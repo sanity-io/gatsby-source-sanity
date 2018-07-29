@@ -1,0 +1,26 @@
+{
+  "name": "gatsby-source-sanity",
+  "description": "Gatsby source plugin for building websites using Sanity.io as a backend.",
+  "version": "0.1.0",
+  "author": "Henrique Cavalieri <henrique@kaordica.com.br>",
+  "repository": "https://github.com/hcavalieri/gatsby-source-sanity",
+  "homepage": "https://github.com/hcavalieri/gatsby-source-sanity#readme",
+  "bugs": {
+    "url": "https://github.com/hcavalieri/gatsby-source-sanity/issues"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "gatsby",
+    "gatsby-plugin",
+    "gatsby-source-plugin"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@sanity/client": "^0.132.5"
+  },
+  "peerDependencies": {
+    "gatsby": "next"
+  }
+}
