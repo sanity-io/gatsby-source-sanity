@@ -45,10 +45,10 @@ module.exports = {
 | useCdn              | boolean | `true`                     | Whether to use Sanity's CDN or not. [Learn more](https://www.sanity.io/docs/api-cdn)           |
 | queries             | array   |                            | **[required]** An array of objects that should contain the options below:                      |
 | (Query object) name | string  |                            | **[required]**  The name of the query. Used                                                    |
-| (Query object) type | string  | Defaults to the query name |                                                                                                |
+| (Query object) type | string  | Defaults to the query name | Used to name the collection inside GraphQL                                                                                               |
 | (Query object) groq | string  |                            | **[required]** The actual [GROQ query](https://www.sanity.io/docs/data-store/how-queries-work). |
 
-**PLEASE NOTE**: _All GROQ queries must contain the _id property_ as it'll be used as the internal ID for Gatsby's `createNode` function. Your build process will fail otherwise.
+**PLEASE NOTE**: _All_ GROQ queries must contain the _id property as it'll be used as the internal ID for Gatsby's `createNode` function. Your build process will fail otherwise.
 
 ## Using .env variables
 
@@ -100,7 +100,7 @@ const metaQuery = `
 
 const postsQuery = `
   *[_type == 'post']{
-		${metaQuery.trim()},
+    ${metaQuery.trim()},
     _id,
     body,
     author,
