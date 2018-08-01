@@ -4,6 +4,12 @@ Source plugin for pulling data from [Sanity](https://sanity.io) into [Gatsby](ht
 
 ## Basic usage
 
+```
+yarn add gatsby-source-sanity
+# or
+npm i gatsby-source-sanity --save
+```
+
 ```js
 // in your gatsby-config.js
 module.exports = {

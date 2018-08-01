@@ -21,15 +21,19 @@ exports.sourceNodes = async ({ actions }, configOptions) => {
 
   // Configuring the sanityClient
   const Sanity = sanityClient({
-    projectId: projectId,
-    dataset: dataset,
-    useCdn: useCdn,
+    projectId,
+    dataset,
+    useCdn,
   });
 
   // Creating a single query that will be ran by Sanity and return
   // an object with keys equivalent to the queries' names
   const finalQuery = `{
-    ${queries.map(query => `"${query.name}": ${query.groq}`)}
+    ${queries.map(query => `"${query.name}": ${query.groq}${
+      // check if there's a comma at the end of the query,
+      // if not, add it to avoid errors with the Sanity query
+      query.groq.substr(query.groq.length - 1, teste.length) === ',' ? '' : ','
+    }`)}
   }`;
   const data = await Sanity.fetch(finalQuery);
 
@@ -63,6 +67,8 @@ exports.sourceNodes = async ({ actions }, configOptions) => {
             }
           })
         })
+      } else {
+        console.log(`${name} doesn't exist in incoming data`);
       }
     })
   } else {
