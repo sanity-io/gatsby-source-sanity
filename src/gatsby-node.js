@@ -28,13 +28,17 @@ exports.sourceNodes = async ({ actions }, configOptions) => {
 
   // Creating a single query that will be ran by Sanity and return
   // an object with keys equivalent to the queries' names
+  const formattedQueries = queries.map(query => {
+    const groq = query.groq.replace(/\s/g, '');
+    return `"${query.name}": ${
+      groq.substr(groq.length -1, 1) === ',' ?
+        groq.slice(0, groq.length - 1)
+      : groq
+    }`
+  });
   const finalQuery = `{
-    ${queries.map(query => `"${query.name}": ${query.groq}${
-      // check if there's a comma at the end of the query,
-      // if not, add it to avoid errors with the Sanity query
-      query.groq.substr(query.groq.length - 1, teste.length) === ',' ? '' : ','
-    }`)}
-  }`;
+    ${formattedQueries.join(',')}
+  }`
   const data = await Sanity.fetch(finalQuery);
 
   if (data) {
