@@ -113,13 +113,14 @@ const normalizeNode = async (node, helpers) => {
 
         if (fileNodeID) {
           // after stored in cache, add this file node id to
-          // a field localFile__NODE in the root of the
+          // a field localFile in the root of the
           // image object and also add the imageUrl field
+          // Take a look at GraphiQl to understand the data
           Object.assign(node, {
             [key]: {
               ...field,
               imageUrl,
-              localFile__NODE: fileNodeID,
+              localFile___NODE: fileNodeID,
             }
           })
         }

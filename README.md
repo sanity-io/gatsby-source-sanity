@@ -22,6 +22,7 @@ module.exports = {
         queries: [
           {
             name: 'posts',
+            type: 'Post',
             groq: `
               *[_type == 'post']{
                 _id,
@@ -32,6 +33,8 @@ module.exports = {
           },
           {
             name: 'authors',
+            // For this case, without a type explicitly defined,
+            // nodes will be created with type = SanityAuthors
             groq: `*[_type == 'author']`
           }
         ]
@@ -159,7 +162,7 @@ module.exports = {
 
 ## Plugin's shortcomings
 
-Sanity is a *API builder*, and for such, it's extremely hard to predict its data model: you can have all sorts of data types, with images nested 4 levels deep inside an object, for example. For such, **this plugin can't go far in shaping your nodes' format**.
+Sanity is an *API builder*, and for such, it's extremely hard to predict its data model: you can have all sorts of data types, with images nested 4 levels deep inside an object, for example. For such, **this plugin can't go far in shaping your nodes' format**.
 
 If you need extra fields built right into the nodes, or deeply-nested images saved to your file system with `gatsby-source-filesystem`'s `createRemoteFileNode`, then your option is to process them in your `gatsby-node.js` file through the [onCreateNode](https://next.gatsbyjs.org/docs/node-apis/#onCreateNode) API.
 
@@ -193,7 +196,7 @@ exports.onCreateNode = ({ node, actions }) => {
 
 If you want to save images to the filesystem, you can use the `saveImages: true` option, but this will only work for those image objects nested in the root of fetched documents. If you need to save deeply nested images, you can either help me out figuring how to make it work with the plugin, or add them manually through your `gatsby-node.js` implementation.
 
-You'll have to know exactly where in you Sanity data tree your images are in order to save them to the filesystem. Here's a suggested implementation:
+If doing it on your own, you'll have to know exactly where in you Sanity data tree your images are in order to save them to the filesystem. Here's a suggested implementation:
 
 _Reminder_: You can also [serve images through Sanity](#serving-images-through-sanity).
 
@@ -275,6 +278,7 @@ The downside of this approach is that you'd have to create lazy-loading componen
 
 ## TODO
 
+- Do a regEx test for the query names and types to avoid errors from Gatsby
 - Test for bugs in different environments and data structures (**I have not tested this with Gatsby v1 or v0, yet!**)
 - Better asset pipeline and file splitting (I've tried setting up Typescript and file bundling to no avail, if you can help out with this, it'd be awesome!)
 - Run the `normalizeNode` function deeper in the structure of the data to be able to save every single image to disk
