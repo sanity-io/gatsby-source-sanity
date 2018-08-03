@@ -1,7 +1,7 @@
 {
   "name": "gatsby-source-sanity",
   "description": "Gatsby source plugin for building websites using Sanity.io as a backend.",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "author": "Henrique Cavalieri <henrique@kaordica.com.br>",
   "repository": "https://github.com/hcavalieri/gatsby-source-sanity",
   "homepage": "https://github.com/hcavalieri/gatsby-source-sanity#readme",
@@ -20,7 +20,9 @@
     "prepublish": "yarn build"
   },
   "dependencies": {
-    "@sanity/client": "^0.132.5"
+    "@sanity/client": "^0.132.5",
+    "@sanity/image-url": "^0.132.5",
+    "gatsby-source-filesystem": "^1.5.39"
   },
   "devDependencies": {
     "@babel/cli": "^7.0.0-beta.44",
