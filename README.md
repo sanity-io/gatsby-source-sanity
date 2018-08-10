@@ -22,7 +22,7 @@ module.exports = {
         queries: [
           {
             name: 'posts',
-            type: 'Post',
+            type: 'Post', // optional
             groq: `
               *[_type == 'post']{
                 _id,
@@ -34,7 +34,8 @@ module.exports = {
           {
             name: 'authors',
             // For this case, without a type explicitly defined,
-            // nodes will be created with type = SanityAuthors
+            // nodes will be created with type = sanityAuthor
+            // and arrays with AllSanityAuthor
             groq: `*[_type == 'author']`
           }
         ]
@@ -44,6 +45,8 @@ module.exports = {
   // ...
 }
 ```
+
+Go through http://localhost:8000/___graphql after running `gatsby develop` to understand the created data and create a new query and checking available collections and fields by typing `CTRL + SPACE`.
 
 ## Options
 
@@ -56,9 +59,39 @@ module.exports = {
 | queries             | array   |                            | **[required]** An array of objects that should contain the options below:                      |
 | (Query object) name | string  |                            | **[required]**  The name of the query, vital for the plugin's functioning                                                    |
 | (Query object) groq | string  |                            | **[required]** The actual [GROQ query](https://www.sanity.io/docs/data-store/how-queries-work). |
-| (Query object) type | string  | `'Sanity' + query.name` | Used to name the collection inside GraphQL                                                                                               |
+| (Query object) type | string  | `'sanity' + query.name` | Used to name the collection inside GraphQL                                                                                               |
 
 **PLEASE NOTE**: _All_ GROQ queries must contain the _id property as it'll be used as the internal ID for Gatsby's `createNode` function. Your build process will fail otherwise.
+
+## Saving images to your filesystem
+
+⚠️ **This is an experimental feature, please report any bugs in the [issues](https://github.com/hcavalieri/gatsby-source-sanity/issues)**
+
+If you want to save images to the filesystem, you can use the `saveImages: true` option, but this will only work for those image objects containing a `_type: 'image'` and an `asset` property. The plugin uses the package `@sanity/image-url` to create URLs for images that preserve hotspots, crops and so on. To avoid any errors in this process, the `asset` field should, ideally, be complete.
+
+Here's a quick way of building your queries with images that will be processed correctly:
+
+_Reminder_: You can also [serve images through Sanity](#serving-images-through-sanity).
+
+```js
+const imageField = 'image{ _type, asset-> }';
+// By standardizing your image field query, you've
+// got yourself a sure way of providing the correct
+// data for the plugin to save images to the filesytem
+const postsQuery = `
+  *[_type == 'post']{
+    _id,
+    meta{
+      ${imageField},
+    },
+    author->{
+      name,
+      excerpt,
+      ${imageField},
+    }
+  }
+`;
+```
 
 ## Using .env variables
 
@@ -162,11 +195,11 @@ module.exports = {
 
 ## Plugin's shortcomings
 
-Sanity is an *API builder*, and for such, it's extremely hard to predict its data model: you can have all sorts of data types, with images nested 4 levels deep inside an object, for example. For such, **this plugin can't go far in shaping your nodes' format**.
+Sanity is an *API builder*, and for such, it's extremely hard to predict its data model: you can have all sorts of data types, with fields nested 8 levels deep inside an object, for example. For such, **this plugin can't go far in shaping your nodes' format**.
 
-If you need extra fields built right into the nodes, or deeply-nested images saved to your file system with `gatsby-source-filesystem`'s `createRemoteFileNode`, then your option is to process them in your `gatsby-node.js` file through the [onCreateNode](https://next.gatsbyjs.org/docs/node-apis/#onCreateNode) API.
+If you need extra or modified fields built right into the nodes, your option is to process them in your `gatsby-node.js` file through the [onCreateNode](https://next.gatsbyjs.org/docs/node-apis/#onCreateNode) API.
 
-*Please note:* Gatsby's `createNodeField` action attaches your new field inside a `fields` object in your node, so when you query for your data in GraphQL, you'll have to do so by calling `fields { [FIELD-NAME] }`. I recommend that you play around with Graphiql to understand the data format before building your front-end.
+*Please note:* Gatsby's `createNodeField` action attaches your new field inside a `fields` object in your node, so when you query for your data in GraphQL, you'll have to do so by calling `fields { [FIELD-NAME] }`. I recommend that you play around with GraphiQl to understand the data format before building your front-end.
 
 ### Attaching a custom field to created nodes
 
@@ -192,82 +225,6 @@ exports.onCreateNode = ({ node, actions }) => {
 }
 ```
 
-### Saving images to your filesystem
-
-If you want to save images to the filesystem, you can use the `saveImages: true` option, but this will only work for those image objects nested in the root of fetched documents. If you need to save deeply nested images, you can either help me out figuring how to make it work with the plugin, or add them manually through your `gatsby-node.js` implementation.
-
-If doing it on your own, you'll have to know exactly where in you Sanity data tree your images are in order to save them to the filesystem. Here's a suggested implementation:
-
-_Reminder_: You can also [serve images through Sanity](#serving-images-through-sanity).
-
-```js
-// gatsby-node.js
-const { createRemoteFileNode } = require(`gatsby-source-filesystem`);
-const imageUrlBuilder = require("@sanity/image-url");
-
-exports.onCreateNode = async ({ node, store, actions, cache, createNodeId }) => {
-  const { createNode, touchNode } = actions;
-
-  // Configuring the sanityClient
-  const Sanity = sanityClient({
-    projectId,
-    dataset,
-    useCdn,
-  });
-  if (node.internal.type === 'Post') {
-    // In this example, the image we want to save is the
-    // ogImage contained in the meta object and considering
-    // we're fetching the whole image object, with _type and _asset
-    const { ogImage } = node.meta;
-    if (ogImage && ogImage.asset) {
-      // Build the url preserving hotspot 'n all
-      imageUrl = imageUrlBuilder(Sanity)
-        .image(ogImage.asset)
-        .url();
-
-      // Check if media is already downloaded
-      let fileNodeID;
-      const mediaDataCacheKey = `sanity-media-${imageUrl}`;
-      const cacheMediaData = await cache.get(mediaDataCacheKey);
-      if (cacheMediaData) {
-        fileNodeID = cacheMediaData.fileNodeID;
-        touchNode({ nodeId: cacheMediaData.fileNodeID });
-      }
-
-      // If not yet cached, createRemoteFileNode
-      if (!fileNodeID) {
-        try {
-          const fileNode = await createRemoteFileNode({
-            url: imageUrl,
-            store,
-            cache,
-            createNode,
-            createNodeId
-          });
-
-          if (fileNode) {
-            fileNodeID = fileNode.id;
-            await cache.set(mediaDataCacheKey, { fileNodeID });
-          }
-        } catch (error) {
-          console.error(`An image failed to be saved to internal storage: ${error}`)
-        }
-      }
-
-      // will be available at fields.ogImage and will
-      // work with gatsby-plugin-sharp out of the box
-      if (fileNodeID) {
-        createNodeField({
-          node,
-          name: 'ogImage',
-          value: fileNode.id,
-        })
-      } else { throw "Couldn't download the requested media file" }
-    }
-  }
-}
-```
-
 ## Serving images through Sanity
 
 Alternatively, you can use [Sanity's image-url library](https://www.npmjs.com/package/@sanity/image-url) and fetch images on the clientside through their `urlFor` function, that is quite powerful in transforming the files.
@@ -280,9 +237,7 @@ The downside of this approach is that you'd have to create lazy-loading componen
 
 - Do a regEx test for the query names and types to avoid errors from Gatsby
 - Test for bugs in different environments and data structures (**I have not tested this with Gatsby v1 or v0, yet!**)
-- Better asset pipeline and file splitting (I've tried setting up Typescript and file bundling to no avail, if you can help out with this, it'd be awesome!)
-- Run the `normalizeNode` function deeper in the structure of the data to be able to save every single image to disk
-- Consider using ES6 classes to make client information universally available for all methods (not sure if gatsby-node would support this, though)
+- Better asset pipeline (I've tried setting up Typescript and file bundling to no avail, if you can help out with this, it'd be awesome!)
 - Gather feedback for new functionalities if needed
 
 ## Credits
