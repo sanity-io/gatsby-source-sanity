@@ -53,8 +53,8 @@ Go through http://localhost:8000/___graphql after running `gatsby develop` to un
 | Options             | Type    | Default                    | Description                                                                                    |
 | ------------------- | ------- | -------------------------- | ---------------------------------------------------------------------------------------------- |
 | projectId           | string  |                            | **[required]** Your Sanity project's ID                                                        |
-| token               | string  |                            | leave blank to be anonymous user                                                               |
 | dataset             | string  | production                 | The dataset to fetch from (can be tied to an .env file as needed)                              |
+| token               | string  |                            | Authentication token for private datasets, leave blank if fetching from a public dataset. [Learn more](https://www.sanity.io/docs/http-auth)
 | useCdn              | boolean | `true`                     | Whether to use Sanity's CDN or not. [Learn more](https://www.sanity.io/docs/api-cdn)           |
 | saveImages              | boolean | `false`                     | Whether to save images to disk. [This has limitations, though](#saving-images-to-your-filesystem).           |
 | queries             | array   |                            | **[required]** An array of objects that should contain the options below:                      |
