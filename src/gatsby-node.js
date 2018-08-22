@@ -14,7 +14,7 @@ const normalizeNode = require('./normalize');
 
 exports.sourceNodes = async ({ actions, cache, store, createNodeId }, configOptions) => {
   const { createNode, touchNode } = actions;
-  const { projectId, dataset = 'production', useCdn = true, saveImages = false, queries } = configOptions;
+  const { projectId, token, dataset = 'production', useCdn = true, saveImages = false, queries } = configOptions;
 
   if (!projectId) {
     throw new Error ("No ID found for your Sanity project!");
@@ -25,6 +25,7 @@ exports.sourceNodes = async ({ actions, cache, store, createNodeId }, configOpti
   // Configuring the sanityClient
   const Sanity = sanityClient({
     projectId,
+    token,
     dataset,
     useCdn,
   });
