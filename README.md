@@ -2,6 +2,19 @@
 
 Source plugin for pulling data from [Sanity](https://sanity.io) into [Gatsby](https://gatsbyjs.org) websites.
 
+## Table of content
+
+- [Basic Usage](#basic-usage)
+- [Options](#options)
+- [Saving images to your filesystem](#saving-images-to-your-filesystem)
+- [Using .env variables](#using-env-variables)
+- [Storing your queries in an external file](#storing-your-queries-in-an-external-file)
+- [Stringify fields](#stringify-fields)
+- [Plugin's shortcomings](#plugins-shortcomings)
+- [Serving images through Sanity](#serving-images-through-sanity)
+- [Todo](#todo)
+- [Credits](#credits)
+
 ## Basic usage
 
 ```
