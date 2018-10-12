@@ -1,0 +1,41 @@
+{
+  "defaultSeverity": "error",
+  "extends": ["tslint:recommended", "tslint-react", "tslint-config-prettier"],
+  "rules": {
+    // Forcing to start interfaces' names with an "I"
+    "interface-name": true,
+    // Only allows to assign `this` to variables named "self"
+    "no-this-assignment": [
+      true,
+      {
+        "allowed-names": ["^self$"],
+        "allow-destructuring": true
+      }
+    ],
+    // Force the usage of semicolons
+    "semicolon": [true, "always"],
+    // Order imports alphabetically
+    "ordered-imports": [false],
+    // Allow the usage of console methods
+    "no-console": [false],
+    // Avoid require statements
+    "no-var-requires": true,
+    // Forces single quotemarks, but double on JSX attributes
+    // In order to avoid escaping quotes, we allow avoid-escape for
+    // cases such as "Hello 'World'"
+    "quotemark": [true, "single", "jsx-double", "avoid-escape"],
+    // Allow only lowerCamelCased and PascalCase variable names, as well
+    // as avoids specific keywords to be used in variable names, such as
+    // "String", "undefined", etc.
+    "variable-name": [
+      true,
+      "ban-keywords",
+      "check-format",
+      "allow-pascal-case"
+    ],
+    // Avoids errors regarding the alphabetical order of variables in an object
+    "object-literal-sort-keys": false,
+    "jsx-no-lambda": false
+  },
+  "rulesDirectory": []
+}

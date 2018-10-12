@@ -1,6 +1,6 @@
 const { createRemoteFileNode } = require("gatsby-source-filesystem");
 
-const saveImage = async (field, actions) => {
+const saveImage = async (field: any, actions: any) => {
   const { urlFor, cache, store, createNode, createNodeId, touchNode } = actions;
 
   // Build the URL for the image using Sanity's package
@@ -30,7 +30,9 @@ const saveImage = async (field, actions) => {
           await cache.set(mediaDataCacheKey, { fileNodeID });
         }
       } catch (error) {
-        console.error(`An image failed to be saved to internal storage: ${error}`)
+        console.error(
+          `An image failed to be saved to internal storage: ${error}`
+        );
       }
     }
 
@@ -42,14 +44,16 @@ const saveImage = async (field, actions) => {
       field = {
         ...field,
         imageUrl,
-        localFile___NODE: fileNodeID,
-      }
+        localFile___NODE: fileNodeID
+      };
     }
   } else {
-    console.error(`An image field has an incomplete asset object or something went wrong when creating its URL: ${key}`);
+    console.error(
+      `An image field has an incomplete asset object or something went wrong when creating its URL`
+    );
   }
 
   return field;
 };
 
-module.exports = saveImage;
+export default saveImage;

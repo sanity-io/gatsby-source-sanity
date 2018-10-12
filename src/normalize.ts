@@ -1,19 +1,19 @@
-const saveImage = require('./saveImage');
+import saveImage from "./saveImage";
 
-// field: any
-const isImagelessObject = field => typeof field == 'object'
-  && field._type !== 'image';
+// TODO: any way to achieve better type checking?
+const isImagelessObject = (field: any) =>
+  typeof field == "object" && field._type !== "image";
 
-// field: Object<any>
-const isImage = field => {
-  return typeof field == 'object' &&
+const isImage = (field: any) => {
+  return (
+    typeof field == "object" &&
     field._type &&
-    field._type === 'image' &&
-    field.asset;
-}
+    field._type === "image" &&
+    field.asset
+  );
+};
 
-// field: Object<any>
-const analyzeField = async (field, actions) => {
+const analyzeField = async (field: any, actions: any) => {
   let finalField = field;
   for (const key of Object.keys(field)) {
     let newField = field[key];
@@ -26,19 +26,15 @@ const analyzeField = async (field, actions) => {
       newField = await saveImage(newField, actions);
     } else {
       // If not an object, we simply skip this key
-      continue
+      continue;
     }
 
     // swap out the previous field with the new one
     finalField = Object.assign(finalField, {
-      [key]: newField,
-    })
+      [key]: newField
+    });
   }
   return finalField;
-}
+};
 
-const normalizeNode = async (node, actions) => {
-  return analyzeField(node, actions);
-}
-
-module.exports = normalizeNode;
+export default analyzeField;
