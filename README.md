@@ -2,6 +2,19 @@
 
 Source plugin for pulling data from [Sanity](https://sanity.io) into [Gatsby](https://gatsbyjs.org) websites.
 
+## Table of content
+
+- [Basic Usage](#basic-usage)
+- [Options](#options)
+- [Saving images to your filesystem](#saving-images-to-your-filesystem)
+- [Using .env variables](#using-env-variables)
+- [Storing your queries in an external file](#storing-your-queries-in-an-external-file)
+- [Stringify fields](#stringify-fields)
+- [Plugin's shortcomings](#plugins-shortcomings)
+- [Serving images through Sanity](#serving-images-through-sanity)
+- [Todo](#todo)
+- [Credits](#credits)
+
 ## Basic usage
 
 ```
@@ -55,6 +68,7 @@ Go through http://localhost:8000/___graphql after running `gatsby develop` to un
 | projectId           | string  |                            | **[required]** Your Sanity project's ID                                                        |
 | dataset             | string  | production                 | The dataset to fetch from (can be tied to an .env file as needed)                              |
 | token               | string  |                            | Authentication token for private datasets, leave blank if fetching from a public dataset. [Learn more](https://www.sanity.io/docs/http-auth)
+| stringifyPattern    | string  |                            | Key flag for field “stringification”, see more below
 | useCdn              | boolean | `true`                     | Whether to use Sanity's CDN or not. [Learn more](https://www.sanity.io/docs/api-cdn)           |
 | saveImages              | boolean | `false`                     | Whether to save images to disk. [This has limitations, though](#saving-images-to-your-filesystem).           |
 | queries             | array   |                            | **[required]** An array of objects that should contain the options below:                      |
@@ -193,6 +207,73 @@ module.exports = {
   // ...
 }
 ```
+
+## Stringify fields
+
+With Sanity [blocks](https://www.sanity.io/docs/schema-types/block-type) (rich content field), **the data structure coming out of a single block field is really hard to predict**, because it depends a lot on the content putted inside. Hard to predict means nearly impossible to use with Gatsby GraphQL query language (see #3).
+
+For that reason and using the GROQ renaming feature, **you can flag those problematic fields** to stringify them with `JSON.stringify` and re-parse them inside of your page.
+
+**gatsby-config.js**
+```js
+//...
+{
+  resolve: 'gatsby-source-sanity',
+  options: {
+    //...
+    stringifyPattern: '_toString', // 👈 This one
+  },
+},
+//...
+```
+
+**your-query.js**
+```js
+//...
+groq: `
+*[_type == 'article']{
+  _id,
+  title,
+  "body_toString": body
+}
+`
+//...
+```
+
+**your-page.js** (*[`@sanity/block-content-to-react`](https://github.com/sanity-io/block-content-to-react) recommended*)
+```js
+import BlockContent from '@sanity/block-content-to-react';
+
+const serializers = {
+  types: {
+    // custom types serialization, see @sanity/block-content-to-react doc
+  }
+};
+
+export default function Article({ data }) {
+  const article = data.article;
+  return (
+    <Layout>
+      <h1>{article.title}</h1>
+      <BlockContent
+        blocks={JSON.parse(article.body_toString)} // 👈 Parsing happen here
+        serializers={serializers}
+      />
+    </Layout>
+  );
+}
+
+export const query = graphql`
+  query articleQuery($slug: String!) {
+    article(slug: { current: { eq: $slug } }) {
+      id
+      title
+      body_toString
+    }
+  }
+`;
+```
+
 
 ## Plugin's shortcomings
 

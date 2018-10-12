@@ -14,7 +14,15 @@ const normalizeNode = require('./normalize');
 
 exports.sourceNodes = async ({ actions, cache, store, createNodeId }, configOptions) => {
   const { createNode, touchNode } = actions;
-  const { projectId, token, dataset = 'production', useCdn = true, saveImages = false, queries } = configOptions;
+    const {
+    projectId,
+    token,
+    dataset = 'production',
+    useCdn = true,
+    saveImages = false,
+    stringifyPattern,
+    queries
+  } = configOptions;
 
   if (!projectId) {
     throw new Error ("No ID found for your Sanity project!");
@@ -68,6 +76,13 @@ exports.sourceNodes = async ({ actions, cache, store, createNodeId }, configOpti
               node,
               { urlFor, cache, store, touchNode, createNodeId, createNode }
             );
+          }
+
+          if (undefined !== stringifyPattern) {
+            finalNode = helpers.stringify(finalNode, (key, value) => {
+              if (key.includes(stringifyPattern)) return JSON.stringify(value);
+              return value;
+            });
           }
 
           const type = query.type || `Sanity${helpers.capitalizeFirstLetter(query.name)}`;
