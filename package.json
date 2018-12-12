@@ -1,13 +1,19 @@
 {
   "name": "gatsby-source-sanity",
   "description": "Gatsby source plugin for building websites using Sanity.io as a backend.",
-  "version": "0.5.1",
-  "author": "Henrique Cavalieri <henrique@kaordica.com.br>",
-  "repository": "https://github.com/hcavalieri/gatsby-source-sanity",
-  "homepage": "https://github.com/hcavalieri/gatsby-source-sanity#readme",
+  "version": "0.9.9",
+  "author": "Sanity.io <hello@sanity.io>",
+  "contributors": [
+    {
+      "name": "Henrique Cavalieri",
+      "email": "henrique@kaordica.com.br"
+    }
+  ],
+  "repository": "https://github.com/sanity-io/gatsby-source-sanity",
+  "homepage": "https://github.com/sanity-io/gatsby-source-sanity#readme",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/hcavalieri/gatsby-source-sanity/issues"
+    "url": "https://github.com/sanity-io/gatsby-source-sanity/issues"
   },
   "keywords": [
     "gatsby",
@@ -28,19 +34,20 @@
     }
   },
   "dependencies": {
-    "@sanity/client": "^0.132.5",
-    "@sanity/image-url": "^0.132.5",
-    "gatsby-source-filesystem": "^2.0.0"
+    "@sanity/client": "^0.136.2",
+    "@sanity/image-url": "^0.136.0",
+    "gatsby-source-filesystem": "^2.0.12"
   },
   "devDependencies": {
-    "@types/node": "^10.11.7",
+    "@types/node": "^10.12.12",
     "cross-env": "^5.1.3",
-    "husky": "^1.1.2",
-    "prettier": "^1.14.3",
-    "pretty-quick": "^1.7.0",
-    "tslint": "^5.11.0",
-    "tslint-config-prettier": "^1.15.0",
-    "typescript": "^3.1.3"
+    "eslint": "^5.10.0",
+    "eslint-config-prettier": "^3.3.0",
+    "eslint-config-sanity": "^0.136.0",
+    "husky": "^1.2.0",
+    "prettier": "^1.15.3",
+    "pretty-quick": "^1.8.0",
+    "typescript": "^3.2.2"
   },
   "peerDependencies": {
     "gatsby": "^2.0.0"

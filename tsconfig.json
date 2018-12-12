@@ -1,29 +1,18 @@
 {
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules", "test/**/*.ts"],
   "compilerOptions": {
+    "strict": true,
+    "noUnusedLocals": true,
+    "noImplicitReturns": true,
+    "module": "commonjs",
+    "removeComments": false,
+    "preserveConstEnums": true,
+    "sourceMap": true,
     "baseUrl": ".",
     "outDir": ".",
-    "module": "commonjs",
-    "target": "es6",
-    "sourceMap": false,
-    "allowJs": false,
-    "moduleResolution": "node",
-    "rootDir": "src",
-    "forceConsistentCasingInFileNames": true,
-    "noImplicitReturns": true,
-    "noImplicitThis": true,
-    "noImplicitAny": true,
-    "strictNullChecks": true,
-    "suppressImplicitAnyIndexErrors": true,
-    "noUnusedLocals": true,
-    "allowSyntheticDefaultImports": true
-  },
-  "exclude": [
-    "node_modules",
-    "build",
-    "scripts",
-    "acceptance-tests",
-    "webpack",
-    "jest",
-    "src/setupTests.ts"
-  ]
+    "target": "es2016",
+    "declaration": true,
+    "lib": ["es2016"]
+  }
 }

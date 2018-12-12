@@ -1,18 +1,18 @@
-const { createRemoteFileNode } = require("gatsby-source-filesystem");
+const {createRemoteFileNode} = require('gatsby-source-filesystem')
 
 const saveImage = async (field: any, actions: any) => {
-  const { urlFor, cache, store, createNode, createNodeId, touchNode } = actions;
+  const {urlFor, cache, store, createNode, createNodeId, touchNode} = actions
 
   // Build the URL for the image using Sanity's package
-  const imageUrl = urlFor(field.asset).url();
+  const imageUrl = urlFor(field.asset).url()
   if (imageUrl) {
-    let fileNodeID;
-    const mediaDataCacheKey = `sanity-media-${imageUrl}`;
-    const cacheMediaData = await cache.get(mediaDataCacheKey);
+    let fileNodeID
+    const mediaDataCacheKey = `sanity-media-${imageUrl}`
+    const cacheMediaData = await cache.get(mediaDataCacheKey)
 
     if (cacheMediaData) {
-      fileNodeID = cacheMediaData.fileNodeID;
-      touchNode({ nodeId: cacheMediaData.fileNodeID });
+      fileNodeID = cacheMediaData.fileNodeID
+      touchNode({nodeId: cacheMediaData.fileNodeID})
     }
 
     if (!fileNodeID) {
@@ -23,16 +23,14 @@ const saveImage = async (field: any, actions: any) => {
           cache,
           createNode,
           createNodeId
-        });
+        })
 
         if (fileNode) {
-          fileNodeID = fileNode.id;
-          await cache.set(mediaDataCacheKey, { fileNodeID });
+          fileNodeID = fileNode.id
+          await cache.set(mediaDataCacheKey, {fileNodeID})
         }
       } catch (error) {
-        console.error(
-          `An image failed to be saved to internal storage: ${error}`
-        );
+        console.error(`An image failed to be saved to internal storage: ${error}`)
       }
     }
 
@@ -45,15 +43,15 @@ const saveImage = async (field: any, actions: any) => {
         ...field,
         imageUrl,
         localFile___NODE: fileNodeID
-      };
+      }
     }
   } else {
     console.error(
       `An image field has an incomplete asset object or something went wrong when creating its URL`
-    );
+    )
   }
 
-  return field;
-};
+  return field
+}
 
-export default saveImage;
+export default saveImage
