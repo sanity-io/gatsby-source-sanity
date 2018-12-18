@@ -34,6 +34,8 @@ module.exports = {
 }
 ```
 
+At this point you can choose to [set up a GraphQL API](https://www.sanity.io/help/graphql-beta) for your Sanity dataset, if you have not done so already. This will help the plugin in knowing which types and fields exists, so you can query for them even without them being present in any current documents. It also helps create more sane names and types for the nodes in Gatsby.
+
 Go through http://localhost:8000/___graphql after running `gatsby develop` to understand the created data and create a new query and checking available collections and fields by typing `CTRL + SPACE`.
 
 ## Options
