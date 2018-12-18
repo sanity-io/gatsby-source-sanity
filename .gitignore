@@ -1,6 +1,3 @@
 node_modules
-/gatsby-node.js
-/fetch.js
-/helpers.js
-/normalize.js
-/saveImage.js
+lib/
+

@@ -9,10 +9,9 @@
     "removeComments": false,
     "preserveConstEnums": true,
     "sourceMap": true,
-    "baseUrl": ".",
-    "outDir": ".",
-    "target": "es2016",
+    "outDir": "./lib",
+    "target": "es2017",
     "declaration": true,
-    "lib": ["es2016"]
+    "lib": ["es2017", "dom", "esnext.asynciterable"]
   }
 }
