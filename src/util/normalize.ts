@@ -13,14 +13,15 @@ import {
 const typePrefix = 'Sanity'
 
 // Node fields used internally by Gatsby.
-const RESTRICTED_NODE_FIELDS = ['id', 'children', 'parent', 'fields', 'internal']
+export const RESTRICTED_NODE_FIELDS = ['id', 'children', 'parent', 'fields', 'internal']
 
-interface ProcessingOptions {
+export interface ProcessingOptions {
   createNode: GatsbyNodeCreator
   createNodeId: GatsbyNodeIdCreator
   createContentDigest: GatsbyContentDigester
   createParentChildLink: GatsbyParentChildLinker
   overlayDrafts: boolean
+  skipCreate?: boolean
 }
 
 interface HoistContext {
@@ -35,7 +36,8 @@ export function processDocument(doc: SanityDocument, options: ProcessingOptions)
     createNodeId,
     createParentChildLink,
     createContentDigest,
-    overlayDrafts
+    overlayDrafts,
+    skipCreate
   } = options
 
   const safe = prefixConflictingKeys(doc)
@@ -54,16 +56,20 @@ export function processDocument(doc: SanityDocument, options: ProcessingOptions)
     }
   }
 
-  createNode(node)
-  hoistedNodes.forEach(childNode => {
-    const child = childNode as GatsbyNode
-    createNode(child)
-    createParentChildLink({parent: node, child})
-  })
+  if (!skipCreate) {
+    createNode(node)
+
+    hoistedNodes.forEach(childNode => {
+      const child = childNode as GatsbyNode
+      createNode(child)
+      createParentChildLink({parent: node, child})
+    })
+  }
 
   return node
 }
 
+// `drafts.foo-bar` => `foo.bar`
 function unprefixDraftId(id: string) {
   return id.replace(/^drafts\./, '')
 }

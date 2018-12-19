@@ -46,6 +46,7 @@ Go through http://localhost:8000/___graphql after running `gatsby develop` to un
 | dataset       | string  |         | **[required]** The dataset to fetch from                                                                                                       |
 | token         | string  |         | Authentication token for fetching data from private datasets, or when using `overlayDrafts` [Learn more](https://www.sanity.io/docs/http-auth) |
 | overlayDrafts | boolean | `false` | Set to `true` in order for drafts to replace their published version. By default, drafts will be skipped.                                      |
+| watchMode     | boolean | `false` | Set to `true` to keep a listener open and update with the latest changes in realtime.                                                          |
 
 ## Using .env variables
 
