@@ -1,28 +1,34 @@
 import * as split from 'split2'
 import * as through from 'through2'
 import SanityClient = require('@sanity/client')
-import {GatsbyContext} from './types/gatsby'
+import {GatsbyContext, GatsbyReporter} from './types/gatsby'
+import {SanityDocument} from './types/sanity'
 import {pump} from './util/pump'
-import {removeDrafts} from './util/removeDrafts'
+import {removeDrafts, extractDrafts} from './util/handleDrafts'
 import {rejectOnApiError} from './util/rejectOnApiError'
 import {processDocument} from './util/normalize'
 import {getDocumentStream} from './util/getDocumentStream'
 import {removeSystemDocuments} from './util/removeSystemDocuments'
 import {getRemoteGraphQLSchema, transformRemoteGraphQLSchema} from './util/remoteGraphQLSchema'
-import {pkgName} from './index'
-import {SanityDocument} from './types/sanity'
 
 interface PluginConfig {
   projectId: string
   dataset: string
-  token: string
+  token?: string
   version?: string
+  overlayDrafts?: boolean
 }
 
-export const onPreBootstrap = async (context: GatsbyContext, config: PluginConfig) => {
+const defaultConfig = {
+  version: '1',
+  overlayDrafts: false
+}
+
+export const onPreBootstrap = async (context: GatsbyContext, pluginConfig: PluginConfig) => {
+  const config = {...defaultConfig, ...pluginConfig}
   const {actions, reporter} = context
 
-  validateConfig(config)
+  validateConfig(config, reporter)
 
   try {
     reporter.info('[sanity] Fetching remote GraphQL schema')
@@ -42,48 +48,54 @@ export const onPreBootstrap = async (context: GatsbyContext, config: PluginConfi
   }
 }
 
-export const sourceNodes = async (context: GatsbyContext, config: PluginConfig) => {
+export const sourceNodes = async (context: GatsbyContext, pluginConfig: PluginConfig) => {
+  const config = {...defaultConfig, ...pluginConfig}
+  const {dataset, overlayDrafts} = config
   const {actions, createNodeId, createContentDigest, reporter} = context
   const {createNode} = actions
-  const {dataset} = config
 
   const client = getClient(config)
   const url = client.getUrl(`/data/export/${dataset}`)
 
-  const nodeIds: string[] = []
-
   reporter.info('[sanity] Fetching export stream for dataset')
   const inputStream = await getDocumentStream(url, config.token)
 
+  const drafts: SanityDocument[] = []
+  const processingOptions = {createNodeId, createContentDigest, overlayDrafts}
   await pump([
     inputStream,
     split(JSON.parse),
     rejectOnApiError(),
-    removeDrafts(),
+    overlayDrafts ? extractDrafts(drafts) : removeDrafts(),
     removeSystemDocuments(),
     through.obj((doc: SanityDocument, enc: string, cb: through.TransformCallback) => {
       reporter.info('[sanity] Got document with ID ' + doc._id)
-      const node = processDocument(doc, {createNodeId, createContentDigest})
-      nodeIds.push(node.id)
-      createNode(node)
+      createNode(processDocument(doc, processingOptions))
       cb()
     })
   ])
 
-  reporter.info('Done fetching from Sanity!')
+  if (drafts.length > 0) {
+    reporter.info('[sanity] Overlaying drafts')
+    drafts.forEach(draft => {
+      createNode(processDocument(draft, processingOptions))
+    })
+  }
+
+  reporter.info('[sanity] Done fetching documents!')
 }
 
-function validateConfig(config: PluginConfig) {
+function validateConfig(config: PluginConfig, reporter: GatsbyReporter) {
   if (!config.projectId) {
-    throw new Error(`${pkgName}: 'projectId' must be specified`)
+    throw new Error('[sanity] `projectId` must be specified')
   }
 
   if (!config.dataset) {
-    throw new Error(`${pkgName}: 'dataset' must be specified`)
+    throw new Error('[sanity] `dataset` must be specified')
   }
 
-  if (!config.token) {
-    throw new Error(`${pkgName}: 'token' must be specified`)
+  if (config.overlayDrafts && !config.token) {
+    reporter.warn('[sanity] `overlayDrafts` is set to `true`, but no token is given')
   }
 }
 

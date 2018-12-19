@@ -7,7 +7,7 @@ declare module '@sanity/client' {
   interface ClientConfig {
     projectId: string
     dataset: string
-    token: string
+    token?: string
     version?: string
     useCdn?: boolean
   }

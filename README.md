@@ -40,11 +40,12 @@ Go through http://localhost:8000/___graphql after running `gatsby develop` to un
 
 ## Options
 
-| Options   | Type   | Default | Description                                                                                              |
-| --------- | ------ | ------- | -------------------------------------------------------------------------------------------------------- |
-| projectId | string |         | **[required]** Your Sanity project's ID                                                                  |
-| dataset   | string |         | **[required]** The dataset to fetch from                                                                 |
-| token     | string |         | **[required]** Authentication token for fetching data [Learn more](https://www.sanity.io/docs/http-auth) |
+| Options       | Type    | Default | Description                                                                                                                                    |
+| ------------- | ------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| projectId     | string  |         | **[required]** Your Sanity project's ID                                                                                                        |
+| dataset       | string  |         | **[required]** The dataset to fetch from                                                                                                       |
+| token         | string  |         | Authentication token for fetching data from private datasets, or when using `overlayDrafts` [Learn more](https://www.sanity.io/docs/http-auth) |
+| overlayDrafts | boolean | `false` | Set to `true` in order for drafts to replace their published version. By default, drafts will be skipped.                                      |
 
 ## Using .env variables
 

@@ -2,14 +2,15 @@ import axios from 'axios'
 import {Readable} from 'stream'
 import {pkgName} from '../index'
 
-export function getDocumentStream(url: string, token: string): Promise<Readable> {
+export function getDocumentStream(url: string, token?: string): Promise<Readable> {
+  const auth = token ? {Authorization: `Bearer ${token}`} : {}
+  const userAgent = {'User-Agent': `${pkgName}`}
+  const headers = {...userAgent, ...auth}
+
   return axios({
     method: 'get',
-    url: url,
     responseType: 'stream',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'User-Agent': `${pkgName}`
-    }
+    url,
+    headers
   }).then(res => res.data)
 }

@@ -9,20 +9,21 @@ const typePrefix = 'Sanity'
 // Node fields used internally by Gatsby.
 const RESTRICTED_NODE_FIELDS = ['id', 'children', 'parent', 'fields', 'internal']
 
-interface NormalizationUtils {
+interface ProcessingOptions {
   createNodeId: GatsbyNodeIdCreator
   createContentDigest: GatsbyContentDigester
+  overlayDrafts: boolean
 }
 
 // Transform a Sanity document into a Gatsby node
-export function processDocument(doc: SanityDocument, utils: NormalizationUtils): GatsbyNode {
-  const {createNodeId, createContentDigest} = utils
+export function processDocument(doc: SanityDocument, options: ProcessingOptions): GatsbyNode {
+  const {createNodeId, createContentDigest, overlayDrafts} = options
   const safe = prefixConflictingKeys(doc)
   const withRefs = makeNodeReferences(safe, createNodeId)
 
   return {
     ...withRefs,
-    id: createNodeId(doc._id),
+    id: createNodeId(overlayDrafts ? unprefixDraftId(doc._id) : doc._id),
     parent: null,
     children: [],
     internal: {
@@ -31,6 +32,10 @@ export function processDocument(doc: SanityDocument, utils: NormalizationUtils):
       contentDigest: createContentDigest(JSON.stringify(withRefs))
     }
   }
+}
+
+function unprefixDraftId(id: string) {
+  return id.replace(/^drafts\./, '')
 }
 
 // movie => SanityMovie
