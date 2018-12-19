@@ -1,4 +1,4 @@
-import {set, unset, startCase, camelCase, cloneDeep} from 'lodash'
+import {get, set, unset, startCase, camelCase, cloneDeep} from 'lodash'
 import {extractWithPath} from '@sanity/mutator'
 import {GatsbyNodeIdCreator, GatsbyContentDigester, GatsbyNode} from '../types/gatsby'
 import {SanityDocument} from '../types/sanity'
@@ -75,10 +75,22 @@ function makeNodeReferences(doc: SanityDocument, createNodeId: GatsbyNodeIdCreat
   refs.forEach(match => {
     const path = match.path.slice(0, -1)
     const key = path[path.length - 1]
-    const refPath = path.slice(0, -1).concat(`${key}___NODE`)
+    const isArrayIndex = typeof key === 'number'
     const referencedId = createNodeId(match.value)
-    unset(newDoc, path)
-    set(newDoc, refPath, referencedId)
+
+    if (isArrayIndex) {
+      const arrayPath = path.slice(0, -1)
+      const field = path[path.length - 2]
+      const nodePath = path.slice(0, -2).concat(`${field}___NODE`)
+      const refPath = nodePath.concat(key)
+      set(newDoc, nodePath, get(newDoc, nodePath, get(newDoc, arrayPath)))
+      set(newDoc, refPath, referencedId)
+      unset(newDoc, arrayPath)
+    } else {
+      const refPath = path.slice(0, -1).concat(`${key}___NODE`)
+      unset(newDoc, path)
+      set(newDoc, refPath, referencedId)
+    }
   })
 
   return newDoc
