@@ -52,7 +52,7 @@ export const sourceNodes = async (context: GatsbyContext, pluginConfig: PluginCo
   const config = {...defaultConfig, ...pluginConfig}
   const {dataset, overlayDrafts} = config
   const {actions, createNodeId, createContentDigest, reporter} = context
-  const {createNode} = actions
+  const {createNode, createParentChildLink} = actions
 
   const client = getClient(config)
   const url = client.getUrl(`/data/export/${dataset}`)
@@ -61,7 +61,14 @@ export const sourceNodes = async (context: GatsbyContext, pluginConfig: PluginCo
   const inputStream = await getDocumentStream(url, config.token)
 
   const drafts: SanityDocument[] = []
-  const processingOptions = {createNodeId, createContentDigest, overlayDrafts}
+  const processingOptions = {
+    createNodeId,
+    createNode,
+    createContentDigest,
+    createParentChildLink,
+    overlayDrafts
+  }
+
   await pump([
     inputStream,
     split(JSON.parse),
@@ -70,7 +77,7 @@ export const sourceNodes = async (context: GatsbyContext, pluginConfig: PluginCo
     removeSystemDocuments(),
     through.obj((doc: SanityDocument, enc: string, cb: through.TransformCallback) => {
       reporter.info('[sanity] Got document with ID ' + doc._id)
-      createNode(processDocument(doc, processingOptions))
+      processDocument(doc, processingOptions)
       cb()
     })
   ])
@@ -78,7 +85,7 @@ export const sourceNodes = async (context: GatsbyContext, pluginConfig: PluginCo
   if (drafts.length > 0) {
     reporter.info('[sanity] Overlaying drafts')
     drafts.forEach(draft => {
-      createNode(processDocument(draft, processingOptions))
+      processDocument(draft, processingOptions)
     })
   }
 

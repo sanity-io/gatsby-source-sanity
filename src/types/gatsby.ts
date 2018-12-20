@@ -9,6 +9,7 @@ export interface GatsbyNode {
     type: string
     contentDigest: string
   }
+  [key: string]: any
 }
 
 export interface GatsbyReporter {
@@ -16,9 +17,18 @@ export interface GatsbyReporter {
   warn: (msg: string) => null
 }
 
-export type GatsbyNodeIdCreator = (id: string) => string
+export interface GatsbyParentChildLink {
+  parent: GatsbyNode
+  child: GatsbyNode
+}
+
+export type GatsbyNodeCreator = (node: GatsbyNode) => null
+
+export type GatsbyNodeIdCreator = (id: string, namespace?: string) => string
 
 export type GatsbyContentDigester = (content: string) => string
+
+export type GatsbyParentChildLinker = (link: GatsbyParentChildLink) => null
 
 export interface GatsbyContext {
   actions: GatsbyActions
@@ -29,7 +39,8 @@ export interface GatsbyContext {
 }
 
 export interface GatsbyActions {
-  createNode: (node: GatsbyNode) => null
+  createNode: GatsbyNodeCreator
+  createParentChildLink: GatsbyParentChildLinker
   touchNode: (options: {nodeId: string}) => null
   addThirdPartySchema: (schema: {schema: GraphQLSchema}) => null
 }
