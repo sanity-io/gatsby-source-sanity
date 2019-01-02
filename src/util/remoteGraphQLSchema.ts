@@ -1,9 +1,21 @@
 import {get} from 'lodash'
-import {buildSchema, GraphQLSchema, printSchema} from 'gatsby/graphql'
+import {
+  buildSchema,
+  GraphQLSchema,
+  GraphQLObjectTypeConfig,
+  GraphQLObjectType,
+  GraphQLFieldConfig,
+  GraphQLUnionTypeConfig,
+  GraphQLUnionType
+} from 'gatsby/graphql'
 import SanityClient = require('@sanity/client')
 import {visitSchema, VisitSchemaKind} from 'graphql-tools/dist/transforms/visitSchema'
 import {transformSchema, RenameTypes} from 'graphql-tools'
 import {getTypeName} from './normalize'
+
+interface UnionTypeList {
+  typeNames: string[]
+}
 
 class RequestError extends Error {
   public isWarning: boolean
@@ -43,14 +55,80 @@ export async function getRemoteGraphQLSchema(client: SanityClient) {
 export async function transformRemoteGraphQLSchema(sdl: string) {
   const remoteSchema = buildSchema(sdl)
 
-  const schema = transformSchema(remoteSchema, [
+  return transformSchema(remoteSchema, [
     new StripNonTypeTransform(),
-    new RenameTypes(getTypeName),
-    new RenameTypes(type => (type === 'SanityDateTime' ? 'Date' : type))
+    new RenameTypes(remapTypeName)
   ])
+}
 
-  const transformed = printSchema(schema)
-  return buildSchema(transformed)
+export function buildObjectTypeMap(schema: GraphQLSchema) {
+  const map = schema.getTypeMap()
+  const typeMap: {[key: string]: GraphQLObjectTypeConfig<any, any>} = {}
+  return Object.keys(map).reduce((acc, typeName) => {
+    const original = map[typeName] as GraphQLObjectType
+    if (typeof original.getFields !== 'function' || typeof original.getInterfaces !== 'function') {
+      return acc
+    }
+
+    const fields = original.getFields()
+    const fieldMap: {[key: string]: GraphQLFieldConfig<any, any>} = {}
+
+    acc[typeName] = {
+      name: original.name,
+      description: original.description,
+      interfaces: original.getInterfaces(),
+      isTypeOf: original.isTypeOf,
+      fields: Object.keys(fields).reduce((fieldList, fieldName) => {
+        const originalField = fields[fieldName]
+        fieldList[fieldName] = {
+          description: originalField.description,
+          resolve: originalField.resolve,
+          type: originalField.type
+        }
+        return fieldList
+      }, fieldMap)
+    }
+    return acc
+  }, typeMap)
+}
+
+export function buildUnionTypeMap(schema: GraphQLSchema) {
+  const map = schema.getTypeMap()
+  const typeMap: {[key: string]: GraphQLUnionTypeConfig<any, any> & UnionTypeList} = {}
+  return Object.keys(map).reduce((acc, typeName) => {
+    const original = map[typeName] as GraphQLUnionType
+    if (typeof original.getTypes !== 'function') {
+      return acc
+    }
+
+    const types = original.getTypes()
+    const typeNames = types.map(type => type.name)
+
+    acc[typeName] = {
+      name: original.name,
+      description: original.description,
+      types: original.getTypes,
+      resolveType: original.resolveType,
+      typeNames
+    }
+    return acc
+  }, typeMap)
+}
+
+function remapTypeName(typeName: string): string {
+  switch (typeName) {
+    // Gatsby provides a date scalar - we don't need/want our own
+    case 'Date':
+    case 'DateTime':
+      return 'Date'
+    // Gatsby provides a JSON scalar, we don't want `SanityJSON`
+    case 'JSON':
+      return 'JSON'
+    // For other types, prefix and pascalcase the type name:
+    // BlogPost => SanityBlogPost
+    default:
+      return getTypeName(typeName)
+  }
 }
 
 class StripNonTypeTransform {

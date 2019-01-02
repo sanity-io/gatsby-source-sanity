@@ -16,6 +16,7 @@ const typePrefix = 'Sanity'
 export const RESTRICTED_NODE_FIELDS = ['id', 'children', 'parent', 'fields', 'internal']
 
 export interface ProcessingOptions {
+  aliases: {[key: string]: {[key: string]: string}}
   createNode: GatsbyNodeCreator
   createNodeId: GatsbyNodeIdCreator
   createContentDigest: GatsbyContentDigester
@@ -44,8 +45,9 @@ export function processDocument(doc: SanityDocument, options: ProcessingOptions)
   const hoistedNodes: object[] = []
   const hoisted = hoistMixedArrays(safe, options, {hoistedNodes, path: [doc._id]})
   const withRefs = makeNodeReferences(hoisted, options)
+  const withAliases = applyAliases(withRefs, doc, options)
   const node = {
-    ...withRefs,
+    ...withAliases,
     id: createNodeId(overlayDrafts ? unprefixDraftId(doc._id) : doc._id),
     parent: null,
     children: [],
@@ -163,36 +165,52 @@ function hoistMixedArrays(obj: any, options: ProcessingOptions, context: HoistCo
   return obj
 }
 
+function applyAliases(doc: SanityDocument, original: SanityDocument, options: ProcessingOptions) {
+  const typeName = getTypeName(doc._type)
+  const typeAliases = options.aliases[typeName] || {}
+
+  return Object.keys(typeAliases).reduce((acc, targetKey) => {
+    const sourceKey = typeAliases[targetKey]
+    return {...acc, [targetKey]: original[sourceKey]}
+  }, doc)
+}
+
 // Tranform Sanity refs ({_ref: 'foo'}) to Gatsby refs (field___NODE: 'foo')
 // {author: {_ref: 'grrm'}} => {author___NODE: 'someNodeIdFor-grrm'}
 function makeNodeReferences(doc: SanityDocument, options: ProcessingOptions) {
-  const {createNodeId} = options
+  const {createNodeId, aliases} = options
+
+  const typeName = getTypeName(doc._type)
+  const fieldAliases = aliases[typeName] || {}
   const refs = extractWithPath('..[_ref]', doc)
   if (refs.length === 0) {
     return doc
   }
 
   const newDoc = cloneDeep(doc)
-  refs.forEach(match => {
-    const path = match.path.slice(0, -1)
-    const key = path[path.length - 1]
-    const isArrayIndex = typeof key === 'number'
-    const referencedId = createNodeId(match.value)
+  refs
+    .filter(match => !fieldAliases[match.path[0]])
+    .forEach(match => {
+      console.log(match.path, fieldAliases)
+      const path = match.path.slice(0, -1)
+      const key = path[path.length - 1]
+      const isArrayIndex = typeof key === 'number'
+      const referencedId = createNodeId(match.value)
 
-    if (isArrayIndex) {
-      const arrayPath = path.slice(0, -1)
-      const field = path[path.length - 2]
-      const nodePath = path.slice(0, -2).concat(`${field}___NODE`)
-      const refPath = nodePath.concat(key)
-      set(newDoc, nodePath, get(newDoc, nodePath, get(newDoc, arrayPath)))
-      set(newDoc, refPath, referencedId)
-      unset(newDoc, arrayPath)
-    } else {
-      const refPath = path.slice(0, -1).concat(`${key}___NODE`)
-      unset(newDoc, path)
-      set(newDoc, refPath, referencedId)
-    }
-  })
+      if (isArrayIndex) {
+        const arrayPath = path.slice(0, -1)
+        const field = path[path.length - 2]
+        const nodePath = path.slice(0, -2).concat(`${field}___NODE`)
+        const refPath = nodePath.concat(key)
+        set(newDoc, nodePath, get(newDoc, nodePath, get(newDoc, arrayPath)))
+        set(newDoc, refPath, referencedId)
+        unset(newDoc, arrayPath)
+      } else {
+        const refPath = path.slice(0, -1).concat(`${key}___NODE`)
+        unset(newDoc, path)
+        set(newDoc, refPath, referencedId)
+      }
+    })
 
   return newDoc
 }

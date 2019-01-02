@@ -1,4 +1,4 @@
-import {GraphQLSchema} from 'graphql'
+import {GraphQLSchema, GraphQLNamedType} from 'graphql'
 
 export interface GatsbyNode {
   id: string // Gatsby node ID
@@ -16,6 +16,8 @@ export interface GatsbyNode {
 export interface GatsbyReporter {
   info: (msg: string) => null
   warn: (msg: string) => null
+  panic: (msg: string) => null
+  panicOnBuild: (msg: string) => null
 }
 
 export interface GatsbyParentChildLink {
@@ -37,7 +39,29 @@ export type GatsbyContentDigester = (content: string) => string
 
 export type GatsbyParentChildLinker = (link: GatsbyParentChildLink) => null
 
+export interface GatsbyCache {
+  name: string
+  cache: {
+    del: (key: string) => Promise<any>
+    get: (key: string) => Promise<any>
+    set: (key: string, value: any) => Promise<any>
+    mset: (
+      key1: string,
+      val1: any,
+      key2: string,
+      val2: any,
+      key3?: string,
+      val3?: any
+    ) => Promise<any>
+  }
+}
+
+export interface GatsbyOnNodeTypeContext {
+  type: GraphQLNamedType
+}
+
 export interface GatsbyContext {
+  cache: GatsbyCache
   actions: GatsbyActions
   createNodeId: GatsbyNodeIdCreator
   createContentDigest: GatsbyContentDigester
