@@ -29,7 +29,8 @@
     "precommit": "tsc",
     "build": "tsc",
     "format": "prettier --write src/**/*.{ts,tsx}",
-    "watch": "tsc --watch"
+    "watch": "tsc --watch",
+    "prepublishOnly": "tsc"
   },
   "husky": {
     "hooks": {
