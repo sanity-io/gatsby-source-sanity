@@ -7,23 +7,18 @@ import {GatsbyContext, GatsbyReporter, GatsbyNode, GatsbyOnNodeTypeContext} from
 import {SanityDocument} from './types/sanity'
 import {pump} from './util/pump'
 import {rejectOnApiError} from './util/rejectOnApiError'
-import {findJsonAliases} from './util/findJsonAliases'
 import {processDocument} from './util/normalize'
 import {getDocumentStream} from './util/getDocumentStream'
 import {removeSystemDocuments} from './util/removeSystemDocuments'
 import {removeDrafts, extractDrafts, unprefixId} from './util/handleDrafts'
 import {handleListenerEvent, ListenerMessage} from './util/handleListenerEvent'
-import {
-  getRemoteGraphQLSchema,
-  transformRemoteGraphQLSchema,
-  buildObjectTypeMap,
-  buildUnionTypeMap
-} from './util/remoteGraphQLSchema'
+import {analyzeGraphQLSchema, getRemoteGraphQLSchema, TypeMap} from './util/remoteGraphQLSchema'
 import debug from './debug'
+import getAliasFields from './util/findJsonAliases'
 
-const CACHE_KEY_ALIASES = 'fieldAliases'
-const CACHE_KEY_UNIONS = 'unionMap'
-const CACHE_KEY_SCHEMA = 'typeMap'
+enum CACHE_KEYS {
+  TYPE_MAP = 'typeMap'
+}
 
 interface PluginConfig {
   projectId: string
@@ -39,6 +34,11 @@ const defaultConfig = {
   overlayDrafts: false
 }
 
+const defaultTypeMap: TypeMap = {
+  unions: {},
+  objects: {}
+}
+
 export const onPreBootstrap = async (context: GatsbyContext, pluginConfig: PluginConfig) => {
   const config = {...defaultConfig, ...pluginConfig}
   const {reporter, cache: pluginCache} = context
@@ -47,21 +47,16 @@ export const onPreBootstrap = async (context: GatsbyContext, pluginConfig: Plugi
   validateConfig(config, reporter)
 
   try {
-    const aliasKey = getCacheKey(pluginConfig, CACHE_KEY_ALIASES)
-    const typeMapKey = getCacheKey(pluginConfig, CACHE_KEY_SCHEMA)
-    const unionMapKey = getCacheKey(pluginConfig, CACHE_KEY_UNIONS)
-    await Promise.all([aliasKey, typeMapKey, unionMapKey].map(key => cache.del(key)))
+    const typeMapKey = getCacheKey(pluginConfig, CACHE_KEYS.TYPE_MAP)
+    await Promise.all([typeMapKey].map(key => cache.del(key)))
 
     reporter.info('[sanity] Fetching remote GraphQL schema')
     const client = getClient(config)
     const api = await getRemoteGraphQLSchema(client)
 
     reporter.info('[sanity] Stitching GraphQL schemas from SDL')
-    const remoteSchema = await transformRemoteGraphQLSchema(api)
-    const fieldAliases = findJsonAliases(remoteSchema)
-    const typeMap = buildObjectTypeMap(remoteSchema)
-    const unionMap = buildUnionTypeMap(remoteSchema)
-    await cache.mset(aliasKey, fieldAliases, typeMapKey, typeMap, unionMapKey, unionMap)
+    const typeMap = analyzeGraphQLSchema(api)
+    await cache.set(typeMapKey, typeMap)
   } catch (err) {
     if (err.isWarning) {
       err.message.split('\n').forEach((line: string) => reporter.warn(line))
@@ -85,8 +80,8 @@ export const sourceNodes = async (context: GatsbyContext, pluginConfig: PluginCo
   const {createNode, createParentChildLink} = actions
   const {cache} = pluginCache
 
-  const cacheKey = getCacheKey(pluginConfig, 'fieldAliases')
-  const aliases = (await cache.get(cacheKey)) || {}
+  const cacheKey = getCacheKey(pluginConfig, CACHE_KEYS.TYPE_MAP)
+  const typeMap = ((await cache.get(cacheKey)) || defaultTypeMap) as TypeMap
 
   const client = getClient(config)
   const url = client.getUrl(`/data/export/${dataset}`)
@@ -95,7 +90,7 @@ export const sourceNodes = async (context: GatsbyContext, pluginConfig: PluginCo
   const inputStream = await getDocumentStream(url, config.token)
 
   const processingOptions = {
-    aliases,
+    typeMap,
     createNodeId,
     createNode,
     createContentDigest,
@@ -150,11 +145,20 @@ export const setFieldsOnGraphQLNodeType = async (
 ) => {
   const {cache: pluginCache, type} = context
   const {cache} = pluginCache
-  const cacheKey = getCacheKey(pluginConfig, 'fieldAliases')
-  const aliases = (await cache.get(cacheKey)) || {}
-  const typeAliases = aliases[type.name] || {}
+  const cacheKey = getCacheKey(pluginConfig, CACHE_KEYS.TYPE_MAP)
+  const typeMap = ((await cache.get(cacheKey)) || defaultTypeMap) as TypeMap
+  const schemaType = typeMap.objects[type.name]
+  if (!schemaType) {
+    return undefined
+  }
+
+  const aliases = getAliasFields(schemaType.fields)
+  if (!aliases.length) {
+    return undefined
+  }
+
   const initial: {[key: string]: GraphQLFieldConfig<any, any>} = {}
-  return Object.keys(typeAliases).reduce((acc, aliasName) => {
+  return aliases.reduce((acc, aliasName) => {
     acc[aliasName] = {type: GraphQLJSON}
     return acc
   }, initial)
@@ -181,7 +185,7 @@ function validateConfig(config: PluginConfig, reporter: GatsbyReporter) {
   }
 }
 
-function getCacheKey(config: PluginConfig, suffix: string) {
+function getCacheKey(config: PluginConfig, suffix: CACHE_KEYS) {
   return `${config.projectId}-${config.dataset}-${suffix}`
 }
 

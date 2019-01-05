@@ -1,6 +1,8 @@
 import {get, set, unset, startCase, camelCase, cloneDeep, isPlainObject} from 'lodash'
 import {extractWithPath} from '@sanity/mutator'
 import {SanityDocument} from '../types/sanity'
+import getAliasFields from './findJsonAliases'
+import {TypeMap} from './remoteGraphQLSchema'
 import {
   GatsbyNodeIdCreator,
   GatsbyContentDigester,
@@ -16,7 +18,7 @@ const typePrefix = 'Sanity'
 export const RESTRICTED_NODE_FIELDS = ['id', 'children', 'parent', 'fields', 'internal']
 
 export interface ProcessingOptions {
-  aliases: {[key: string]: {[key: string]: string}}
+  typeMap: TypeMap
   createNode: GatsbyNodeCreator
   createNodeId: GatsbyNodeIdCreator
   createContentDigest: GatsbyContentDigester
@@ -105,7 +107,7 @@ function prefixConflictingKeys(obj: SanityDocument) {
 // adding gatsby child nodes as needed
 // {body: [{_ref: 'grrm'}, {_type: 'book', name: 'Game of Thrones'}]}
 // =>
-// {body: [{_ref: 'grrm'}, {_ref: ''}]}
+// {body: [{_ref: 'grrm'}, {_ref: 'someNode'}]}
 function hoistMixedArrays(obj: any, options: ProcessingOptions, context: HoistContext): any {
   const {createNodeId, createContentDigest, overlayDrafts} = options
   const {hoistedNodes, path} = context
@@ -167,21 +169,25 @@ function hoistMixedArrays(obj: any, options: ProcessingOptions, context: HoistCo
 
 function applyAliases(doc: SanityDocument, original: SanityDocument, options: ProcessingOptions) {
   const typeName = getTypeName(doc._type)
-  const typeAliases = options.aliases[typeName] || {}
+  const type = options.typeMap.objects[typeName]
+  if (!type) {
+    return doc
+  }
 
-  return Object.keys(typeAliases).reduce((acc, targetKey) => {
-    const sourceKey = typeAliases[targetKey]
-    return {...acc, [targetKey]: original[sourceKey]}
+  return Object.keys(type.fields).reduce((acc, targetKey) => {
+    const field = type.fields[targetKey]
+    return field.aliasFor ? {...acc, [targetKey]: original[field.aliasFor]} : acc
   }, doc)
 }
 
 // Tranform Sanity refs ({_ref: 'foo'}) to Gatsby refs (field___NODE: 'foo')
 // {author: {_ref: 'grrm'}} => {author___NODE: 'someNodeIdFor-grrm'}
 function makeNodeReferences(doc: SanityDocument, options: ProcessingOptions) {
-  const {createNodeId, aliases} = options
+  const {createNodeId, typeMap} = options
 
   const typeName = getTypeName(doc._type)
-  const fieldAliases = aliases[typeName] || {}
+  const type = typeMap.objects[typeName]
+  const fieldAliases = type ? getAliasFields(type.fields) : []
   const refs = extractWithPath('..[_ref]', doc)
   if (refs.length === 0) {
     return doc
@@ -189,9 +195,8 @@ function makeNodeReferences(doc: SanityDocument, options: ProcessingOptions) {
 
   const newDoc = cloneDeep(doc)
   refs
-    .filter(match => !fieldAliases[match.path[0]])
+    .filter(match => !fieldAliases.includes(match.path[0]))
     .forEach(match => {
-      console.log(match.path, fieldAliases)
       const path = match.path.slice(0, -1)
       const key = path[path.length - 1]
       const isArrayIndex = typeof key === 'number'
