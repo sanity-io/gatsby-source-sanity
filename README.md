@@ -6,6 +6,12 @@ Source plugin for pulling data from [Sanity.io](https://sanity.io) into [Gatsby]
 
 - [Basic Usage](#basic-usage)
 - [Options](#options)
+- [Missing fields](#missing-fields)
+- [Overlaying drafts](#overlaying-drafts)
+- [Watch mode](#watch-mode)
+- [Generating pages](#generating-pages)
+- [Portable Text / Block Content](#portable-text--block-content)
+- [Using environment variables](#using-env-variables)
 - [Credits](#credits)
 
 ## Basic usage
@@ -34,7 +40,7 @@ module.exports = {
 }
 ```
 
-At this point you can choose to [set up a GraphQL API](https://www.sanity.io/help/graphql-beta) for your Sanity dataset, if you have not done so already. This will help the plugin in knowing which types and fields exists, so you can query for them even without them being present in any current documents. It also helps create more sane names and types for the nodes in Gatsby.
+At this point you can choose to (and probably should) [set up a GraphQL API](https://www.sanity.io/help/graphql-beta) for your Sanity dataset, if you have not done so already. This will help the plugin in knowing which types and fields exists, so you can query for them even without them being present in any current documents.
 
 Go through http://localhost:8000/___graphql after running `gatsby develop` to understand the created data and create a new query and checking available collections and fields by typing `CTRL + SPACE`.
 
@@ -47,6 +53,96 @@ Go through http://localhost:8000/___graphql after running `gatsby develop` to un
 | token         | string  |         | Authentication token for fetching data from private datasets, or when using `overlayDrafts` [Learn more](https://www.sanity.io/docs/http-auth) |
 | overlayDrafts | boolean | `false` | Set to `true` in order for drafts to replace their published version. By default, drafts will be skipped.                                      |
 | watchMode     | boolean | `false` | Set to `true` to keep a listener open and update with the latest changes in realtime.                                                          |
+
+## Missing fields
+
+If you are getting errors such as:
+
+> Cannot query field "allSanityBlogPost"
+> or
+> Unknown field `preamble` on type `BlogPost`
+
+This is because that field or document type is not present in your documents, so you cannot query for it yet. This is a known problem with Gatsby - luckily there is ongoing work to solve this issue.
+
+**However**, by [deploying a GraphQL API](https://www.sanity.io/help/graphql-beta) for your dataset, we are able to introspect and figure out which schema types and fields are available and make them available to prevent this problem. Once the API is deployed it will be transparently be applied.
+
+## Overlaying drafts
+
+Sometimes you might be working on some new content that is not yet published, which you want to make sure looks alright within your Gatsby site. By setting the `overlayDrafts` setting to `true`, the draft versions will as the option says "overlay" the regular document. In terms of Gatsby nodes, it will _replace_ the published document with the draft.
+
+Keep in mind that drafts do not have to conform to any validation rules, so your frontend will usually want to double-check all nested properties before attempting to use them.
+
+## Watch mode
+
+While developing, it can often be beneficial to get updates without having to manually restart the build process. By setting `watchMode` to true, this plugin will set up a listener which watches for changes. When it detects a change, the document in question is updated in real-time and will be reflected immediately.
+
+When setting `overlayDrafts` to true, each small change to the draft will immediately be applied.
+
+## Generating pages
+
+Sanity does not have any concept of a "page", since it's built to be totally agnostic to how you want to present your content and in which medium, but since you're using Gatsby, you'll probably want some pages!
+
+As with any Gatsby site, you'll want to create a `gatsby-node.js` in the root of your Gatsby site repository (if it doesn't already exist), and declare a `createPages` function. Within it, you'll use GraphQL to query for the data you need to build the pages.
+
+For instance, if you have a `project` document type in Sanity that you want to generate pages for, you could do something along the lines of this:
+
+```js
+exports.createPages = async ({graphql, actions}) => {
+  const {createPage, createPageDependency} = actions
+
+  const result = await graphql(`
+    {
+      allSanityProject(filter: {slug: {current: {ne: null}}}) {
+        edges {
+          node {
+            title
+            description
+            tags
+            launchDate(format: "DD.MM.YYYY")
+            slug {
+              current
+            }
+            image {
+              asset {
+                url
+              }
+            }
+          }
+        }
+      }
+    }
+  `)
+
+  if (result.errors) {
+    throw result.errors
+  }
+
+  const projects = result.data.allSanityProject.edges || []
+  projects.forEach((edge, index) => {
+    const path = `/project/${edge.node.slug.current}`
+
+    createPage({
+      path,
+      component: require.resolve('./src/templates/project.js'),
+      context: {slug: edge.node.slug.current}
+    })
+
+    createPageDependency({path, nodeId: edge.node.id})
+  })
+}
+```
+
+The above query will fetch all projects that have a `slug.current` field set, and generate pages for them, available as `/project/<project-slug>`. It will use the template defined in `src/templates/project.js` as the basis for these pages.
+
+Most [Gatsby starters](https://www.gatsbyjs.org/starters/?v=2) have some example of building pages, which you should be able to modify to your needs.
+
+Remember to use the GraphiQL interface to help write the queries you need - it's usually running at http://localhost:8000/___graphql while running `gatsby develop`.
+
+## Portable Text / Block Content
+
+Rich text in Sanity is usually represented as [Portable Text](https://www.portabletext.org/) (previously known as "Block Content").
+
+These data structures can be deep and hard to query, so any array containing portable text blocks will have a "_raw_" alternative that simply returns all the data without having to specify all the fields. For a field named `body` in your Sanity document type, there will be a `bodyRaw` field in Gatsby for you to use.
 
 ## Using .env variables
 
@@ -80,31 +176,7 @@ module.exports = {
 }
 ```
 
-This example is based off [Gatsby Docs' implementation](https://next.gatsbyjs.org/docs/environment-variables).
-
-### Attaching a custom field to created nodes
-
-The example below is for creating a slug field for your nodes.
-
-```js
-// gatsby-node.js
-const slugify = require('slugify')
-
-exports.onCreateNode = ({node, actions}) => {
-  const {createNodeField} = actions
-
-  // check if the internal type corresponds to the type passed
-  // to the plugin in your gatsby-config.js
-  if (node.internal.type === 'Post') {
-    // the new field will be accessible as fields.slug
-    createNodeField({
-      node,
-      name: 'slug',
-      value: slugify(node.title, {lower: true})
-    })
-  }
-}
-```
+This example is based off [Gatsby Docs' implementation](https://www.gatsbyjs.org/docs/environment-variables/).
 
 ## Credits
 
