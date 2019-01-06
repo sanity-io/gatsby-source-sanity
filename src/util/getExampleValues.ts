@@ -12,13 +12,19 @@ import {
   NamedTypeNode,
   valueFromAST,
   GraphQLString,
-  NameNode
+  NameNode,
+  UnionTypeDefinitionNode
 } from 'gatsby/graphql'
 import crypto = require('crypto')
 import mockSchemaValues = require('easygraphql-mock')
 import {PluginConfig} from '../gatsby-node'
 import {GatsbyNode} from '../types/gatsby'
 import {RESTRICTED_NODE_FIELDS} from './normalize'
+
+const conflictPrefix = 'sanity'
+const builtins = ['ID', 'String', 'Boolean', 'Int', 'Float', 'JSON', 'DateTime', 'Date']
+const wantedNodeTypes = ['ObjectTypeDefinition', 'UnionTypeDefinition', 'InterfaceTypeDefinition']
+const wantedScalarTypes = ['Date', 'JSON']
 
 export type ExampleValues = {[key: string]: GatsbyNode}
 
@@ -36,9 +42,6 @@ export const getExampleValues = (ast: DocumentNode, config: PluginConfig): Examp
   return addGatsbyNodeValues(mocked, config)
 }
 
-const conflictPrefix = 'sanity'
-const builtins = ['ID', 'String', 'Boolean', 'Int', 'Float', 'JSON', 'DateTime', 'Date']
-
 function transformAst(ast: DocumentNode) {
   const root = {
     ...ast,
@@ -49,14 +52,11 @@ function transformAst(ast: DocumentNode) {
 
 function isWantedAstNode(astNode: DefinitionNode) {
   const node = astNode as TypeDefinitionNode
-  if (
-    ['ObjectTypeDefinition', 'InterfaceTypeDefinition'].includes(node.kind) &&
-    node.name.value !== 'RootQuery'
-  ) {
+  if (wantedNodeTypes.includes(node.kind) && node.name.value !== 'RootQuery') {
     return true
   }
 
-  if (node.kind === 'ScalarTypeDefinition' && ['Date', 'JSON'].includes(node.name.value)) {
+  if (node.kind === 'ScalarTypeDefinition' && wantedScalarTypes.includes(node.name.value)) {
     return true
   }
 
@@ -67,6 +67,8 @@ function transformDefinitionNode(node: DefinitionNode) {
   switch (node.kind) {
     case 'ObjectTypeDefinition':
       return transformObjectTypeDefinition(node)
+    case 'UnionTypeDefinition':
+      return transformUnionTypeDefinition(node)
     case 'InterfaceTypeDefinition':
       return transformInterfaceTypeDefinition(node)
     default:
@@ -86,6 +88,14 @@ function transformObjectTypeDefinition(astNode: DefinitionNode) {
   return {
     ...node,
     fields: [...fields.map(transformFieldNodeAst), ...jsonAliases],
+    name: {...node.name, value: getTypeName(node.name.value)}
+  }
+}
+
+function transformUnionTypeDefinition(node: UnionTypeDefinitionNode) {
+  return {
+    ...node,
+    types: (node.types || []).map(maybeRewriteType),
     name: {...node.name, value: getTypeName(node.name.value)}
   }
 }
