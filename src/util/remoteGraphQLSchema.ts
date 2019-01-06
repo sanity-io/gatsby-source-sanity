@@ -66,10 +66,13 @@ export async function getRemoteGraphQLSchema(client: SanityClient, config: Plugi
       get(err, 'response.statusMessage') || err.message
     )
 
+    const gqlBenefits = [
+      'Schemas will be much cleaner, and you will have less problems with missing fields',
+      'See https://github.com/sanity-io/gatsby-source-sanity#missing-fields for more info'
+    ].join('\n')
+
     const is404 = code === 404 || /schema not found/i.test(message)
-    const hint = is404
-      ? ' - have you run `sanity graphql deploy` yet?\nSchemas will be much cleaner when using proper '
-      : ''
+    const hint = is404 ? ' - have you run `sanity graphql deploy` yet?\n' + gqlBenefits : ''
 
     throw new RequestError(`${message}${hint}`, is404)
   }
