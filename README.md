@@ -17,9 +17,9 @@ Source plugin for pulling data from [Sanity.io](https://sanity.io) into [Gatsby]
 ## Basic usage
 
 ```
-yarn add gatsby-source-sanity
+yarn add gatsby-source-sanity@next
 # or
-npm i gatsby-source-sanity --save
+npm i gatsby-source-sanity@next --save
 ```
 
 ```js
