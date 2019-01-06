@@ -16,27 +16,30 @@ import {analyzeGraphQLSchema, getRemoteGraphQLSchema, TypeMap} from './util/remo
 import debug from './debug'
 import getAliasFields from './util/findJsonAliases'
 
-enum CACHE_KEYS {
-  TYPE_MAP = 'typeMap'
-}
-
-interface PluginConfig {
+export interface PluginConfig {
   projectId: string
   dataset: string
   token?: string
   version?: string
+  graphqlApi: string
   overlayDrafts?: boolean
   watchMode?: boolean
 }
 
+enum CACHE_KEYS {
+  TYPE_MAP = 'typeMap'
+}
+
 const defaultConfig = {
   version: '1',
-  overlayDrafts: false
+  overlayDrafts: false,
+  graphqlApi: 'default'
 }
 
 const defaultTypeMap: TypeMap = {
   unions: {},
-  objects: {}
+  objects: {},
+  exampleValues: {}
 }
 
 export const onPreBootstrap = async (context: GatsbyContext, pluginConfig: PluginConfig) => {
@@ -52,10 +55,10 @@ export const onPreBootstrap = async (context: GatsbyContext, pluginConfig: Plugi
 
     reporter.info('[sanity] Fetching remote GraphQL schema')
     const client = getClient(config)
-    const api = await getRemoteGraphQLSchema(client)
+    const api = await getRemoteGraphQLSchema(client, config)
 
     reporter.info('[sanity] Stitching GraphQL schemas from SDL')
-    const typeMap = analyzeGraphQLSchema(api)
+    const typeMap = analyzeGraphQLSchema(api, pluginConfig)
     await cache.set(typeMapKey, typeMap)
   } catch (err) {
     if (err.isWarning) {
@@ -82,6 +85,8 @@ export const sourceNodes = async (context: GatsbyContext, pluginConfig: PluginCo
 
   const cacheKey = getCacheKey(pluginConfig, CACHE_KEYS.TYPE_MAP)
   const typeMap = ((await cache.get(cacheKey)) || defaultTypeMap) as TypeMap
+
+  createTemporaryMockNodes(context, pluginConfig, 'sourceNodes')
 
   const client = getClient(config)
   const url = client.getUrl(`/data/export/${dataset}`)
@@ -137,6 +142,10 @@ export const sourceNodes = async (context: GatsbyContext, pluginConfig: PluginCo
   }
 
   reporter.info('[sanity] Done exporting!')
+}
+
+export const onPreExtractQueries = (context: GatsbyContext, pluginConfig: PluginConfig) => {
+  return createTemporaryMockNodes(context, pluginConfig, 'extract queries')
 }
 
 export const setFieldsOnGraphQLNodeType = async (
@@ -197,4 +206,66 @@ function getClient(config: PluginConfig): SanityClient {
     token,
     useCdn: false
   })
+}
+
+async function createTemporaryMockNodes(
+  context: GatsbyContext,
+  pluginConfig: PluginConfig,
+  from: string
+) {
+  const {emitter, actions, reporter, cache: pluginCache} = context
+  if (!actions) {
+    reporter.panic('No actions received in ' + from)
+    process.exit(1)
+  }
+
+  const {createNode, deleteNode} = actions
+
+  // Sanity-check (heh) some undocumented, half-internal APIs
+  const canMock = emitter && typeof emitter.on === 'function' && typeof emitter.off === 'function'
+  if (!canMock) {
+    reporter.warn('[sanity] `emitter` API not received, Gatsby internals might have changed')
+    reporter.warn('[sanity] Please create issue: https://github.com/sanity-io/gatsby-source-sanity')
+    return
+  }
+
+  const {cache} = pluginCache
+  const cacheKey = getCacheKey(pluginConfig, CACHE_KEYS.TYPE_MAP)
+  const typeMap = ((await cache.get(cacheKey)) || defaultTypeMap) as TypeMap
+  const exampleValues = typeMap.exampleValues
+  const exampleTypes = exampleValues && Object.keys(exampleValues)
+  if (!exampleTypes || exampleTypes.length === 0) {
+    if (Object.keys(typeMap.objects).length > 0) {
+      reporter.warn('[sanity] No example values generated, fields might be missing!')
+    }
+    return
+  }
+
+  const onSchemaUpdate = () => {
+    debug('[sanity] Schema updated, removing mock nodes')
+    exampleTypes.forEach(typeName => {
+      deleteNode({node: exampleValues[typeName]})
+    })
+
+    emitter.off('SET_SCHEMA', onSchemaUpdate)
+  }
+
+  debug('[sanity] Creating mock nodes with example value')
+  exampleTypes.forEach(typeName => {
+    createNode(rewriteInternal(exampleValues[typeName]))
+  })
+
+  emitter.on('SET_SCHEMA', onSchemaUpdate)
+}
+
+// Gatsby mutates (...tm) the `internal` object, adding `owner`.
+function rewriteInternal(node: GatsbyNode): GatsbyNode {
+  const internal = node.internal || {type: '', contentDigest: ''}
+  return {
+    ...node,
+    internal: {
+      type: internal.type,
+      contentDigest: internal.contentDigest
+    }
+  }
 }

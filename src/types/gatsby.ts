@@ -1,12 +1,17 @@
 import {GraphQLSchema, GraphQLNamedType} from 'graphql'
 
+interface GatsbyEventEmitter {
+  on: (event: String, fn: Function) => null
+  off: (event: String, fn: Function) => null
+}
+
 export interface GatsbyNode {
   id: string // Gatsby node ID
   _id: string // Sanity document ID
   parent?: string | null
   children?: string[]
   internal?: {
-    mediaType: string
+    mediaType?: string
     type: string
     contentDigest: string
   }
@@ -61,6 +66,7 @@ export interface GatsbyOnNodeTypeContext {
 }
 
 export interface GatsbyContext {
+  emitter: GatsbyEventEmitter
   cache: GatsbyCache
   actions: GatsbyActions
   createNodeId: GatsbyNodeIdCreator

@@ -12,6 +12,8 @@ import {
 } from 'gatsby/graphql'
 import SanityClient = require('@sanity/client')
 import {getTypeName} from './normalize'
+import {ExampleValues, getExampleValues} from './getExampleValues'
+import {PluginConfig} from '../gatsby-node'
 
 class RequestError extends Error {
   public isWarning: boolean
@@ -30,6 +32,7 @@ export type FieldDef = {
 export type ObjectTypeDef = {
   name: string
   kind: 'Object'
+  isDocument: boolean
   fields: {[key: string]: FieldDef}
 }
 
@@ -42,13 +45,15 @@ export type UnionTypeDef = {
 export type TypeMap = {
   unions: {[key: string]: UnionTypeDef}
   objects: {[key: string]: ObjectTypeDef}
+  exampleValues: ExampleValues
 }
 
-export async function getRemoteGraphQLSchema(client: SanityClient) {
+export async function getRemoteGraphQLSchema(client: SanityClient, config: PluginConfig) {
+  const {graphqlApi} = config
   const {dataset} = client.config()
   try {
     const api = await client.request({
-      url: `/apis/graphql/${dataset}/default`,
+      url: `/apis/graphql/${dataset}/${graphqlApi}`,
       headers: {Accept: 'application/graphql'}
     })
 
@@ -70,7 +75,7 @@ export async function getRemoteGraphQLSchema(client: SanityClient) {
   }
 }
 
-export function analyzeGraphQLSchema(sdl: string): TypeMap {
+export function analyzeGraphQLSchema(sdl: string, config: PluginConfig): TypeMap {
   const remoteSchema = parse(sdl)
   const groups = {
     ObjectTypeDefinition: [],
@@ -84,6 +89,9 @@ export function analyzeGraphQLSchema(sdl: string): TypeMap {
     acc[name] = {
       name,
       kind: 'Object',
+      isDocument: Boolean(
+        (typeDef.interfaces || []).find(iface => iface.name.value === 'Document')
+      ),
       fields: (typeDef.fields || []).reduce(
         (fields, fieldDef) => ({
           ...fields,
@@ -109,7 +117,9 @@ export function analyzeGraphQLSchema(sdl: string): TypeMap {
     return acc
   }, unions)
 
-  return {unions, objects}
+  const exampleValues = getExampleValues(remoteSchema, config)
+
+  return {unions, objects, exampleValues}
 }
 
 function getAliasDirective(field: FieldDefinitionNode) {

@@ -1,4 +1,4 @@
-import {get, set, unset, startCase, camelCase, cloneDeep, isPlainObject} from 'lodash'
+import {get, set, unset, startCase, camelCase, cloneDeep, isPlainObject, upperFirst} from 'lodash'
 import {extractWithPath} from '@sanity/mutator'
 import {SanityDocument} from '../types/sanity'
 import getAliasFields from './findJsonAliases'
@@ -94,7 +94,7 @@ function prefixConflictingKeys(obj: SanityDocument) {
 
   return Object.keys(obj).reduce((target, key) => {
     if (RESTRICTED_NODE_FIELDS.includes(key)) {
-      target[camelCase(`${typePrefix}${key}`)] = obj[key]
+      target[`${camelCase(typePrefix)}${upperFirst(key)}`] = obj[key]
     } else {
       target[key] = obj[key]
     }
