@@ -14,6 +14,7 @@ import SanityClient = require('@sanity/client')
 import {getTypeName} from './normalize'
 import {ExampleValues, getExampleValues} from './getExampleValues'
 import {PluginConfig} from '../gatsby-node'
+import debug from '../debug'
 
 class RequestError extends Error {
   public isWarning: boolean
@@ -120,7 +121,14 @@ export function analyzeGraphQLSchema(sdl: string, config: PluginConfig): TypeMap
     return acc
   }, unions)
 
-  const exampleValues = getExampleValues(remoteSchema, config)
+  let exampleValues = {}
+  try {
+    exampleValues = getExampleValues(remoteSchema, config)
+  } catch (err) {
+    debug('Failed to mock values:\n%s', err.stack)
+    debug('Failed to transform GraphQL schema AST: %s', err.stack)
+    debug('Original schema:\n\n', remoteSchema)
+  }
 
   return {unions, objects, exampleValues}
 }

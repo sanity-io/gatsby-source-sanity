@@ -17,6 +17,7 @@ import {
 } from 'gatsby/graphql'
 import crypto = require('crypto')
 import mockSchemaValues = require('easygraphql-mock')
+import debug from '../debug'
 import {PluginConfig} from '../gatsby-node'
 import {GatsbyNode} from '../types/gatsby'
 import {RESTRICTED_NODE_FIELDS} from './normalize'
@@ -31,15 +32,23 @@ export type ExampleValues = {[key: string]: GatsbyNode}
 export const getExampleValues = (ast: DocumentNode, config: PluginConfig): ExampleValues => {
   const transformed = print(transformAst(ast))
 
-  const mocked = mockSchemaValues(transformed, {
-    Date: '2018-01-01'
-  })
+  let mockedValues: {[key: string]: any} = {}
+  try {
+    const mocked = mockSchemaValues(transformed, {
+      Date: '2018-01-01'
+    })
 
-  // Delete mocked values for scalars
-  delete mocked.Date
-  delete mocked.JSON
+    // Delete mocked values for scalars
+    delete mocked.Date
+    delete mocked.JSON
 
-  return addGatsbyNodeValues(mocked, config)
+    mockedValues = mocked
+  } catch (err) {
+    debug('Failed to mock values from transformed schema: %s', err.stack)
+    debug('Input schema:\n\n%s', transformed)
+  }
+
+  return addGatsbyNodeValues(mockedValues, config)
 }
 
 function transformAst(ast: DocumentNode) {

@@ -21,6 +21,7 @@ export interface GatsbyNode {
 export interface GatsbyReporter {
   info: (msg: string) => null
   warn: (msg: string) => null
+  error: (msg: string) => null
   panic: (msg: string) => null
   panicOnBuild: (msg: string) => null
 }

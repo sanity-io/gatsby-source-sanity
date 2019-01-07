@@ -59,6 +59,12 @@ export const onPreBootstrap = async (context: GatsbyContext, pluginConfig: Plugi
 
     reporter.info('[sanity] Stitching GraphQL schemas from SDL')
     const typeMap = analyzeGraphQLSchema(api, pluginConfig)
+
+    if (Object.keys(typeMap.exampleValues).length === 0) {
+      reporter.error('[sanity] Failed to create example values, fields might be missing!')
+      reporter.error('[sanity] Run the build again with DEBUG=sanity to debug issues.')
+    }
+
     await cache.set(typeMapKey, typeMap)
   } catch (err) {
     if (err.isWarning) {
@@ -242,7 +248,7 @@ async function createTemporaryMockNodes(
   }
 
   const onSchemaUpdate = () => {
-    debug('[sanity] Schema updated, removing mock nodes')
+    debug('Schema updated, removing mock nodes')
     exampleTypes.forEach(typeName => {
       deleteNode({node: exampleValues[typeName]})
     })
@@ -250,7 +256,7 @@ async function createTemporaryMockNodes(
     emitter.off('SET_SCHEMA', onSchemaUpdate)
   }
 
-  debug('[sanity] Creating mock nodes with example value')
+  debug('Creating mock nodes with example value')
   exampleTypes.forEach(typeName => {
     createNode(rewriteInternal(exampleValues[typeName]))
   })
