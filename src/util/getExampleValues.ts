@@ -13,7 +13,8 @@ import {
   valueFromAST,
   GraphQLString,
   NameNode,
-  UnionTypeDefinitionNode
+  UnionTypeDefinitionNode,
+  ScalarTypeDefinitionNode
 } from 'gatsby/graphql'
 import crypto = require('crypto')
 import mockSchemaValues = require('easygraphql-mock')
@@ -54,7 +55,10 @@ export const getExampleValues = (ast: DocumentNode, config: PluginConfig): Examp
 function transformAst(ast: DocumentNode) {
   const root = {
     ...ast,
-    definitions: ast.definitions.filter(isWantedAstNode).map(transformDefinitionNode)
+    definitions: ast.definitions
+      .filter(isWantedAstNode)
+      .map(transformDefinitionNode)
+      .concat(getScalarTypeDefs())
   }
   return root
 }
@@ -62,10 +66,6 @@ function transformAst(ast: DocumentNode) {
 function isWantedAstNode(astNode: DefinitionNode) {
   const node = astNode as TypeDefinitionNode
   if (wantedNodeTypes.includes(node.kind) && node.name.value !== 'RootQuery') {
-    return true
-  }
-
-  if (node.kind === 'ScalarTypeDefinition' && wantedScalarTypes.includes(node.name.value)) {
     return true
   }
 
@@ -281,4 +281,15 @@ function removeTypeName(obj: any): any {
   }
 
   return obj
+}
+
+function getScalarTypeDefs(): ScalarTypeDefinitionNode[] {
+  return wantedScalarTypes.map((name: string) => {
+    const scalar: ScalarTypeDefinitionNode = {
+      kind: 'ScalarTypeDefinition',
+      name: {kind: 'Name', value: name}
+    }
+
+    return scalar
+  })
 }
