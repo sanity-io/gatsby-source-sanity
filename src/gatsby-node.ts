@@ -92,7 +92,7 @@ export const sourceNodes = async (context: GatsbyContext, pluginConfig: PluginCo
   const cacheKey = getCacheKey(pluginConfig, CACHE_KEYS.TYPE_MAP)
   const typeMap = ((await cache.get(cacheKey)) || defaultTypeMap) as TypeMap
 
-  createTemporaryMockNodes(context, pluginConfig, 'sourceNodes')
+  createTemporaryMockNodes(context, pluginConfig)
 
   const client = getClient(config)
   const url = client.getUrl(`/data/export/${dataset}`)
@@ -151,7 +151,7 @@ export const sourceNodes = async (context: GatsbyContext, pluginConfig: PluginCo
 }
 
 export const onPreExtractQueries = (context: GatsbyContext, pluginConfig: PluginConfig) => {
-  return createTemporaryMockNodes(context, pluginConfig, 'extract queries')
+  return createTemporaryMockNodes(context, pluginConfig)
 }
 
 export const setFieldsOnGraphQLNodeType = async (
@@ -218,17 +218,8 @@ function getClient(config: PluginConfig): SanityClient {
   })
 }
 
-async function createTemporaryMockNodes(
-  context: GatsbyContext,
-  pluginConfig: PluginConfig,
-  from: string
-) {
+async function createTemporaryMockNodes(context: GatsbyContext, pluginConfig: PluginConfig) {
   const {emitter, actions, reporter, cache: pluginCache} = context
-  if (!actions) {
-    reporter.panic('No actions received in ' + from)
-    process.exit(1)
-  }
-
   const {createNode, deleteNode} = actions
 
   // Sanity-check (heh) some undocumented, half-internal APIs

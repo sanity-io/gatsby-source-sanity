@@ -27,13 +27,6 @@ const conflictPrefix = 'sanity'
 const builtins = ['ID', 'String', 'Boolean', 'Int', 'Float', 'JSON', 'DateTime', 'Date']
 const wantedNodeTypes = ['ObjectTypeDefinition', 'UnionTypeDefinition', 'InterfaceTypeDefinition']
 const wantedScalarTypes = ['Date', 'JSON']
-const mockJsonBlockArray = [
-  {
-    _type: 'block',
-    markDefs: [{_key: 'abc', _type: 'link', href: 'http://sanity.io'}],
-    children: [{_type: 'span', text: 'foo', marks: ['em', 'abc']}]
-  }
-]
 
 export type ExampleValues = {[key: string]: GatsbyNode}
 
@@ -51,7 +44,13 @@ export const getExampleValues = (ast: DocumentNode, config: PluginConfig): Examp
   try {
     const mocked = mockSchemaValues(transformed, {
       Date: '2018-01-01',
-      JSON: mockJsonBlockArray
+
+      /**
+       * While JSON fields are usually array of blocks, by providing a string here,
+       * we still maintain the ability to run queries without a projection, which you
+       * would have to provide if this was an array
+       */
+      JSON: 'foo'
     })
 
     // Delete mocked values for non-object types
