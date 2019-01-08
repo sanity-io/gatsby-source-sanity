@@ -13,8 +13,8 @@ import {removeSystemDocuments} from './util/removeSystemDocuments'
 import {removeDrafts, extractDrafts, unprefixId} from './util/handleDrafts'
 import {handleListenerEvent, ListenerMessage} from './util/handleListenerEvent'
 import {analyzeGraphQLSchema, getRemoteGraphQLSchema, TypeMap} from './util/remoteGraphQLSchema'
-import debug from './debug'
 import getAliasFields from './util/findJsonAliases'
+import debug from './debug'
 
 export interface PluginConfig {
   projectId: string
@@ -164,13 +164,17 @@ export const setFieldsOnGraphQLNodeType = async (
   const typeMap = ((await cache.get(cacheKey)) || defaultTypeMap) as TypeMap
   const schemaType = typeMap.objects[type.name]
   if (!schemaType) {
+    debug('[%s] Not in type map', type.name)
     return undefined
   }
 
   const aliases = getAliasFields(schemaType.fields)
   if (!aliases.length) {
+    debug('[%s] No aliases found', type.name)
     return undefined
   }
+
+  debug('[%s] Aliases found: %s', type.name, aliases.join(', '))
 
   const initial: {[key: string]: GraphQLFieldConfig<any, any>} = {}
   return aliases.reduce((acc, aliasName) => {

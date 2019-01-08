@@ -27,26 +27,43 @@ const conflictPrefix = 'sanity'
 const builtins = ['ID', 'String', 'Boolean', 'Int', 'Float', 'JSON', 'DateTime', 'Date']
 const wantedNodeTypes = ['ObjectTypeDefinition', 'UnionTypeDefinition', 'InterfaceTypeDefinition']
 const wantedScalarTypes = ['Date', 'JSON']
+const mockJsonBlockArray = [
+  {
+    _type: 'block',
+    markDefs: [{_key: 'abc', _type: 'link', href: 'http://sanity.io'}],
+    children: [{_type: 'span', text: 'foo', marks: ['em', 'abc']}]
+  }
+]
 
 export type ExampleValues = {[key: string]: GatsbyNode}
 
 export const getExampleValues = (ast: DocumentNode, config: PluginConfig): ExampleValues => {
-  const transformed = print(transformAst(ast))
+  const transformedAst = transformAst(ast)
+  const transformed = print(transformedAst)
+
+  const objectTypes = (transformedAst.definitions || [])
+    .filter(def => def.kind === 'ObjectTypeDefinition')
+    .map(def => (def as ObjectTypeDefinitionNode).name.value)
+
+  debug('Schema used for mocking values:\n\n%s', transformed)
 
   let mockedValues: {[key: string]: any} = {}
   try {
     const mocked = mockSchemaValues(transformed, {
-      Date: '2018-01-01'
+      Date: '2018-01-01',
+      JSON: mockJsonBlockArray
     })
 
-    // Delete mocked values for scalars
-    delete mocked.Date
-    delete mocked.JSON
+    // Delete mocked values for non-object types
+    Object.keys(mocked).forEach(typeName => {
+      if (!objectTypes.includes(typeName)) {
+        delete mocked[typeName]
+      }
+    })
 
     mockedValues = mocked
   } catch (err) {
     debug('Failed to mock values from transformed schema: %s', err.stack)
-    debug('Input schema:\n\n%s', transformed)
   }
 
   return addGatsbyNodeValues(mockedValues, config)
