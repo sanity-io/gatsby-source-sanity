@@ -109,17 +109,15 @@ function transformObjectTypeDefinition(astNode: DefinitionNode) {
   const node = astNode as ObjectTypeDefinitionNode
 
   const fields = node.fields || []
-  const jsonAliases = fields
-    .map(getJsonAliasTargets)
-    .filter(Boolean)
-    .map(makeBlockField)
+  const jsonTargets = fields.map(getJsonAliasTargets).filter(Boolean)
+  const blockFields = jsonTargets.map(makeBlockField)
 
   return {
     ...node,
     name: {...node.name, value: getTypeName(node.name.value)},
     fields: [
-      ...fields.filter(field => !isJsonAliasSource(field)).map(transformFieldNodeAst),
-      ...jsonAliases
+      ...fields.filter(field => !getJsonAliasTargets(field)).map(transformFieldNodeAst),
+      ...blockFields
     ]
   }
 }
@@ -148,20 +146,6 @@ function unwrapType(typeNode: TypeNode): NamedTypeNode {
   }
 
   return typeNode as NamedTypeNode
-}
-
-function isJsonAliasSource(field: FieldDefinitionNode) {
-  const alias = (field.directives || []).find(dir => dir.name.value === 'jsonAlias')
-  if (!alias) {
-    return false
-  }
-
-  const forArg = (alias.arguments || []).find(arg => arg.name.value === 'for')
-  if (!forArg) {
-    return false
-  }
-
-  return true
 }
 
 function getJsonAliasTargets(field: FieldDefinitionNode) {

@@ -169,6 +169,16 @@ export const setFieldsOnGraphQLNodeType = async (
   const initial: {[key: string]: GraphQLFieldConfig<any, any>} = {}
   return Object.keys(schemaType.fields).reduce((acc, fieldName) => {
     const field = schemaType.fields[fieldName]
+    const aliasFor = field.aliasFor
+    if (field.namedType.name.value === 'JSON' && aliasFor) {
+      const aliasName = '_' + camelCase(`raw ${field.aliasFor}`)
+      acc[aliasName] = {
+        type: GraphQLJSON,
+        resolve: obj => obj[aliasName] || obj[fieldName] || obj[aliasFor]
+      }
+      return acc
+    }
+
     if (typeMap.scalars.includes(field.namedType.name.value)) {
       return acc
     }
