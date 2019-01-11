@@ -1,9 +1,12 @@
 # gatsby-source-sanity
 
+:warning: Work-in-progress beta/alpha version. There are [known issues](#known-issues).
+
 Source plugin for pulling data from [Sanity.io](https://www.sanity.io/) into [Gatsby](https://www.gatsbyjs.org/) websites.
 
 ## Table of content
 
+- [Known issues](#known-issues)
 - [Basic Usage](#basic-usage)
 - [Options](#options)
 - [Missing fields](#missing-fields)
@@ -13,8 +16,15 @@ Source plugin for pulling data from [Sanity.io](https://www.sanity.io/) into [Ga
 - ["Raw" fields](#raw-fields)
 - [Portable Text / Block Content](#portable-text--block-content)
 - [Using environment variables](#using-env-variables)
-- [Known issues](#known-issues)
 - [Credits](#credits)
+
+## Known issues
+
+This is a work-in-progress beta version, as such there are known problems that we are working on.
+
+- Reference fields are broken. Fixing this is the highest priority right now
+- Weak references that point to non-existant documents will break the build
+- Circular references in types break mocking of example values
 
 ## Basic usage
 
@@ -184,10 +194,6 @@ module.exports = {
 ```
 
 This example is based off [Gatsby Docs' implementation](https://www.gatsbyjs.org/docs/environment-variables/).
-
-## Known issues
-
-- Weak references that point to non-existant documents will break the build
 
 ## Credits
 
