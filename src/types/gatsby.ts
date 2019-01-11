@@ -82,5 +82,9 @@ export interface GatsbyActions {
   deleteNode: GatsbyNodeDeletor
   createParentChildLink: GatsbyParentChildLinker
   touchNode: (options: {nodeId: string}) => null
-  addThirdPartySchema: (schema: {schema: GraphQLSchema}) => null
+  addThirdPartySchema: (schema: {schema: GraphQLSchema | string}) => null
+}
+
+export interface ReduxSetSchemaAction {
+  payload: GraphQLSchema
 }

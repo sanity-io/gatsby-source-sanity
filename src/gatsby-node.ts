@@ -1,5 +1,6 @@
 import * as split from 'split2'
 import * as through from 'through2'
+import {camelCase} from 'lodash'
 import {filter} from 'rxjs/operators'
 import {GraphQLJSON, GraphQLFieldConfig} from 'gatsby/graphql'
 import SanityClient = require('@sanity/client')
@@ -9,11 +10,17 @@ import {pump} from './util/pump'
 import {rejectOnApiError} from './util/rejectOnApiError'
 import {processDocument} from './util/normalize'
 import {getDocumentStream} from './util/getDocumentStream'
+import {getCacheKey, CACHE_KEYS} from './util/gatsbyCache'
 import {removeSystemDocuments} from './util/removeSystemDocuments'
 import {removeDrafts, extractDrafts, unprefixId} from './util/handleDrafts'
 import {handleListenerEvent, ListenerMessage} from './util/handleListenerEvent'
-import {analyzeGraphQLSchema, getRemoteGraphQLSchema, TypeMap} from './util/remoteGraphQLSchema'
-import getAliasFields from './util/findJsonAliases'
+import {createTemporaryMockNodes} from './util/createTemporaryMockNodes'
+import {
+  getTypeMapFromGraphQLSchema,
+  getRemoteGraphQLSchema,
+  defaultTypeMap,
+  TypeMap
+} from './util/remoteGraphQLSchema'
 import debug from './debug'
 
 export interface PluginConfig {
@@ -26,20 +33,10 @@ export interface PluginConfig {
   watchMode?: boolean
 }
 
-enum CACHE_KEYS {
-  TYPE_MAP = 'typeMap'
-}
-
 const defaultConfig = {
   version: '1',
   overlayDrafts: false,
   graphqlApi: 'default'
-}
-
-const defaultTypeMap: TypeMap = {
-  unions: {},
-  objects: {},
-  exampleValues: {}
 }
 
 export const onPreBootstrap = async (context: GatsbyContext, pluginConfig: PluginConfig) => {
@@ -58,7 +55,7 @@ export const onPreBootstrap = async (context: GatsbyContext, pluginConfig: Plugi
     const api = await getRemoteGraphQLSchema(client, config)
 
     reporter.info('[sanity] Stitching GraphQL schemas from SDL')
-    const typeMap = analyzeGraphQLSchema(api, pluginConfig)
+    const typeMap = getTypeMapFromGraphQLSchema(api, pluginConfig)
 
     if (Object.keys(typeMap.exampleValues).length === 0) {
       reporter.error('[sanity] Failed to create example values, fields might be missing!')
@@ -160,25 +157,27 @@ export const setFieldsOnGraphQLNodeType = async (
 ) => {
   const {cache: pluginCache, type} = context
   const {cache} = pluginCache
-  const cacheKey = getCacheKey(pluginConfig, CACHE_KEYS.TYPE_MAP)
-  const typeMap = ((await cache.get(cacheKey)) || defaultTypeMap) as TypeMap
+  const typeMapKey = getCacheKey(pluginConfig, CACHE_KEYS.TYPE_MAP)
+  const typeMap = ((await cache.get(typeMapKey)) || defaultTypeMap) as TypeMap
   const schemaType = typeMap.objects[type.name]
+
   if (!schemaType) {
     debug('[%s] Not in type map', type.name)
     return undefined
   }
 
-  const aliases = getAliasFields(schemaType.fields)
-  if (!aliases.length) {
-    debug('[%s] No aliases found', type.name)
-    return undefined
-  }
-
-  debug('[%s] Aliases found: %s', type.name, aliases.join(', '))
-
   const initial: {[key: string]: GraphQLFieldConfig<any, any>} = {}
-  return aliases.reduce((acc, aliasName) => {
-    acc[aliasName] = {type: GraphQLJSON}
+  return Object.keys(schemaType.fields).reduce((acc, fieldName) => {
+    const field = schemaType.fields[fieldName]
+    if (typeMap.scalars.includes(field.namedType.name.value)) {
+      return acc
+    }
+
+    const aliasName = '_' + camelCase(`raw ${fieldName}`)
+    acc[aliasName] = {
+      type: GraphQLJSON,
+      resolve: obj => obj[aliasName] || obj[fieldName]
+    }
     return acc
   }, initial)
 }
@@ -204,10 +203,6 @@ function validateConfig(config: PluginConfig, reporter: GatsbyReporter) {
   }
 }
 
-function getCacheKey(config: PluginConfig, suffix: CACHE_KEYS) {
-  return `${config.projectId}-${config.dataset}-${suffix}`
-}
-
 function getClient(config: PluginConfig): SanityClient {
   const {projectId, dataset, token} = config
   return new SanityClient({
@@ -216,57 +211,4 @@ function getClient(config: PluginConfig): SanityClient {
     token,
     useCdn: false
   })
-}
-
-async function createTemporaryMockNodes(context: GatsbyContext, pluginConfig: PluginConfig) {
-  const {emitter, actions, reporter, cache: pluginCache} = context
-  const {createNode, deleteNode} = actions
-
-  // Sanity-check (heh) some undocumented, half-internal APIs
-  const canMock = emitter && typeof emitter.on === 'function' && typeof emitter.off === 'function'
-  if (!canMock) {
-    reporter.warn('[sanity] `emitter` API not received, Gatsby internals might have changed')
-    reporter.warn('[sanity] Please create issue: https://github.com/sanity-io/gatsby-source-sanity')
-    return
-  }
-
-  const {cache} = pluginCache
-  const cacheKey = getCacheKey(pluginConfig, CACHE_KEYS.TYPE_MAP)
-  const typeMap = ((await cache.get(cacheKey)) || defaultTypeMap) as TypeMap
-  const exampleValues = typeMap.exampleValues
-  const exampleTypes = exampleValues && Object.keys(exampleValues)
-  if (!exampleTypes || exampleTypes.length === 0) {
-    if (Object.keys(typeMap.objects).length > 0) {
-      reporter.warn('[sanity] No example values generated, fields might be missing!')
-    }
-    return
-  }
-
-  const onSchemaUpdate = () => {
-    debug('Schema updated, removing mock nodes')
-    exampleTypes.forEach(typeName => {
-      deleteNode({node: exampleValues[typeName]})
-    })
-
-    emitter.off('SET_SCHEMA', onSchemaUpdate)
-  }
-
-  debug('Creating mock nodes with example value')
-  exampleTypes.forEach(typeName => {
-    createNode(rewriteInternal(exampleValues[typeName]))
-  })
-
-  emitter.on('SET_SCHEMA', onSchemaUpdate)
-}
-
-// Gatsby mutates (...tm) the `internal` object, adding `owner`.
-function rewriteInternal(node: GatsbyNode): GatsbyNode {
-  const internal = node.internal || {type: '', contentDigest: ''}
-  return {
-    ...node,
-    internal: {
-      type: internal.type,
-      contentDigest: internal.contentDigest
-    }
-  }
 }

@@ -27,6 +27,16 @@ const conflictPrefix = 'sanity'
 const builtins = ['ID', 'String', 'Boolean', 'Int', 'Float', 'JSON', 'DateTime', 'Date']
 const wantedNodeTypes = ['ObjectTypeDefinition', 'UnionTypeDefinition', 'InterfaceTypeDefinition']
 const wantedScalarTypes = ['Date', 'JSON']
+const blockExample = [
+  {
+    _key: 'abc123',
+    _type: 'block',
+    style: 'normal',
+    list: 'bullet',
+    markDefs: [{_key: 'abc', _type: 'link', href: 'https://www.sanity.io/'}],
+    children: [{_key: 'bcd', _type: 'span', text: 'Sanity', marks: ['em', 'abc']}]
+  }
+]
 
 export type ExampleValues = {[key: string]: GatsbyNode}
 
@@ -44,13 +54,7 @@ export const getExampleValues = (ast: DocumentNode, config: PluginConfig): Examp
   try {
     const mocked = mockSchemaValues(transformed, {
       Date: '2018-01-01',
-
-      /**
-       * While JSON fields are usually array of blocks, by providing a string here,
-       * we still maintain the ability to run queries without a projection, which you
-       * would have to provide if this was an array
-       */
-      JSON: 'foo'
+      JSON: blockExample
     })
 
     // Delete mocked values for non-object types
@@ -112,8 +116,11 @@ function transformObjectTypeDefinition(astNode: DefinitionNode) {
 
   return {
     ...node,
-    fields: [...fields.map(transformFieldNodeAst), ...jsonAliases],
-    name: {...node.name, value: getTypeName(node.name.value)}
+    name: {...node.name, value: getTypeName(node.name.value)},
+    fields: [
+      ...fields.filter(field => !isJsonAliasSource(field)).map(transformFieldNodeAst),
+      ...jsonAliases
+    ]
   }
 }
 
@@ -141,6 +148,20 @@ function unwrapType(typeNode: TypeNode): NamedTypeNode {
   }
 
   return typeNode as NamedTypeNode
+}
+
+function isJsonAliasSource(field: FieldDefinitionNode) {
+  const alias = (field.directives || []).find(dir => dir.name.value === 'jsonAlias')
+  if (!alias) {
+    return false
+  }
+
+  const forArg = (alias.arguments || []).find(arg => arg.name.value === 'for')
+  if (!forArg) {
+    return false
+  }
+
+  return true
 }
 
 function getJsonAliasTargets(field: FieldDefinitionNode) {

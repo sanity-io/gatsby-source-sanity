@@ -10,8 +10,10 @@ Source plugin for pulling data from [Sanity.io](https://www.sanity.io/) into [Ga
 - [Overlaying drafts](#overlaying-drafts)
 - [Watch mode](#watch-mode)
 - [Generating pages](#generating-pages)
+- ["Raw" fields](#raw-fields)
 - [Portable Text / Block Content](#portable-text--block-content)
 - [Using environment variables](#using-env-variables)
+- [Known issues](#known-issues)
 - [Credits](#credits)
 
 ## Basic usage
@@ -65,7 +67,7 @@ By [deploying a GraphQL API](https://www.sanity.io/help/graphql-beta) for your d
 
 Some background for this problem:
 
-Gatsby cannot know about the types and fields without having documents of the given types that contain the fields you want to query. This is a [known problem](https://github.com/gatsbyjs/gatsby/issues/3344) with Gatsby - luckily there is ongoing work to solve this issue, which might remove the need for a deployed GraphQL API.
+Gatsby cannot know about the types and fields without having documents of the given types that contain the fields you want to query. This is a [known problem](https://github.com/gatsbyjs/gatsby/issues/3344) with Gatsby - luckily there is ongoing work to solve this issue, which will lead to much clearer schemas and less boilerplate.
 
 ## Overlaying drafts
 
@@ -139,11 +141,15 @@ Most [Gatsby starters](https://www.gatsbyjs.org/starters/?v=2) have some example
 
 Remember to use the GraphiQL interface to help write the queries you need - it's usually running at http://localhost:8000/___graphql while running `gatsby develop`.
 
+## "Raw" fields
+
+Arrays and object types at the root of documents will get an additional "raw JSON" representation in a field called `_raw<FieldName>`. For instance, a field named `body` will be mapped to `_rawBody`. It's important to note that this is only done for top-level nodes (documents).
+
 ## Portable Text / Block Content
 
 Rich text in Sanity is usually represented as [Portable Text](https://www.portabletext.org/) (previously known as "Block Content").
 
-These data structures can be deep and hard to query, so any array containing portable text blocks will have a "_raw_" alternative that simply returns all the data without having to specify all the fields. For a field named `body` in your Sanity document type, there will be a `bodyRaw` field in Gatsby for you to use.
+These data structures can be deep and a chore to query (specifying all the possible fields). As [noted above](#raw-fields), there is a "raw" alternative available for these fields which is usually what you'll want to use.
 
 ## Using .env variables
 
@@ -178,6 +184,10 @@ module.exports = {
 ```
 
 This example is based off [Gatsby Docs' implementation](https://www.gatsbyjs.org/docs/environment-variables/).
+
+## Known issues
+
+- Weak references that point to non-existant documents will break the build
 
 ## Credits
 

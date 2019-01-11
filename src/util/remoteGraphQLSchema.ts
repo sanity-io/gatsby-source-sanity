@@ -8,7 +8,10 @@ import {
   NonNullTypeNode,
   ObjectTypeDefinitionNode,
   UnionTypeDefinitionNode,
-  valueFromAST
+  valueFromAST,
+  TypeNode,
+  ScalarTypeDefinitionNode,
+  specifiedScalarTypes
 } from 'gatsby/graphql'
 import SanityClient = require('@sanity/client')
 import {getTypeName} from './normalize'
@@ -27,6 +30,8 @@ class RequestError extends Error {
 
 export type FieldDef = {
   type: NamedTypeNode | ListTypeNode | NonNullTypeNode
+  namedType: NamedTypeNode
+  isList: boolean
   aliasFor: string | null
 }
 
@@ -44,9 +49,17 @@ export type UnionTypeDef = {
 }
 
 export type TypeMap = {
+  scalars: string[]
   unions: {[key: string]: UnionTypeDef}
   objects: {[key: string]: ObjectTypeDef}
   exampleValues: ExampleValues
+}
+
+export const defaultTypeMap: TypeMap = {
+  scalars: [],
+  unions: {},
+  objects: {},
+  exampleValues: {}
 }
 
 export async function getRemoteGraphQLSchema(client: SanityClient, config: PluginConfig) {
@@ -79,11 +92,12 @@ export async function getRemoteGraphQLSchema(client: SanityClient, config: Plugi
   }
 }
 
-export function analyzeGraphQLSchema(sdl: string, config: PluginConfig): TypeMap {
+export function getTypeMapFromGraphQLSchema(sdl: string, config: PluginConfig): TypeMap {
   const remoteSchema = parse(sdl)
   const groups = {
     ObjectTypeDefinition: [],
     UnionTypeDefinition: [],
+    ScalarTypeDefinition: [],
     ...groupBy(remoteSchema.definitions, 'kind')
   }
 
@@ -101,6 +115,8 @@ export function analyzeGraphQLSchema(sdl: string, config: PluginConfig): TypeMap
           ...fields,
           [fieldDef.name.value]: {
             type: fieldDef.type,
+            isList: isListType(fieldDef.type),
+            namedType: unwrapType(fieldDef.type),
             aliasFor: getAliasDirective(fieldDef)
           }
         }),
@@ -130,7 +146,35 @@ export function analyzeGraphQLSchema(sdl: string, config: PluginConfig): TypeMap
     debug('Original schema:\n\n', remoteSchema)
   }
 
-  return {unions, objects, exampleValues}
+  const scalars = specifiedScalarTypes
+    .map(scalar => scalar.name)
+    .concat(
+      groups.ScalarTypeDefinition.map((typeDef: ScalarTypeDefinitionNode) => typeDef.name.value)
+    )
+
+  return {scalars, unions, objects, exampleValues}
+}
+
+function unwrapType(typeNode: TypeNode): NamedTypeNode {
+  if (['NonNullType', 'ListType'].includes(typeNode.kind)) {
+    const wrappedType = typeNode as NonNullTypeNode
+    return unwrapType(wrappedType.type)
+  }
+
+  return typeNode as NamedTypeNode
+}
+
+function isListType(typeNode: TypeNode): boolean {
+  if (typeNode.kind === 'ListType') {
+    return true
+  }
+
+  if (typeNode.kind === 'NonNullType') {
+    const node = typeNode as NonNullTypeNode
+    return isListType(node.type)
+  }
+
+  return false
 }
 
 function getAliasDirective(field: FieldDefinitionNode) {

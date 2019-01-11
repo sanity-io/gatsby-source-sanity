@@ -1,7 +1,7 @@
 import {get, set, unset, startCase, camelCase, cloneDeep, isPlainObject, upperFirst} from 'lodash'
 import {extractWithPath} from '@sanity/mutator'
+import {specifiedScalarTypes} from 'gatsby/graphql'
 import {SanityDocument} from '../types/sanity'
-import getAliasFields from './findJsonAliases'
 import {TypeMap} from './remoteGraphQLSchema'
 import {
   GatsbyNodeIdCreator,
@@ -10,6 +10,8 @@ import {
   GatsbyNodeCreator,
   GatsbyParentChildLinker
 } from '../types/gatsby'
+
+const scalarTypeNames = specifiedScalarTypes.map(def => def.name).concat(['JSON', 'Date'])
 
 // Movie => SanityMovie
 const typePrefix = 'Sanity'
@@ -43,13 +45,14 @@ export function processDocument(doc: SanityDocument, options: ProcessingOptions)
     skipCreate
   } = options
 
-  const safe = prefixConflictingKeys(doc)
   const hoistedNodes: object[] = []
+  const rawAliases = getRawAliases(doc, options)
+  const safe = prefixConflictingKeys(doc)
   const hoisted = hoistMixedArrays(safe, options, {hoistedNodes, path: [doc._id]})
   const withRefs = makeNodeReferences(hoisted, options)
-  const withAliases = applyAliases(withRefs, doc, options)
   const node = {
-    ...withAliases,
+    ...withRefs,
+    ...rawAliases,
     id: createNodeId(overlayDrafts ? unprefixDraftId(doc._id) : doc._id),
     parent: null,
     children: [],
@@ -82,9 +85,16 @@ function unprefixDraftId(id: string) {
 // blog_post => SanityBlogPost
 // sanity.imageAsset => SanityImageAsset
 export function getTypeName(type: string) {
-  return `${typePrefix}${startCase(type)
-    .replace(/\s+/g, '')
-    .replace(/^Sanity/, '')}`
+  if (!type) {
+    return type
+  }
+
+  const typeName = startCase(type)
+  if (scalarTypeNames.includes(typeName)) {
+    return typeName
+  }
+
+  return `${typePrefix}${typeName.replace(/\s+/g, '').replace(/^Sanity/, '')}`
 }
 
 // {foo: 'bar', children: []} => {foo: 'bar', sanityChildren: []}
@@ -115,6 +125,11 @@ function hoistMixedArrays(obj: any, options: ProcessingOptions, context: HoistCo
   if (isPlainObject(obj)) {
     const initial: {[key: string]: any} = {}
     return Object.keys(obj).reduce((acc, key) => {
+      // Skip raw aliases
+      if (key.startsWith('_raw')) {
+        return acc
+      }
+
       acc[key] = hoistMixedArrays(obj[key], options, {...context, path: path.concat(key)})
       return acc
     }, initial)
@@ -167,55 +182,58 @@ function hoistMixedArrays(obj: any, options: ProcessingOptions, context: HoistCo
   return obj
 }
 
-function applyAliases(doc: SanityDocument, original: SanityDocument, options: ProcessingOptions) {
+function getRawAliases(doc: SanityDocument, options: ProcessingOptions) {
+  const {typeMap} = options
   const typeName = getTypeName(doc._type)
-  const type = options.typeMap.objects[typeName]
+  const type = typeMap.objects[typeName]
   if (!type) {
     return doc
   }
 
-  return Object.keys(type.fields).reduce((acc, targetKey) => {
-    const field = type.fields[targetKey]
-    return field.aliasFor ? {...acc, [targetKey]: original[field.aliasFor]} : acc
-  }, doc)
+  const initial: {[key: string]: any} = {}
+  return Object.keys(type.fields).reduce((acc, fieldName) => {
+    const field = type.fields[fieldName]
+    if (typeMap.scalars.includes(field.namedType.name.value)) {
+      return acc
+    }
+
+    const aliasName = '_' + camelCase(`raw ${fieldName}`)
+    acc[aliasName] = doc[fieldName]
+    return acc
+  }, initial)
 }
 
 // Tranform Sanity refs ({_ref: 'foo'}) to Gatsby refs (field___NODE: 'foo')
 // {author: {_ref: 'grrm'}} => {author___NODE: 'someNodeIdFor-grrm'}
 function makeNodeReferences(doc: SanityDocument, options: ProcessingOptions) {
-  const {createNodeId, typeMap} = options
+  const {createNodeId} = options
 
-  const typeName = getTypeName(doc._type)
-  const type = typeMap.objects[typeName]
-  const fieldAliases = type ? getAliasFields(type.fields) : []
   const refs = extractWithPath('..[_ref]', doc)
   if (refs.length === 0) {
     return doc
   }
 
   const newDoc = cloneDeep(doc)
-  refs
-    .filter(match => !fieldAliases.includes(match.path[0]))
-    .forEach(match => {
-      const path = match.path.slice(0, -1)
-      const key = path[path.length - 1]
-      const isArrayIndex = typeof key === 'number'
-      const referencedId = createNodeId(match.value)
+  refs.forEach(match => {
+    const path = match.path.slice(0, -1)
+    const key = path[path.length - 1]
+    const isArrayIndex = typeof key === 'number'
+    const referencedId = createNodeId(match.value)
 
-      if (isArrayIndex) {
-        const arrayPath = path.slice(0, -1)
-        const field = path[path.length - 2]
-        const nodePath = path.slice(0, -2).concat(`${field}___NODE`)
-        const refPath = nodePath.concat(key)
-        set(newDoc, nodePath, get(newDoc, nodePath, get(newDoc, arrayPath)))
-        set(newDoc, refPath, referencedId)
-        unset(newDoc, arrayPath)
-      } else {
-        const refPath = path.slice(0, -1).concat(`${key}___NODE`)
-        unset(newDoc, path)
-        set(newDoc, refPath, referencedId)
-      }
-    })
+    if (isArrayIndex) {
+      const arrayPath = path.slice(0, -1)
+      const field = path[path.length - 2]
+      const nodePath = path.slice(0, -2).concat(`${field}___NODE`)
+      const refPath = nodePath.concat(key)
+      set(newDoc, nodePath, get(newDoc, nodePath, get(newDoc, arrayPath)))
+      set(newDoc, refPath, referencedId)
+      unset(newDoc, arrayPath)
+    } else {
+      const refPath = path.slice(0, -1).concat(`${key}___NODE`)
+      unset(newDoc, path)
+      set(newDoc, refPath, referencedId)
+    }
+  })
 
   return newDoc
 }
