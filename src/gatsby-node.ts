@@ -10,7 +10,7 @@ import {pump} from './util/pump'
 import {rejectOnApiError} from './util/rejectOnApiError'
 import {processDocument} from './util/normalize'
 import {getDocumentStream} from './util/getDocumentStream'
-import {getCacheKey, CACHE_KEYS} from './util/gatsbyCache'
+import {getCacheKey, CACHE_KEYS} from './util/cache'
 import {removeSystemDocuments} from './util/removeSystemDocuments'
 import {removeDrafts, extractDrafts, unprefixId} from './util/handleDrafts'
 import {handleListenerEvent, ListenerMessage} from './util/handleListenerEvent'
@@ -39,17 +39,15 @@ const defaultConfig = {
   graphqlApi: 'default'
 }
 
+const stateCache: {[key: string]: any} = {}
+
 export const onPreBootstrap = async (context: GatsbyContext, pluginConfig: PluginConfig) => {
   const config = {...defaultConfig, ...pluginConfig}
-  const {reporter, cache: pluginCache} = context
-  const {cache} = pluginCache
+  const {reporter} = context
 
   validateConfig(config, reporter)
 
   try {
-    const typeMapKey = getCacheKey(pluginConfig, CACHE_KEYS.TYPE_MAP)
-    await Promise.all([typeMapKey].map(key => cache.del(key)))
-
     reporter.info('[sanity] Fetching remote GraphQL schema')
     const client = getClient(config)
     const api = await getRemoteGraphQLSchema(client, config)
@@ -62,7 +60,8 @@ export const onPreBootstrap = async (context: GatsbyContext, pluginConfig: Plugi
       reporter.error('[sanity] Run the build again with DEBUG=sanity to debug issues.')
     }
 
-    await cache.set(typeMapKey, typeMap)
+    const typeMapKey = getCacheKey(pluginConfig, CACHE_KEYS.TYPE_MAP)
+    stateCache[typeMapKey] = typeMap
   } catch (err) {
     if (err.isWarning) {
       err.message.split('\n').forEach((line: string) => reporter.warn(line))
@@ -75,21 +74,13 @@ export const onPreBootstrap = async (context: GatsbyContext, pluginConfig: Plugi
 export const sourceNodes = async (context: GatsbyContext, pluginConfig: PluginConfig) => {
   const config = {...defaultConfig, ...pluginConfig}
   const {dataset, overlayDrafts, watchMode} = config
-  const {
-    cache: pluginCache,
-    actions,
-    getNode,
-    createNodeId,
-    createContentDigest,
-    reporter
-  } = context
+  const {actions, getNode, createNodeId, createContentDigest, reporter} = context
   const {createNode, createParentChildLink} = actions
-  const {cache} = pluginCache
 
-  const cacheKey = getCacheKey(pluginConfig, CACHE_KEYS.TYPE_MAP)
-  const typeMap = ((await cache.get(cacheKey)) || defaultTypeMap) as TypeMap
+  const typeMapKey = getCacheKey(pluginConfig, CACHE_KEYS.TYPE_MAP)
+  const typeMap = (stateCache[typeMapKey] || defaultTypeMap) as TypeMap
 
-  createTemporaryMockNodes(context, pluginConfig)
+  createTemporaryMockNodes(context, pluginConfig, stateCache)
 
   const client = getClient(config)
   const url = client.getUrl(`/data/export/${dataset}`)
@@ -148,17 +139,16 @@ export const sourceNodes = async (context: GatsbyContext, pluginConfig: PluginCo
 }
 
 export const onPreExtractQueries = (context: GatsbyContext, pluginConfig: PluginConfig) => {
-  return createTemporaryMockNodes(context, pluginConfig)
+  return createTemporaryMockNodes(context, pluginConfig, stateCache)
 }
 
 export const setFieldsOnGraphQLNodeType = async (
   context: GatsbyContext & GatsbyOnNodeTypeContext,
   pluginConfig: PluginConfig
 ) => {
-  const {cache: pluginCache, type} = context
-  const {cache} = pluginCache
+  const {type} = context
   const typeMapKey = getCacheKey(pluginConfig, CACHE_KEYS.TYPE_MAP)
-  const typeMap = ((await cache.get(typeMapKey)) || defaultTypeMap) as TypeMap
+  const typeMap = (stateCache[typeMapKey] || defaultTypeMap) as TypeMap
   const schemaType = typeMap.objects[type.name]
 
   if (!schemaType) {

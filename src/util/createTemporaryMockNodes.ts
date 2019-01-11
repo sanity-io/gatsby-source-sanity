@@ -1,7 +1,7 @@
 import {removeGatsbyInternalProps} from './removeGatsbyInternalProps'
 import {GatsbyContext} from '../types/gatsby'
 import {PluginConfig} from '../gatsby-node'
-import {getCacheKey, CACHE_KEYS} from './gatsbyCache'
+import {getCacheKey, CACHE_KEYS, StateCache} from './cache'
 import {TypeMap, defaultTypeMap} from './remoteGraphQLSchema'
 import debug from '../debug'
 
@@ -24,8 +24,12 @@ import debug from '../debug'
  * proper API for declaring schema types, which will make this hack unnecessary.
  * Until it lands, this is the best we can do.
  */
-export async function createTemporaryMockNodes(context: GatsbyContext, pluginConfig: PluginConfig) {
-  const {emitter, actions, reporter, cache: pluginCache} = context
+export async function createTemporaryMockNodes(
+  context: GatsbyContext,
+  pluginConfig: PluginConfig,
+  stateCache: StateCache
+) {
+  const {emitter, actions, reporter} = context
   const {createNode, deleteNode} = actions
 
   // Sanity-check (heh) some undocumented, half-internal APIs
@@ -36,9 +40,8 @@ export async function createTemporaryMockNodes(context: GatsbyContext, pluginCon
     return
   }
 
-  const {cache} = pluginCache
   const typeMapKey = getCacheKey(pluginConfig, CACHE_KEYS.TYPE_MAP)
-  const typeMap = ((await cache.get(typeMapKey)) || defaultTypeMap) as TypeMap
+  const typeMap = (stateCache[typeMapKey] || defaultTypeMap) as TypeMap
   const exampleValues = typeMap.exampleValues
   const exampleTypes = exampleValues && Object.keys(exampleValues)
   if (!exampleTypes || exampleTypes.length === 0) {
