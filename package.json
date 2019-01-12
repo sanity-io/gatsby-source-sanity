@@ -44,6 +44,7 @@
     "axios": "^0.18.0",
     "debug": "^4.1.0",
     "easygraphql-mock": "^0.1.7",
+    "flatted": "^2.0.0",
     "gatsby-source-filesystem": "^2.0.12",
     "graphql-tools": "^3.0.4",
     "lodash": "^4.17.11",

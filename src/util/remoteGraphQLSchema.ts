@@ -33,6 +33,7 @@ export type FieldDef = {
   namedType: NamedTypeNode
   isList: boolean
   aliasFor: string | null
+  isReference: boolean
 }
 
 export type ObjectTypeDef = {
@@ -93,6 +94,7 @@ export async function getRemoteGraphQLSchema(client: SanityClient, config: Plugi
 }
 
 export function getTypeMapFromGraphQLSchema(sdl: string, config: PluginConfig): TypeMap {
+  const typeMap: TypeMap = {objects: {}, unions: {}, scalars: [], exampleValues: {}}
   const remoteSchema = parse(sdl)
   const groups = {
     ObjectTypeDefinition: [],
@@ -101,8 +103,8 @@ export function getTypeMapFromGraphQLSchema(sdl: string, config: PluginConfig): 
     ...groupBy(remoteSchema.definitions, 'kind')
   }
 
-  let objects: {[key: string]: ObjectTypeDef} = {}
-  objects = groups.ObjectTypeDefinition.reduce((acc, typeDef: ObjectTypeDefinitionNode) => {
+  const objects: {[key: string]: ObjectTypeDef} = {}
+  typeMap.objects = groups.ObjectTypeDefinition.reduce((acc, typeDef: ObjectTypeDefinitionNode) => {
     const name = getTypeName(typeDef.name.value)
     acc[name] = {
       name,
@@ -117,7 +119,8 @@ export function getTypeMapFromGraphQLSchema(sdl: string, config: PluginConfig): 
             type: fieldDef.type,
             isList: isListType(fieldDef.type),
             namedType: unwrapType(fieldDef.type),
-            aliasFor: getAliasDirective(fieldDef)
+            aliasFor: getAliasDirective(fieldDef),
+            isReference: Boolean(getReferenceDirective(fieldDef))
           }
         }),
         {}
@@ -126,8 +129,8 @@ export function getTypeMapFromGraphQLSchema(sdl: string, config: PluginConfig): 
     return acc
   }, objects)
 
-  let unions: {[key: string]: UnionTypeDef} = {}
-  unions = groups.UnionTypeDefinition.reduce((acc, typeDef: UnionTypeDefinitionNode) => {
+  const unions: {[key: string]: UnionTypeDef} = {}
+  typeMap.unions = groups.UnionTypeDefinition.reduce((acc, typeDef: UnionTypeDefinitionNode) => {
     const name = getTypeName(typeDef.name.value)
     acc[name] = {
       name,
@@ -137,22 +140,21 @@ export function getTypeMapFromGraphQLSchema(sdl: string, config: PluginConfig): 
     return acc
   }, unions)
 
-  let exampleValues = {}
+  typeMap.scalars = specifiedScalarTypes
+    .map(scalar => scalar.name)
+    .concat(
+      groups.ScalarTypeDefinition.map((typeDef: ScalarTypeDefinitionNode) => typeDef.name.value)
+    )
+
   try {
-    exampleValues = getExampleValues(remoteSchema, config)
+    typeMap.exampleValues = getExampleValues(remoteSchema, config, typeMap)
   } catch (err) {
     debug('Failed to mock values:\n%s', err.stack)
     debug('Failed to transform GraphQL schema AST: %s', err.stack)
     debug('Original schema:\n\n', remoteSchema)
   }
 
-  const scalars = specifiedScalarTypes
-    .map(scalar => scalar.name)
-    .concat(
-      groups.ScalarTypeDefinition.map((typeDef: ScalarTypeDefinitionNode) => typeDef.name.value)
-    )
-
-  return {scalars, unions, objects, exampleValues}
+  return typeMap
 }
 
 function unwrapType(typeNode: TypeNode): NamedTypeNode {
@@ -189,4 +191,8 @@ function getAliasDirective(field: FieldDefinitionNode) {
   }
 
   return valueFromAST(forArg.value, GraphQLString, {})
+}
+
+function getReferenceDirective(field: FieldDefinitionNode) {
+  return (field.directives || []).find(dir => dir.name.value === 'reference')
 }

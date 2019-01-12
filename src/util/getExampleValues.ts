@@ -12,16 +12,18 @@ import {
   NamedTypeNode,
   valueFromAST,
   GraphQLString,
-  NameNode,
   UnionTypeDefinitionNode,
-  ScalarTypeDefinitionNode
+  ScalarTypeDefinitionNode,
+  NameNode
 } from 'gatsby/graphql'
 import crypto = require('crypto')
 import mockSchemaValues = require('easygraphql-mock')
+import {stringify} from 'flatted'
 import debug from '../debug'
 import {PluginConfig} from '../gatsby-node'
 import {GatsbyNode} from '../types/gatsby'
 import {RESTRICTED_NODE_FIELDS} from './normalize'
+import {TypeMap} from './remoteGraphQLSchema'
 
 const conflictPrefix = 'sanity'
 const builtins = ['ID', 'String', 'Boolean', 'Int', 'Float', 'JSON', 'DateTime', 'Date']
@@ -40,7 +42,11 @@ const blockExample = [
 
 export type ExampleValues = {[key: string]: GatsbyNode}
 
-export const getExampleValues = (ast: DocumentNode, config: PluginConfig): ExampleValues => {
+export const getExampleValues = (
+  ast: DocumentNode,
+  config: PluginConfig,
+  typeMap: TypeMap
+): ExampleValues => {
   const transformedAst = transformAst(ast)
   const transformed = print(transformedAst)
 
@@ -69,7 +75,7 @@ export const getExampleValues = (ast: DocumentNode, config: PluginConfig): Examp
     debug('Failed to mock values from transformed schema: %s', err.stack)
   }
 
-  return addGatsbyNodeValues(mockedValues, config)
+  return addGatsbyNodeValues(mockedValues, config, typeMap)
 }
 
 function transformAst(ast: DocumentNode) {
@@ -213,7 +219,7 @@ function makeNonNullable(nodeType: TypeNode): NonNullTypeNode {
 function transformFieldNodeAst(node: FieldDefinitionNode) {
   return {
     ...node,
-    name: maybeRewriteFieldName(node.name),
+    name: maybeRewriteFieldName(node),
     type: makeNonNullable(node.type),
     description: undefined,
     directives: []
@@ -238,14 +244,14 @@ function maybeRewriteType(nodeType: TypeNode): TypeNode {
   return {...type, name: {kind: 'Name', value: getTypeName(type.name.value)}}
 }
 
-function maybeRewriteFieldName(name: NameNode) {
-  if (!RESTRICTED_NODE_FIELDS.includes(name.value)) {
-    return name
+function maybeRewriteFieldName(field: FieldDefinitionNode): NameNode {
+  if (!RESTRICTED_NODE_FIELDS.includes(field.name.value)) {
+    return field.name
   }
 
   return {
-    ...name,
-    value: `${conflictPrefix}${upperFirst(name.value)}`
+    ...field.name,
+    value: `${conflictPrefix}${upperFirst(field.name.value)}`
   }
 }
 
@@ -256,11 +262,15 @@ function getTypeName(name: string) {
 function hash(content: any) {
   return crypto
     .createHash('md5')
-    .update(JSON.stringify(content))
+    .update(stringify(content))
     .digest('hex')
 }
 
-function addGatsbyNodeValues(map: {[key: string]: any}, config: PluginConfig): ExampleValues {
+function addGatsbyNodeValues(
+  map: {[key: string]: any},
+  config: PluginConfig,
+  typeMap: TypeMap
+): ExampleValues {
   const idPrefix = `mock--${config.projectId}-${config.dataset}`
   const initial: ExampleValues = {}
   return Object.keys(map).reduce((acc, typeName: string) => {
@@ -268,25 +278,49 @@ function addGatsbyNodeValues(map: {[key: string]: any}, config: PluginConfig): E
       return acc
     }
 
+    const type = typeMap.objects[typeName]
     const existingValue = map[typeName]
-    const newValue = {
+    const initial: {[key: string]: any} = {}
+    const newValue = Object.keys(existingValue).reduce((acc, key) => {
+      const isReference = type && type.fields[key] && type.fields[key].isReference
+
+      if (isReference) {
+        for (let typeName in map) {
+          if (map[typeName] === existingValue[key] && existingValue[key]._id) {
+            acc[`${key}___NODE`] = `${idPrefix}-${typeName}`
+            return acc
+          }
+        }
+      }
+
+      acc[key] = existingValue[key]
+      return acc
+    }, initial)
+
+    const node = {
       id: `${idPrefix}-${typeName}`,
       parent: null,
       children: [],
-      ...existingValue,
+      ...newValue,
       internal: {
         type: typeName,
-        contentDigest: hash(existingValue)
+        contentDigest: hash(newValue)
       }
     }
 
-    return {...acc, [typeName]: removeTypeName(newValue)}
+    return {...acc, [typeName]: removeTypeName(node)}
   }, initial)
 }
 
-function removeTypeName(obj: any): any {
+function removeTypeName(obj: any, seen = new Set()): any {
+  if (seen.has(obj)) {
+    return obj
+  }
+
+  seen.add(obj)
+
   if (Array.isArray(obj)) {
-    return obj.map(removeTypeName)
+    return obj.map(item => removeTypeName(item, seen))
   }
 
   if (obj === null || typeof obj !== 'object') {
@@ -297,7 +331,7 @@ function removeTypeName(obj: any): any {
     if (prop === '__typename') {
       delete obj[prop]
     } else {
-      removeTypeName(obj[prop])
+      removeTypeName(obj[prop], seen)
     }
   }
 
