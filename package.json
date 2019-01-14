@@ -25,6 +25,7 @@
   ],
   "main": "index.js",
   "scripts": {
+    "test": "jest",
     "clean": "rm -f gatsby-node.*",
     "precommit": "tsc",
     "build": "tsc",
@@ -55,6 +56,7 @@
   },
   "devDependencies": {
     "@types/graphql": "^14.0.3",
+    "@types/jest": "^23.3.12",
     "@types/lodash": "^4.14.119",
     "@types/node": "^10.0.0",
     "@types/pump": "^1.0.1",
@@ -64,8 +66,10 @@
     "eslint-config-prettier": "^3.3.0",
     "eslint-config-sanity": "^0.138.0",
     "husky": "^1.2.1",
+    "jest": "^23.6.0",
     "prettier": "^1.15.3",
     "pretty-quick": "^1.8.0",
+    "ts-jest": "^23.10.5",
     "typescript": "^3.2.2"
   },
   "peerDependencies": {

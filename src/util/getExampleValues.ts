@@ -282,15 +282,25 @@ function addGatsbyNodeValues(
     const existingValue = map[typeName]
     const initial: {[key: string]: any} = {}
     const newValue = Object.keys(existingValue).reduce((acc, key) => {
-      const isReference = type && type.fields[key] && type.fields[key].isReference
+      const field = type && type.fields[key]
+      const isExplicitReference = field && field.isReference
 
-      if (isReference) {
+      if (isExplicitReference) {
         for (let typeName in map) {
           if (map[typeName] === existingValue[key] && existingValue[key]._id) {
             acc[`${key}___NODE`] = `${idPrefix}-${typeName}`
             return acc
           }
         }
+      } else if (isImplicitReference(existingValue[key], map)) {
+        acc[`${key}___NODE`] = existingValue[key]
+          .map((item: any) => {
+            const memberType = getValueType(item, map)
+            return memberType ? `${idPrefix}-${memberType}` : false
+          })
+          .filter(Boolean)
+
+        return acc
       }
 
       acc[key] = existingValue[key]
@@ -347,4 +357,31 @@ function getScalarTypeDefs(): ScalarTypeDefinitionNode[] {
 
     return scalar
   })
+}
+
+function isImplicitReference(fieldValue: any, exampleValueMap: {[key: string]: any}): boolean {
+  if (!Array.isArray(fieldValue)) {
+    return false
+  }
+
+  const first = fieldValue[0]
+  if (!first) {
+    return false
+  }
+
+  if (first._id) {
+    return Boolean(getValueType(first, exampleValueMap))
+  }
+
+  return false
+}
+
+function getValueType(value: any, exampleValueMap: {[key: string]: any}): string | false {
+  for (let typeName in exampleValueMap) {
+    if (exampleValueMap[typeName] === value) {
+      return typeName
+    }
+  }
+
+  return false
 }

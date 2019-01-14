@@ -1,0 +1,1893 @@
+schema {
+  query: RootQuery
+}
+
+"""
+Field is a "raw" JSON alias for a different field
+"""
+directive @jsonAlias(
+  """
+  Source field name
+  """
+  for: String!
+) on FIELD_DEFINITION
+
+"""
+Field references one or more documents
+"""
+directive @reference on FIELD_DEFINITION
+
+type Author implements Document {
+  """
+  Document ID
+  """
+  _id: ID!
+  """
+  Document type
+  """
+  _type: String!
+  """
+  Date the document was created
+  """
+  _createdAt: DateTime!
+  """
+  Date the document was last modified
+  """
+  _updatedAt: DateTime!
+  """
+  Current document revision
+  """
+  _rev: String!
+  _key: String
+  name: String
+  profileImage: Image
+  work: [Project]
+  favoriteWork: Project @reference
+}
+
+input AuthorFilter {
+  """
+  All documents that are equal to given value
+  """
+  _id: ID
+  """
+  All documents that are not equal to given value
+  """
+  _id_not: ID
+  """
+  All documents contain (match) the given word/words
+  """
+  _id_matches: String
+  _id_in: [String!]
+  _id_not_in: [String!]
+  """
+  All documents that are equal to given value
+  """
+  _type: String
+  """
+  All documents that are not equal to given value
+  """
+  _type_not: String
+  """
+  All documents contain (match) the given word/words
+  """
+  _type_matches: String
+  _type_in: [String!]
+  _type_not_in: [String!]
+  """
+  All documents that are equal to given value
+  """
+  _createdAt: DateTime
+  """
+  All documents that are not equal to given value
+  """
+  _createdAt_not: DateTime
+  """
+  All documents are less than given value
+  """
+  _createdAt_lt: DateTime
+  """
+  All documents are less than or equal to given value
+  """
+  _createdAt_lte: DateTime
+  """
+  All documents are greater than given value
+  """
+  _createdAt_gt: DateTime
+  """
+  All documents are greater than or equal to given value
+  """
+  _createdAt_gte: DateTime
+  """
+  All documents that are equal to given value
+  """
+  _updatedAt: DateTime
+  """
+  All documents that are not equal to given value
+  """
+  _updatedAt_not: DateTime
+  """
+  All documents are less than given value
+  """
+  _updatedAt_lt: DateTime
+  """
+  All documents are less than or equal to given value
+  """
+  _updatedAt_lte: DateTime
+  """
+  All documents are greater than given value
+  """
+  _updatedAt_gt: DateTime
+  """
+  All documents are greater than or equal to given value
+  """
+  _updatedAt_gte: DateTime
+  """
+  All documents that are equal to given value
+  """
+  _rev: String
+  """
+  All documents that are not equal to given value
+  """
+  _rev_not: String
+  """
+  All documents contain (match) the given word/words
+  """
+  _rev_matches: String
+  _rev_in: [String!]
+  _rev_not_in: [String!]
+  """
+  All documents that are equal to given value
+  """
+  _key: String
+  """
+  All documents that are not equal to given value
+  """
+  _key_not: String
+  """
+  All documents contain (match) the given word/words
+  """
+  _key_matches: String
+  _key_in: [String!]
+  _key_not_in: [String!]
+  """
+  All documents that are equal to given value
+  """
+  name: String
+  """
+  All documents that are not equal to given value
+  """
+  name_not: String
+  """
+  All documents contain (match) the given word/words
+  """
+  name_matches: String
+  name_in: [String!]
+  name_not_in: [String!]
+  """
+  All documents that are drafts
+  """
+  is_draft: Boolean
+}
+
+type Block {
+  _key: String
+  _type: String
+  children: [Span]
+  style: String
+  list: String
+}
+
+union BlockOrImageOrYoutubeVideo = Block | Image | YoutubeVideo
+
+type BlogPost implements Document {
+  """
+  Document ID
+  """
+  _id: ID!
+  """
+  Document type
+  """
+  _type: String!
+  """
+  Date the document was created
+  """
+  _createdAt: DateTime!
+  """
+  Date the document was last modified
+  """
+  _updatedAt: DateTime!
+  """
+  Current document revision
+  """
+  _rev: String!
+  _key: String
+  title: String
+  slug: Slug
+  preamble: String
+  author: Author @reference
+  mainImage: Image
+  bodyRaw: JSON @jsonAlias(for: "body")
+  tags: [Tag]
+}
+
+input BlogPostFilter {
+  """
+  All documents that are equal to given value
+  """
+  _id: ID
+  """
+  All documents that are not equal to given value
+  """
+  _id_not: ID
+  """
+  All documents contain (match) the given word/words
+  """
+  _id_matches: String
+  _id_in: [String!]
+  _id_not_in: [String!]
+  """
+  All documents that are equal to given value
+  """
+  _type: String
+  """
+  All documents that are not equal to given value
+  """
+  _type_not: String
+  """
+  All documents contain (match) the given word/words
+  """
+  _type_matches: String
+  _type_in: [String!]
+  _type_not_in: [String!]
+  """
+  All documents that are equal to given value
+  """
+  _createdAt: DateTime
+  """
+  All documents that are not equal to given value
+  """
+  _createdAt_not: DateTime
+  """
+  All documents are less than given value
+  """
+  _createdAt_lt: DateTime
+  """
+  All documents are less than or equal to given value
+  """
+  _createdAt_lte: DateTime
+  """
+  All documents are greater than given value
+  """
+  _createdAt_gt: DateTime
+  """
+  All documents are greater than or equal to given value
+  """
+  _createdAt_gte: DateTime
+  """
+  All documents that are equal to given value
+  """
+  _updatedAt: DateTime
+  """
+  All documents that are not equal to given value
+  """
+  _updatedAt_not: DateTime
+  """
+  All documents are less than given value
+  """
+  _updatedAt_lt: DateTime
+  """
+  All documents are less than or equal to given value
+  """
+  _updatedAt_lte: DateTime
+  """
+  All documents are greater than given value
+  """
+  _updatedAt_gt: DateTime
+  """
+  All documents are greater than or equal to given value
+  """
+  _updatedAt_gte: DateTime
+  """
+  All documents that are equal to given value
+  """
+  _rev: String
+  """
+  All documents that are not equal to given value
+  """
+  _rev_not: String
+  """
+  All documents contain (match) the given word/words
+  """
+  _rev_matches: String
+  _rev_in: [String!]
+  _rev_not_in: [String!]
+  """
+  All documents that are equal to given value
+  """
+  _key: String
+  """
+  All documents that are not equal to given value
+  """
+  _key_not: String
+  """
+  All documents contain (match) the given word/words
+  """
+  _key_matches: String
+  _key_in: [String!]
+  _key_not_in: [String!]
+  """
+  All documents that are equal to given value
+  """
+  title: String
+  """
+  All documents that are not equal to given value
+  """
+  title_not: String
+  """
+  All documents contain (match) the given word/words
+  """
+  title_matches: String
+  title_in: [String!]
+  title_not_in: [String!]
+  """
+  All documents that are equal to given value
+  """
+  preamble: String
+  """
+  All documents that are not equal to given value
+  """
+  preamble_not: String
+  """
+  All documents contain (match) the given word/words
+  """
+  preamble_matches: String
+  preamble_in: [String!]
+  preamble_not_in: [String!]
+  author: ID
+  """
+  All documents that are drafts
+  """
+  is_draft: Boolean
+}
+
+"""
+A date string, such as 2007-12-03, compliant with the `full-date` format
+outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for
+representation of dates and times using the Gregorian calendar.
+"""
+scalar Date
+
+"""
+A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the
+`date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO
+8601 standard for representation of dates and times using the Gregorian calendar.
+"""
+scalar DateTime
+
+"""
+A Sanity document
+"""
+interface Document {
+  """
+  Document ID
+  """
+  _id: ID!
+  """
+  Document type
+  """
+  _type: String!
+  """
+  Date the document was created
+  """
+  _createdAt: DateTime!
+  """
+  Date the document was last modified
+  """
+  _updatedAt: DateTime!
+  """
+  Current document revision
+  """
+  _rev: String!
+}
+
+type File {
+  _key: String
+  _type: String
+  asset: SanityFileAsset @reference
+}
+
+type Geopoint {
+  _key: String
+  _type: String
+  lat: Float
+  lng: Float
+  alt: Float
+}
+
+type Image {
+  _key: String
+  _type: String
+  asset: SanityImageAsset @reference
+  hotspot: SanityImageHotspot
+  crop: SanityImageCrop
+}
+
+"""
+The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar JSON
+
+type Project implements Document {
+  """
+  Document ID
+  """
+  _id: ID!
+  """
+  Document type
+  """
+  _type: String!
+  """
+  Date the document was created
+  """
+  _createdAt: DateTime!
+  """
+  Date the document was last modified
+  """
+  _updatedAt: DateTime!
+  """
+  Current document revision
+  """
+  _rev: String!
+  _key: String
+  title: String
+  description: String
+  image: Image
+  tags: [String]
+  date: Date
+}
+
+input ProjectFilter {
+  """
+  All documents that are equal to given value
+  """
+  _id: ID
+  """
+  All documents that are not equal to given value
+  """
+  _id_not: ID
+  """
+  All documents contain (match) the given word/words
+  """
+  _id_matches: String
+  _id_in: [String!]
+  _id_not_in: [String!]
+  """
+  All documents that are equal to given value
+  """
+  _type: String
+  """
+  All documents that are not equal to given value
+  """
+  _type_not: String
+  """
+  All documents contain (match) the given word/words
+  """
+  _type_matches: String
+  _type_in: [String!]
+  _type_not_in: [String!]
+  """
+  All documents that are equal to given value
+  """
+  _createdAt: DateTime
+  """
+  All documents that are not equal to given value
+  """
+  _createdAt_not: DateTime
+  """
+  All documents are less than given value
+  """
+  _createdAt_lt: DateTime
+  """
+  All documents are less than or equal to given value
+  """
+  _createdAt_lte: DateTime
+  """
+  All documents are greater than given value
+  """
+  _createdAt_gt: DateTime
+  """
+  All documents are greater than or equal to given value
+  """
+  _createdAt_gte: DateTime
+  """
+  All documents that are equal to given value
+  """
+  _updatedAt: DateTime
+  """
+  All documents that are not equal to given value
+  """
+  _updatedAt_not: DateTime
+  """
+  All documents are less than given value
+  """
+  _updatedAt_lt: DateTime
+  """
+  All documents are less than or equal to given value
+  """
+  _updatedAt_lte: DateTime
+  """
+  All documents are greater than given value
+  """
+  _updatedAt_gt: DateTime
+  """
+  All documents are greater than or equal to given value
+  """
+  _updatedAt_gte: DateTime
+  """
+  All documents that are equal to given value
+  """
+  _rev: String
+  """
+  All documents that are not equal to given value
+  """
+  _rev_not: String
+  """
+  All documents contain (match) the given word/words
+  """
+  _rev_matches: String
+  _rev_in: [String!]
+  _rev_not_in: [String!]
+  """
+  All documents that are equal to given value
+  """
+  _key: String
+  """
+  All documents that are not equal to given value
+  """
+  _key_not: String
+  """
+  All documents contain (match) the given word/words
+  """
+  _key_matches: String
+  _key_in: [String!]
+  _key_not_in: [String!]
+  """
+  All documents that are equal to given value
+  """
+  title: String
+  """
+  All documents that are not equal to given value
+  """
+  title_not: String
+  """
+  All documents contain (match) the given word/words
+  """
+  title_matches: String
+  title_in: [String!]
+  title_not_in: [String!]
+  """
+  All documents that are equal to given value
+  """
+  description: String
+  """
+  All documents that are not equal to given value
+  """
+  description_not: String
+  """
+  All documents contain (match) the given word/words
+  """
+  description_matches: String
+  description_in: [String!]
+  description_not_in: [String!]
+  """
+  All documents that are equal to given value
+  """
+  date: Date
+  """
+  All documents that are not equal to given value
+  """
+  date_not: Date
+  """
+  All documents are less than given value
+  """
+  date_lt: Date
+  """
+  All documents are less than or equal to given value
+  """
+  date_lte: Date
+  """
+  All documents are greater than given value
+  """
+  date_gt: Date
+  """
+  All documents are greater than or equal to given value
+  """
+  date_gte: Date
+  """
+  All documents that are drafts
+  """
+  is_draft: Boolean
+}
+
+type ProjectRack implements Document {
+  """
+  Document ID
+  """
+  _id: ID!
+  """
+  Document type
+  """
+  _type: String!
+  """
+  Date the document was created
+  """
+  _createdAt: DateTime!
+  """
+  Date the document was last modified
+  """
+  _updatedAt: DateTime!
+  """
+  Current document revision
+  """
+  _rev: String!
+  _key: String
+  title: String
+  projects: [Project]
+}
+
+input ProjectRackFilter {
+  """
+  All documents that are equal to given value
+  """
+  _id: ID
+  """
+  All documents that are not equal to given value
+  """
+  _id_not: ID
+  """
+  All documents contain (match) the given word/words
+  """
+  _id_matches: String
+  _id_in: [String!]
+  _id_not_in: [String!]
+  """
+  All documents that are equal to given value
+  """
+  _type: String
+  """
+  All documents that are not equal to given value
+  """
+  _type_not: String
+  """
+  All documents contain (match) the given word/words
+  """
+  _type_matches: String
+  _type_in: [String!]
+  _type_not_in: [String!]
+  """
+  All documents that are equal to given value
+  """
+  _createdAt: DateTime
+  """
+  All documents that are not equal to given value
+  """
+  _createdAt_not: DateTime
+  """
+  All documents are less than given value
+  """
+  _createdAt_lt: DateTime
+  """
+  All documents are less than or equal to given value
+  """
+  _createdAt_lte: DateTime
+  """
+  All documents are greater than given value
+  """
+  _createdAt_gt: DateTime
+  """
+  All documents are greater than or equal to given value
+  """
+  _createdAt_gte: DateTime
+  """
+  All documents that are equal to given value
+  """
+  _updatedAt: DateTime
+  """
+  All documents that are not equal to given value
+  """
+  _updatedAt_not: DateTime
+  """
+  All documents are less than given value
+  """
+  _updatedAt_lt: DateTime
+  """
+  All documents are less than or equal to given value
+  """
+  _updatedAt_lte: DateTime
+  """
+  All documents are greater than given value
+  """
+  _updatedAt_gt: DateTime
+  """
+  All documents are greater than or equal to given value
+  """
+  _updatedAt_gte: DateTime
+  """
+  All documents that are equal to given value
+  """
+  _rev: String
+  """
+  All documents that are not equal to given value
+  """
+  _rev_not: String
+  """
+  All documents contain (match) the given word/words
+  """
+  _rev_matches: String
+  _rev_in: [String!]
+  _rev_not_in: [String!]
+  """
+  All documents that are equal to given value
+  """
+  _key: String
+  """
+  All documents that are not equal to given value
+  """
+  _key_not: String
+  """
+  All documents contain (match) the given word/words
+  """
+  _key_matches: String
+  _key_in: [String!]
+  _key_not_in: [String!]
+  """
+  All documents that are equal to given value
+  """
+  title: String
+  """
+  All documents that are not equal to given value
+  """
+  title_not: String
+  """
+  All documents contain (match) the given word/words
+  """
+  title_matches: String
+  title_in: [String!]
+  title_not_in: [String!]
+  """
+  All documents that are drafts
+  """
+  is_draft: Boolean
+}
+
+type RootQuery {
+  Author(
+    """
+    Author document ID
+    """
+    id: ID!
+  ): Author
+  SiteConfig(
+    """
+    SiteConfig document ID
+    """
+    id: ID!
+  ): SiteConfig
+  BlogPost(
+    """
+    BlogPost document ID
+    """
+    id: ID!
+  ): BlogPost
+  Project(
+    """
+    Project document ID
+    """
+    id: ID!
+  ): Project
+  ProjectRack(
+    """
+    ProjectRack document ID
+    """
+    id: ID!
+  ): ProjectRack
+  Tag(
+    """
+    Tag document ID
+    """
+    id: ID!
+  ): Tag
+  SanityImageAsset(
+    """
+    SanityImageAsset document ID
+    """
+    id: ID!
+  ): SanityImageAsset
+  SanityFileAsset(
+    """
+    SanityFileAsset document ID
+    """
+    id: ID!
+  ): SanityFileAsset
+  allAuthors(
+    where: AuthorFilter
+    """
+    Max documents to return
+    """
+    limit: Int
+    """
+    Offset at which to start returning documents from
+    """
+    offset: Int
+  ): [Author!]!
+  allSiteConfigs(
+    where: SiteConfigFilter
+    """
+    Max documents to return
+    """
+    limit: Int
+    """
+    Offset at which to start returning documents from
+    """
+    offset: Int
+  ): [SiteConfig!]!
+  allBlogPosts(
+    where: BlogPostFilter
+    """
+    Max documents to return
+    """
+    limit: Int
+    """
+    Offset at which to start returning documents from
+    """
+    offset: Int
+  ): [BlogPost!]!
+  allProjects(
+    where: ProjectFilter
+    """
+    Max documents to return
+    """
+    limit: Int
+    """
+    Offset at which to start returning documents from
+    """
+    offset: Int
+  ): [Project!]!
+  allProjectRacks(
+    where: ProjectRackFilter
+    """
+    Max documents to return
+    """
+    limit: Int
+    """
+    Offset at which to start returning documents from
+    """
+    offset: Int
+  ): [ProjectRack!]!
+  allTags(
+    where: TagFilter
+    """
+    Max documents to return
+    """
+    limit: Int
+    """
+    Offset at which to start returning documents from
+    """
+    offset: Int
+  ): [Tag!]!
+  allSanityImageAssets(
+    where: SanityImageAssetFilter
+    """
+    Max documents to return
+    """
+    limit: Int
+    """
+    Offset at which to start returning documents from
+    """
+    offset: Int
+  ): [SanityImageAsset!]!
+  allSanityFileAssets(
+    where: SanityFileAssetFilter
+    """
+    Max documents to return
+    """
+    limit: Int
+    """
+    Offset at which to start returning documents from
+    """
+    offset: Int
+  ): [SanityFileAsset!]!
+}
+
+type SanityFileAsset implements Document {
+  """
+  Document ID
+  """
+  _id: ID!
+  """
+  Document type
+  """
+  _type: String!
+  """
+  Date the document was created
+  """
+  _createdAt: DateTime!
+  """
+  Date the document was last modified
+  """
+  _updatedAt: DateTime!
+  """
+  Current document revision
+  """
+  _rev: String!
+  _key: String
+  originalFilename: String
+  label: String
+  sha1hash: String
+  extension: String
+  mimeType: String
+  size: Float
+  assetId: String
+  path: String
+  url: String
+}
+
+input SanityFileAssetFilter {
+  """
+  All documents that are equal to given value
+  """
+  _id: ID
+  """
+  All documents that are not equal to given value
+  """
+  _id_not: ID
+  """
+  All documents contain (match) the given word/words
+  """
+  _id_matches: String
+  _id_in: [String!]
+  _id_not_in: [String!]
+  """
+  All documents that are equal to given value
+  """
+  _type: String
+  """
+  All documents that are not equal to given value
+  """
+  _type_not: String
+  """
+  All documents contain (match) the given word/words
+  """
+  _type_matches: String
+  _type_in: [String!]
+  _type_not_in: [String!]
+  """
+  All documents that are equal to given value
+  """
+  _createdAt: DateTime
+  """
+  All documents that are not equal to given value
+  """
+  _createdAt_not: DateTime
+  """
+  All documents are less than given value
+  """
+  _createdAt_lt: DateTime
+  """
+  All documents are less than or equal to given value
+  """
+  _createdAt_lte: DateTime
+  """
+  All documents are greater than given value
+  """
+  _createdAt_gt: DateTime
+  """
+  All documents are greater than or equal to given value
+  """
+  _createdAt_gte: DateTime
+  """
+  All documents that are equal to given value
+  """
+  _updatedAt: DateTime
+  """
+  All documents that are not equal to given value
+  """
+  _updatedAt_not: DateTime
+  """
+  All documents are less than given value
+  """
+  _updatedAt_lt: DateTime
+  """
+  All documents are less than or equal to given value
+  """
+  _updatedAt_lte: DateTime
+  """
+  All documents are greater than given value
+  """
+  _updatedAt_gt: DateTime
+  """
+  All documents are greater than or equal to given value
+  """
+  _updatedAt_gte: DateTime
+  """
+  All documents that are equal to given value
+  """
+  _rev: String
+  """
+  All documents that are not equal to given value
+  """
+  _rev_not: String
+  """
+  All documents contain (match) the given word/words
+  """
+  _rev_matches: String
+  _rev_in: [String!]
+  _rev_not_in: [String!]
+  """
+  All documents that are equal to given value
+  """
+  _key: String
+  """
+  All documents that are not equal to given value
+  """
+  _key_not: String
+  """
+  All documents contain (match) the given word/words
+  """
+  _key_matches: String
+  _key_in: [String!]
+  _key_not_in: [String!]
+  """
+  All documents that are equal to given value
+  """
+  originalFilename: String
+  """
+  All documents that are not equal to given value
+  """
+  originalFilename_not: String
+  """
+  All documents contain (match) the given word/words
+  """
+  originalFilename_matches: String
+  originalFilename_in: [String!]
+  originalFilename_not_in: [String!]
+  """
+  All documents that are equal to given value
+  """
+  label: String
+  """
+  All documents that are not equal to given value
+  """
+  label_not: String
+  """
+  All documents contain (match) the given word/words
+  """
+  label_matches: String
+  label_in: [String!]
+  label_not_in: [String!]
+  """
+  All documents that are equal to given value
+  """
+  sha1hash: String
+  """
+  All documents that are not equal to given value
+  """
+  sha1hash_not: String
+  """
+  All documents contain (match) the given word/words
+  """
+  sha1hash_matches: String
+  sha1hash_in: [String!]
+  sha1hash_not_in: [String!]
+  """
+  All documents that are equal to given value
+  """
+  extension: String
+  """
+  All documents that are not equal to given value
+  """
+  extension_not: String
+  """
+  All documents contain (match) the given word/words
+  """
+  extension_matches: String
+  extension_in: [String!]
+  extension_not_in: [String!]
+  """
+  All documents that are equal to given value
+  """
+  mimeType: String
+  """
+  All documents that are not equal to given value
+  """
+  mimeType_not: String
+  """
+  All documents contain (match) the given word/words
+  """
+  mimeType_matches: String
+  mimeType_in: [String!]
+  mimeType_not_in: [String!]
+  """
+  All documents that are equal to given value
+  """
+  size: Float
+  """
+  All documents that are not equal to given value
+  """
+  size_not: Float
+  """
+  All documents are less than given value
+  """
+  size_lt: Float
+  """
+  All documents are less than or equal to given value
+  """
+  size_lte: Float
+  """
+  All documents are greater than given value
+  """
+  size_gt: Float
+  """
+  All documents are greater than or equal to given value
+  """
+  size_gte: Float
+  """
+  All documents that are equal to given value
+  """
+  assetId: String
+  """
+  All documents that are not equal to given value
+  """
+  assetId_not: String
+  """
+  All documents contain (match) the given word/words
+  """
+  assetId_matches: String
+  assetId_in: [String!]
+  assetId_not_in: [String!]
+  """
+  All documents that are equal to given value
+  """
+  path: String
+  """
+  All documents that are not equal to given value
+  """
+  path_not: String
+  """
+  All documents contain (match) the given word/words
+  """
+  path_matches: String
+  path_in: [String!]
+  path_not_in: [String!]
+  """
+  All documents that are equal to given value
+  """
+  url: String
+  """
+  All documents that are not equal to given value
+  """
+  url_not: String
+  """
+  All documents contain (match) the given word/words
+  """
+  url_matches: String
+  url_in: [String!]
+  url_not_in: [String!]
+  """
+  All documents that are drafts
+  """
+  is_draft: Boolean
+}
+
+type SanityImageAsset implements Document {
+  """
+  Document ID
+  """
+  _id: ID!
+  """
+  Document type
+  """
+  _type: String!
+  """
+  Date the document was created
+  """
+  _createdAt: DateTime!
+  """
+  Date the document was last modified
+  """
+  _updatedAt: DateTime!
+  """
+  Current document revision
+  """
+  _rev: String!
+  _key: String
+  originalFilename: String
+  label: String
+  sha1hash: String
+  extension: String
+  mimeType: String
+  size: Float
+  assetId: String
+  path: String
+  url: String
+  metadata: SanityImageMetadata
+}
+
+input SanityImageAssetFilter {
+  """
+  All documents that are equal to given value
+  """
+  _id: ID
+  """
+  All documents that are not equal to given value
+  """
+  _id_not: ID
+  """
+  All documents contain (match) the given word/words
+  """
+  _id_matches: String
+  _id_in: [String!]
+  _id_not_in: [String!]
+  """
+  All documents that are equal to given value
+  """
+  _type: String
+  """
+  All documents that are not equal to given value
+  """
+  _type_not: String
+  """
+  All documents contain (match) the given word/words
+  """
+  _type_matches: String
+  _type_in: [String!]
+  _type_not_in: [String!]
+  """
+  All documents that are equal to given value
+  """
+  _createdAt: DateTime
+  """
+  All documents that are not equal to given value
+  """
+  _createdAt_not: DateTime
+  """
+  All documents are less than given value
+  """
+  _createdAt_lt: DateTime
+  """
+  All documents are less than or equal to given value
+  """
+  _createdAt_lte: DateTime
+  """
+  All documents are greater than given value
+  """
+  _createdAt_gt: DateTime
+  """
+  All documents are greater than or equal to given value
+  """
+  _createdAt_gte: DateTime
+  """
+  All documents that are equal to given value
+  """
+  _updatedAt: DateTime
+  """
+  All documents that are not equal to given value
+  """
+  _updatedAt_not: DateTime
+  """
+  All documents are less than given value
+  """
+  _updatedAt_lt: DateTime
+  """
+  All documents are less than or equal to given value
+  """
+  _updatedAt_lte: DateTime
+  """
+  All documents are greater than given value
+  """
+  _updatedAt_gt: DateTime
+  """
+  All documents are greater than or equal to given value
+  """
+  _updatedAt_gte: DateTime
+  """
+  All documents that are equal to given value
+  """
+  _rev: String
+  """
+  All documents that are not equal to given value
+  """
+  _rev_not: String
+  """
+  All documents contain (match) the given word/words
+  """
+  _rev_matches: String
+  _rev_in: [String!]
+  _rev_not_in: [String!]
+  """
+  All documents that are equal to given value
+  """
+  _key: String
+  """
+  All documents that are not equal to given value
+  """
+  _key_not: String
+  """
+  All documents contain (match) the given word/words
+  """
+  _key_matches: String
+  _key_in: [String!]
+  _key_not_in: [String!]
+  """
+  All documents that are equal to given value
+  """
+  originalFilename: String
+  """
+  All documents that are not equal to given value
+  """
+  originalFilename_not: String
+  """
+  All documents contain (match) the given word/words
+  """
+  originalFilename_matches: String
+  originalFilename_in: [String!]
+  originalFilename_not_in: [String!]
+  """
+  All documents that are equal to given value
+  """
+  label: String
+  """
+  All documents that are not equal to given value
+  """
+  label_not: String
+  """
+  All documents contain (match) the given word/words
+  """
+  label_matches: String
+  label_in: [String!]
+  label_not_in: [String!]
+  """
+  All documents that are equal to given value
+  """
+  sha1hash: String
+  """
+  All documents that are not equal to given value
+  """
+  sha1hash_not: String
+  """
+  All documents contain (match) the given word/words
+  """
+  sha1hash_matches: String
+  sha1hash_in: [String!]
+  sha1hash_not_in: [String!]
+  """
+  All documents that are equal to given value
+  """
+  extension: String
+  """
+  All documents that are not equal to given value
+  """
+  extension_not: String
+  """
+  All documents contain (match) the given word/words
+  """
+  extension_matches: String
+  extension_in: [String!]
+  extension_not_in: [String!]
+  """
+  All documents that are equal to given value
+  """
+  mimeType: String
+  """
+  All documents that are not equal to given value
+  """
+  mimeType_not: String
+  """
+  All documents contain (match) the given word/words
+  """
+  mimeType_matches: String
+  mimeType_in: [String!]
+  mimeType_not_in: [String!]
+  """
+  All documents that are equal to given value
+  """
+  size: Float
+  """
+  All documents that are not equal to given value
+  """
+  size_not: Float
+  """
+  All documents are less than given value
+  """
+  size_lt: Float
+  """
+  All documents are less than or equal to given value
+  """
+  size_lte: Float
+  """
+  All documents are greater than given value
+  """
+  size_gt: Float
+  """
+  All documents are greater than or equal to given value
+  """
+  size_gte: Float
+  """
+  All documents that are equal to given value
+  """
+  assetId: String
+  """
+  All documents that are not equal to given value
+  """
+  assetId_not: String
+  """
+  All documents contain (match) the given word/words
+  """
+  assetId_matches: String
+  assetId_in: [String!]
+  assetId_not_in: [String!]
+  """
+  All documents that are equal to given value
+  """
+  path: String
+  """
+  All documents that are not equal to given value
+  """
+  path_not: String
+  """
+  All documents contain (match) the given word/words
+  """
+  path_matches: String
+  path_in: [String!]
+  path_not_in: [String!]
+  """
+  All documents that are equal to given value
+  """
+  url: String
+  """
+  All documents that are not equal to given value
+  """
+  url_not: String
+  """
+  All documents contain (match) the given word/words
+  """
+  url_matches: String
+  url_in: [String!]
+  url_not_in: [String!]
+  """
+  All documents that are drafts
+  """
+  is_draft: Boolean
+}
+
+type SanityImageCrop {
+  _key: String
+  _type: String
+  top: Float
+  bottom: Float
+  left: Float
+  right: Float
+}
+
+type SanityImageDimensions {
+  _key: String
+  _type: String
+  height: Float
+  width: Float
+  aspectRatio: Float
+}
+
+type SanityImageHotspot {
+  _key: String
+  _type: String
+  x: Float
+  y: Float
+  height: Float
+  width: Float
+}
+
+type SanityImageMetadata {
+  _key: String
+  _type: String
+  location: Geopoint
+  dimensions: SanityImageDimensions
+  palette: SanityImagePalette
+  lqip: String
+}
+
+type SanityImagePalette {
+  _key: String
+  _type: String
+  darkMuted: SanityImagePaletteSwatch
+  lightVibrant: SanityImagePaletteSwatch
+  darkVibrant: SanityImagePaletteSwatch
+  vibrant: SanityImagePaletteSwatch
+  dominant: SanityImagePaletteSwatch
+  lightMuted: SanityImagePaletteSwatch
+  muted: SanityImagePaletteSwatch
+}
+
+type SanityImagePaletteSwatch {
+  _key: String
+  _type: String
+  background: String
+  foreground: String
+  population: Float
+  title: String
+}
+
+type SiteConfig implements Document {
+  """
+  Document ID
+  """
+  _id: ID!
+  """
+  Document type
+  """
+  _type: String!
+  """
+  Date the document was created
+  """
+  _createdAt: DateTime!
+  """
+  Date the document was last modified
+  """
+  _updatedAt: DateTime!
+  """
+  Current document revision
+  """
+  _rev: String!
+  _key: String
+  title: String
+  description: String
+  author: String
+  social: SocialLinks
+  profileImage: Image
+  backgroundImage: Image
+}
+
+input SiteConfigFilter {
+  """
+  All documents that are equal to given value
+  """
+  _id: ID
+  """
+  All documents that are not equal to given value
+  """
+  _id_not: ID
+  """
+  All documents contain (match) the given word/words
+  """
+  _id_matches: String
+  _id_in: [String!]
+  _id_not_in: [String!]
+  """
+  All documents that are equal to given value
+  """
+  _type: String
+  """
+  All documents that are not equal to given value
+  """
+  _type_not: String
+  """
+  All documents contain (match) the given word/words
+  """
+  _type_matches: String
+  _type_in: [String!]
+  _type_not_in: [String!]
+  """
+  All documents that are equal to given value
+  """
+  _createdAt: DateTime
+  """
+  All documents that are not equal to given value
+  """
+  _createdAt_not: DateTime
+  """
+  All documents are less than given value
+  """
+  _createdAt_lt: DateTime
+  """
+  All documents are less than or equal to given value
+  """
+  _createdAt_lte: DateTime
+  """
+  All documents are greater than given value
+  """
+  _createdAt_gt: DateTime
+  """
+  All documents are greater than or equal to given value
+  """
+  _createdAt_gte: DateTime
+  """
+  All documents that are equal to given value
+  """
+  _updatedAt: DateTime
+  """
+  All documents that are not equal to given value
+  """
+  _updatedAt_not: DateTime
+  """
+  All documents are less than given value
+  """
+  _updatedAt_lt: DateTime
+  """
+  All documents are less than or equal to given value
+  """
+  _updatedAt_lte: DateTime
+  """
+  All documents are greater than given value
+  """
+  _updatedAt_gt: DateTime
+  """
+  All documents are greater than or equal to given value
+  """
+  _updatedAt_gte: DateTime
+  """
+  All documents that are equal to given value
+  """
+  _rev: String
+  """
+  All documents that are not equal to given value
+  """
+  _rev_not: String
+  """
+  All documents contain (match) the given word/words
+  """
+  _rev_matches: String
+  _rev_in: [String!]
+  _rev_not_in: [String!]
+  """
+  All documents that are equal to given value
+  """
+  _key: String
+  """
+  All documents that are not equal to given value
+  """
+  _key_not: String
+  """
+  All documents contain (match) the given word/words
+  """
+  _key_matches: String
+  _key_in: [String!]
+  _key_not_in: [String!]
+  """
+  All documents that are equal to given value
+  """
+  title: String
+  """
+  All documents that are not equal to given value
+  """
+  title_not: String
+  """
+  All documents contain (match) the given word/words
+  """
+  title_matches: String
+  title_in: [String!]
+  title_not_in: [String!]
+  """
+  All documents that are equal to given value
+  """
+  description: String
+  """
+  All documents that are not equal to given value
+  """
+  description_not: String
+  """
+  All documents contain (match) the given word/words
+  """
+  description_matches: String
+  description_in: [String!]
+  description_not_in: [String!]
+  """
+  All documents that are equal to given value
+  """
+  author: String
+  """
+  All documents that are not equal to given value
+  """
+  author_not: String
+  """
+  All documents contain (match) the given word/words
+  """
+  author_matches: String
+  author_in: [String!]
+  author_not_in: [String!]
+  """
+  All documents that are drafts
+  """
+  is_draft: Boolean
+}
+
+type Slug {
+  _key: String
+  _type: String
+  current: String
+}
+
+type SocialLinks {
+  _key: String
+  _type: String
+  twitter: String
+  github: String
+  email: String
+}
+
+type Span {
+  _key: String
+  _type: String
+  marks: [String]
+  text: String
+}
+
+type Tag implements Document {
+  """
+  Document ID
+  """
+  _id: ID!
+  """
+  Document type
+  """
+  _type: String!
+  """
+  Date the document was created
+  """
+  _createdAt: DateTime!
+  """
+  Date the document was last modified
+  """
+  _updatedAt: DateTime!
+  """
+  Current document revision
+  """
+  _rev: String!
+  _key: String
+  title: String
+  description: String
+}
+
+input TagFilter {
+  """
+  All documents that are equal to given value
+  """
+  _id: ID
+  """
+  All documents that are not equal to given value
+  """
+  _id_not: ID
+  """
+  All documents contain (match) the given word/words
+  """
+  _id_matches: String
+  _id_in: [String!]
+  _id_not_in: [String!]
+  """
+  All documents that are equal to given value
+  """
+  _type: String
+  """
+  All documents that are not equal to given value
+  """
+  _type_not: String
+  """
+  All documents contain (match) the given word/words
+  """
+  _type_matches: String
+  _type_in: [String!]
+  _type_not_in: [String!]
+  """
+  All documents that are equal to given value
+  """
+  _createdAt: DateTime
+  """
+  All documents that are not equal to given value
+  """
+  _createdAt_not: DateTime
+  """
+  All documents are less than given value
+  """
+  _createdAt_lt: DateTime
+  """
+  All documents are less than or equal to given value
+  """
+  _createdAt_lte: DateTime
+  """
+  All documents are greater than given value
+  """
+  _createdAt_gt: DateTime
+  """
+  All documents are greater than or equal to given value
+  """
+  _createdAt_gte: DateTime
+  """
+  All documents that are equal to given value
+  """
+  _updatedAt: DateTime
+  """
+  All documents that are not equal to given value
+  """
+  _updatedAt_not: DateTime
+  """
+  All documents are less than given value
+  """
+  _updatedAt_lt: DateTime
+  """
+  All documents are less than or equal to given value
+  """
+  _updatedAt_lte: DateTime
+  """
+  All documents are greater than given value
+  """
+  _updatedAt_gt: DateTime
+  """
+  All documents are greater than or equal to given value
+  """
+  _updatedAt_gte: DateTime
+  """
+  All documents that are equal to given value
+  """
+  _rev: String
+  """
+  All documents that are not equal to given value
+  """
+  _rev_not: String
+  """
+  All documents contain (match) the given word/words
+  """
+  _rev_matches: String
+  _rev_in: [String!]
+  _rev_not_in: [String!]
+  """
+  All documents that are equal to given value
+  """
+  _key: String
+  """
+  All documents that are not equal to given value
+  """
+  _key_not: String
+  """
+  All documents contain (match) the given word/words
+  """
+  _key_matches: String
+  _key_in: [String!]
+  _key_not_in: [String!]
+  """
+  All documents that are equal to given value
+  """
+  title: String
+  """
+  All documents that are not equal to given value
+  """
+  title_not: String
+  """
+  All documents contain (match) the given word/words
+  """
+  title_matches: String
+  title_in: [String!]
+  title_not_in: [String!]
+  """
+  All documents that are equal to given value
+  """
+  description: String
+  """
+  All documents that are not equal to given value
+  """
+  description_not: String
+  """
+  All documents contain (match) the given word/words
+  """
+  description_matches: String
+  description_in: [String!]
+  description_not_in: [String!]
+  """
+  All documents that are drafts
+  """
+  is_draft: Boolean
+}
+
+type YoutubeVideo {
+  _key: String
+  _type: String
+  url: String
+}
