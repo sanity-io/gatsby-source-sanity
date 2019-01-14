@@ -1,5 +1,6 @@
 import fs = require('fs')
 import path = require('path')
+import {get} from 'lodash'
 import {getTypeMapFromGraphQLSchema} from '../src/util/remoteGraphQLSchema'
 
 const sdl = fs.readFileSync(path.join(__dirname, 'fixtures', 'schemaSdl.graphql'), 'utf8')
@@ -25,4 +26,10 @@ test('generates reference field for references, list of documents', () => {
 
   // List of references (implied by document member)
   expect(exampleValues.SanityAuthor).toHaveProperty('work___NODE')
+
+  // List of inline objects with references
+  expect(get(exampleValues, ['SanityProject', 'gallery', 0])).toHaveProperty(
+    'asset___NODE',
+    'mock--abc123-blog-SanityImageAsset'
+  )
 })

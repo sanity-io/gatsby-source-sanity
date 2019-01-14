@@ -309,26 +309,35 @@ function rewriteReferences(existingValue: {[key: string]: any}, options: Referen
   const initial: {[key: string]: any} = {}
   return Object.keys(existingValue).reduce((acc, key) => {
     const field = type && type.fields[key]
-    const isExplicitReference = field && field.isReference
+    const isExplicitRef = field && field.isReference
+    const isImplicitRef = !isExplicitRef && isImplicitReference(existingValue[key], map)
 
-    if (isExplicitReference) {
+    if (isExplicitRef) {
       for (let typeName in map) {
         if (map[typeName] === existingValue[key] && existingValue[key]._id) {
           acc[`${key}___NODE`] = `${idPrefix}-${typeName}`
           return acc
         }
       }
-    } else if (isImplicitReference(existingValue[key], map)) {
+    } else if (isImplicitRef && Array.isArray(existingValue[key])) {
       acc[`${key}___NODE`] = existingValue[key]
         .map((item: any) => {
           const memberType = getValueType(item, map)
           return memberType ? `${idPrefix}-${memberType}` : false
         })
         .filter(Boolean)
-
+      return acc
+    } else if (isImplicitRef) {
+      const memberType = getValueType(existingValue[key], map)
+      acc[`${key}___NODE`] = `${idPrefix}-${memberType}`
       return acc
     } else if (isPlainObject(existingValue[key])) {
       acc[key] = rewriteReferences(existingValue[key], options)
+      return acc
+    } else if (Array.isArray(existingValue[key])) {
+      acc[key] = existingValue[key].map((item: {}) =>
+        isPlainObject(item) ? rewriteReferences(item, options) : item
+      )
       return acc
     }
 
@@ -375,17 +384,13 @@ function getScalarTypeDefs(): ScalarTypeDefinitionNode[] {
 }
 
 function isImplicitReference(fieldValue: any, exampleValueMap: {[key: string]: any}): boolean {
-  if (!Array.isArray(fieldValue)) {
-    return false
+  if (Array.isArray(fieldValue)) {
+    const first = fieldValue[0]
+    return isImplicitReference(first, exampleValueMap)
   }
 
-  const first = fieldValue[0]
-  if (!first) {
-    return false
-  }
-
-  if (first._id) {
-    return Boolean(getValueType(first, exampleValueMap))
+  if (fieldValue && fieldValue._id) {
+    return Boolean(getValueType(fieldValue, exampleValueMap))
   }
 
   return false

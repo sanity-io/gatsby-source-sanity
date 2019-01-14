@@ -443,6 +443,7 @@ type Project implements Document {
   title: String
   description: String
   image: Image
+  gallery: [Image]
   tags: [String]
   date: Date
 }
