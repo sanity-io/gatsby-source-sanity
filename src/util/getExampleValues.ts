@@ -278,34 +278,8 @@ function addGatsbyNodeValues(
       return acc
     }
 
-    const type = typeMap.objects[typeName]
     const existingValue = map[typeName]
-    const initial: {[key: string]: any} = {}
-    const newValue = Object.keys(existingValue).reduce((acc, key) => {
-      const field = type && type.fields[key]
-      const isExplicitReference = field && field.isReference
-
-      if (isExplicitReference) {
-        for (let typeName in map) {
-          if (map[typeName] === existingValue[key] && existingValue[key]._id) {
-            acc[`${key}___NODE`] = `${idPrefix}-${typeName}`
-            return acc
-          }
-        }
-      } else if (isImplicitReference(existingValue[key], map)) {
-        acc[`${key}___NODE`] = existingValue[key]
-          .map((item: any) => {
-            const memberType = getValueType(item, map)
-            return memberType ? `${idPrefix}-${memberType}` : false
-          })
-          .filter(Boolean)
-
-        return acc
-      }
-
-      acc[key] = existingValue[key]
-      return acc
-    }, initial)
+    const newValue = rewriteReferences(existingValue, {exampleValueMap: map, typeMap, idPrefix})
 
     const node = {
       id: `${idPrefix}-${typeName}`,
@@ -319,6 +293,47 @@ function addGatsbyNodeValues(
     }
 
     return {...acc, [typeName]: removeTypeName(node)}
+  }, initial)
+}
+
+type ReferenceRewriterOptions = {
+  exampleValueMap: {[key: string]: any}
+  typeMap: TypeMap
+  idPrefix: string
+}
+
+function rewriteReferences(existingValue: {[key: string]: any}, options: ReferenceRewriterOptions) {
+  const {exampleValueMap: map, idPrefix, typeMap} = options
+  const typeName = getValueType(existingValue, map)
+  const type = typeName && typeMap.objects[typeName]
+  const initial: {[key: string]: any} = {}
+  return Object.keys(existingValue).reduce((acc, key) => {
+    const field = type && type.fields[key]
+    const isExplicitReference = field && field.isReference
+
+    if (isExplicitReference) {
+      for (let typeName in map) {
+        if (map[typeName] === existingValue[key] && existingValue[key]._id) {
+          acc[`${key}___NODE`] = `${idPrefix}-${typeName}`
+          return acc
+        }
+      }
+    } else if (isImplicitReference(existingValue[key], map)) {
+      acc[`${key}___NODE`] = existingValue[key]
+        .map((item: any) => {
+          const memberType = getValueType(item, map)
+          return memberType ? `${idPrefix}-${memberType}` : false
+        })
+        .filter(Boolean)
+
+      return acc
+    } else if (isPlainObject(existingValue[key])) {
+      acc[key] = rewriteReferences(existingValue[key], options)
+      return acc
+    }
+
+    acc[key] = existingValue[key]
+    return acc
   }, initial)
 }
 
