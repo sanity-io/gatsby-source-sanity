@@ -27,11 +27,11 @@
   "scripts": {
     "test": "jest",
     "clean": "rm -f gatsby-node.*",
-    "precommit": "tsc",
+    "precommit": "tsc && npm test",
     "build": "tsc",
     "format": "prettier --write src/**/*.{ts,tsx}",
     "watch": "tsc --watch",
-    "prepublishOnly": "tsc"
+    "prepublishOnly": "tsc && npm test"
   },
   "husky": {
     "hooks": {
