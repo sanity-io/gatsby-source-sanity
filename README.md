@@ -145,6 +145,19 @@ export const query = graphql`
 `
 ```
 
+### Available fragments
+
+These are the fragments available on image assets, which allows easy lookup of the fields required by gatsby-image in various modes:
+
+- `GatsbySanityImageFixed`
+- `GatsbySanityImageFixed_noBase64`
+- `GatsbySanityImageFixed_withWebp`
+- `GatsbySanityImageFixed_withWebp_noBase64`
+- `GatsbySanityImageFluid`
+- `GatsbySanityImageFluid_noBase64`
+- `GatsbySanityImageFluid_withWebp`
+- `GatsbySanityImageFluid_withWebp_noBase64`
+
 ## Overlaying drafts
 
 Sometimes you might be working on some new content that is not yet published, which you want to make sure looks alright within your Gatsby site. By setting the `overlayDrafts` setting to `true`, the draft versions will as the option says "overlay" the regular document. In terms of Gatsby nodes, it will _replace_ the published document with the draft.
