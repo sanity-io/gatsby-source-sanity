@@ -1,7 +1,7 @@
 {
   "name": "gatsby-source-sanity",
   "description": "Gatsby source plugin for building websites using Sanity.io as a backend.",
-  "version": "0.9.10-next.10",
+  "version": "1.0.0",
   "author": "Sanity.io <hello@sanity.io>",
   "contributors": [
     {
@@ -56,6 +56,7 @@
     "through2": "^3.0.0"
   },
   "devDependencies": {
+    "@types/debug": "^0.0.31",
     "@types/fs-extra": "^5.0.4",
     "@types/graphql": "^14.0.3",
     "@types/jest": "^23.3.12",
@@ -67,6 +68,7 @@
     "eslint": "^5.10.0",
     "eslint-config-prettier": "^3.3.0",
     "eslint-config-sanity": "^0.138.0",
+    "gatsby": "^2.0.91",
     "husky": "^1.2.1",
     "jest": "^23.6.0",
     "prettier": "^1.15.3",
