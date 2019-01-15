@@ -5,6 +5,16 @@ interface GatsbyEventEmitter {
   off: (event: String, fn: Function) => null
 }
 
+interface GatsbyStoreState {
+  program: {
+    directory: string
+  }
+}
+
+interface GatsbyStore {
+  getState: () => GatsbyStoreState
+}
+
 export interface GatsbyNode {
   id: string // Gatsby node ID
   _id: string // Sanity document ID
@@ -72,6 +82,7 @@ export interface GatsbyContext {
   actions: GatsbyActions
   createNodeId: GatsbyNodeIdCreator
   createContentDigest: GatsbyContentDigester
+  store: GatsbyStore
   getNode: (id: string) => GatsbyNode | undefined
   getNodes: () => GatsbyNode[]
   reporter: GatsbyReporter

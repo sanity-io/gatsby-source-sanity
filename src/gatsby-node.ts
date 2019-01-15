@@ -1,5 +1,7 @@
+import path = require('path')
 import * as split from 'split2'
 import * as through from 'through2'
+import {copy} from 'fs-extra'
 import {camelCase} from 'lodash'
 import {filter} from 'rxjs/operators'
 import {GraphQLJSON, GraphQLFieldConfig} from 'gatsby/graphql'
@@ -22,6 +24,7 @@ import {
   TypeMap
 } from './util/remoteGraphQLSchema'
 import debug from './debug'
+import {extendImageNode} from './images/extendImageNode'
 
 export interface PluginConfig {
   projectId: string
@@ -138,8 +141,21 @@ export const sourceNodes = async (context: GatsbyContext, pluginConfig: PluginCo
   reporter.info('[sanity] Done exporting!')
 }
 
-export const onPreExtractQueries = (context: GatsbyContext, pluginConfig: PluginConfig) => {
-  return createTemporaryMockNodes(context, pluginConfig, stateCache)
+export const onPreExtractQueries = async (context: GatsbyContext, pluginConfig: PluginConfig) => {
+  const {getNodes, store} = context
+  const program = store.getState().program
+  const hasImages = getNodes().some(node =>
+    Boolean(node.internal && node.internal.type === 'SanityImageAsset')
+  )
+
+  if (hasImages) {
+    await copy(
+      path.join(__dirname, '..', 'fragments', 'imageFragments.js'),
+      `${program.directory}/.cache/fragments/sanity-image-fragments.js`
+    )
+  }
+
+  await createTemporaryMockNodes(context, pluginConfig, stateCache)
 }
 
 export const setFieldsOnGraphQLNodeType = async (
@@ -151,12 +167,17 @@ export const setFieldsOnGraphQLNodeType = async (
   const typeMap = (stateCache[typeMapKey] || defaultTypeMap) as TypeMap
   const schemaType = typeMap.objects[type.name]
 
-  if (!schemaType) {
-    debug('[%s] Not in type map', type.name)
-    return undefined
+  let fields: {[key: string]: GraphQLFieldConfig<any, any>} = {}
+
+  if (type.name === 'SanityImageAsset') {
+    fields = {...fields, ...extendImageNode(context, pluginConfig)}
   }
 
-  const initial: {[key: string]: GraphQLFieldConfig<any, any>} = {}
+  if (!schemaType) {
+    debug('[%s] Not in type map', type.name)
+    return fields
+  }
+
   return Object.keys(schemaType.fields).reduce((acc, fieldName) => {
     const field = schemaType.fields[fieldName]
     const aliasFor = field.aliasFor
@@ -179,7 +200,7 @@ export const setFieldsOnGraphQLNodeType = async (
       resolve: obj => obj[aliasName] || obj[fieldName]
     }
     return acc
-  }, initial)
+  }, fields)
 }
 
 function validateConfig(config: PluginConfig, reporter: GatsbyReporter) {
