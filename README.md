@@ -1,7 +1,5 @@
 # gatsby-source-sanity
 
-:warning: Work-in-progress beta/alpha version. There are [known issues](#known-issues).
-
 Source plugin for pulling data from [Sanity.io](https://www.sanity.io/) into [Gatsby](https://www.gatsbyjs.org/) websites.
 
 ## Table of content
@@ -21,17 +19,17 @@ Source plugin for pulling data from [Sanity.io](https://www.sanity.io/) into [Ga
 
 ## Known issues
 
-This is a work-in-progress beta version, as such there are known problems that we are working on.
+This is a beta version, as such there are known problems that we are working on.
 
-- Weak references that point to non-existant documents might break the build
 - Circular references in types break mocking of example values
+- Weak references that point to non-existant documents might break the build
 
 ## Basic usage
 
 ```
-yarn add gatsby-source-sanity@next
+yarn add gatsby-source-sanity
 # or
-npm i gatsby-source-sanity@next --save
+npm i gatsby-source-sanity --save
 ```
 
 ```js
