@@ -10,6 +10,7 @@ Source plugin for pulling data from [Sanity.io](https://www.sanity.io/) into [Ga
 - [Basic Usage](#basic-usage)
 - [Options](#options)
 - [Missing fields](#missing-fields)
+- [Using images](#using-images)
 - [Overlaying drafts](#overlaying-drafts)
 - [Watch mode](#watch-mode)
 - [Generating pages](#generating-pages)
@@ -77,6 +78,74 @@ By [deploying a GraphQL API](https://www.sanity.io/help/graphql-beta) for your d
 Some background for this problem:
 
 Gatsby cannot know about the types and fields without having documents of the given types that contain the fields you want to query. This is a [known problem](https://github.com/gatsbyjs/gatsby/issues/3344) with Gatsby - luckily there is ongoing work to solve this issue, which will lead to much clearer schemas and less boilerplate.
+
+## Using images
+
+Image fields will have the image URL available under the `field.asset.url` key, but you can also use [gatsby-image](https://github.com/gatsbyjs/gatsby/tree/master/packages/gatsby-image) for a smooth experience. It's a React component that enables responsive images and advanced image loading techniques. It works great with this source plugin, without requiring any additional build steps.
+
+There are two types of responsive images supported; _fixed_ and _fluid_. To decide between the two, ask yourself: "do I know the exact size this image will be?" If yes, you'll want to use _fixed_. If no and its width and/or height need to vary depending on the size of the screen, then you'll want to use _fluid_.
+
+### Fluid
+
+```js
+import React from 'react'
+import Img from 'gatsby-image'
+
+const Person = ({data}) => (
+  <article>
+    <h2>{data.sanityPerson.name}</h2>
+    <Img fluid={data.sanityPerson.profileImage.asset.fluid} />
+  </article>
+)
+
+export default Person
+
+export const query = graphql`
+  query PersonQuery {
+    sanityPerson {
+      name
+      profileImage {
+        asset {
+          fluid(maxWidth: 700) {
+            ...GatsbySanityImageFluid
+          }
+        }
+      }
+    }
+  }
+`
+```
+
+### Fixed
+
+```js
+import React from 'react'
+import Img from 'gatsby-image'
+
+const Person = ({data}) => (
+  <article>
+    <h2>{data.sanityPerson.name}</h2>
+    <Img fixed={data.sanityPerson.profileImage.asset.fixed} />
+  </article>
+)
+
+export default Person
+
+export const query = graphql`
+  query PersonQuery {
+    sanityPerson {
+      name
+      profileImage {
+        asset {
+          fixed(width: 400) {
+            ...GatsbySanityImageFixed
+          }
+        }
+      }
+    }
+  }
+`
+```
 
 ## Overlaying drafts
 
