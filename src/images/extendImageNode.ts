@@ -3,10 +3,27 @@ import {
   GraphQLString,
   GraphQLFloat,
   GraphQLInt,
-  GraphQLFieldConfig
+  GraphQLFieldConfig,
+  GraphQLEnumType
 } from 'gatsby/graphql'
 import {GatsbyContext, GatsbyOnNodeTypeContext} from '../types/gatsby'
 import {PluginConfig} from '../gatsby-node'
+
+enum ImageFormat {
+  NO_CHANGE = '',
+  WEBP = 'webp',
+  JPG = 'jpg',
+  PNG = 'png'
+}
+
+type ImageProps = {
+  base64: string | null
+  aspectRatio: number
+  width: number
+  height: number
+  src: string
+  srcSet: string
+}
 
 type ImageAsset = {
   _id: string
@@ -23,12 +40,24 @@ type FluidArgs = {
   maxWidth?: number
   maxHeight?: number
   sizes?: string
+  toFormat?: ImageFormat
 }
 
 type FixedArgs = {
   width?: number
   height?: number
+  toFormat?: ImageFormat
 }
+
+const ImageFormatType = new GraphQLEnumType({
+  name: 'SanityImageFormat',
+  values: {
+    NO_CHANGE: {value: ''},
+    JPG: {value: 'jpg'},
+    PNG: {value: 'png'},
+    WEBP: {value: 'webp'}
+  }
+})
 
 const idPattern = /^image-[A-Za-z0-9]+-\d+x\d+-[a-z]+$/
 const sizeMultipliersFixed = [1, 1.5, 2, 3]
@@ -50,21 +79,22 @@ function isValidImage(img: ImageAsset) {
   return img && img.metadata && img.metadata.dimensions.width
 }
 
-function resolveFixed(image: ImageAsset, options: FixedArgs) {
+function resolveFixed(image: ImageAsset, args: FixedArgs) {
   if (image === null || !isValidImage(image)) {
     return null
   }
 
-  const width = options.width || 400
-  const height = options.height
+  const width = args.width || 400
+  const height = args.height
   const {dimensions, lqip} = image.metadata
   const widths = sizeMultipliersFixed.map(scale => Math.round(width * scale))
+  const format = args.toFormat ? `&fm=${args.toFormat}` : ''
   const srcSet = widths
     .filter(currentWidth => currentWidth < dimensions.width)
     .map((currentWidth, i) => {
       const resolution = `${sizeMultipliersFixed[i]}x`
       const currentHeight = Math.round(currentWidth / dimensions.aspectRatio)
-      const url = `${image.url}?w=${currentWidth}&h=${currentHeight}&fit=crop`
+      const url = `${image.url}?w=${currentWidth}&h=${currentHeight}&fit=crop${format}`
       return `${url} ${resolution}`
     })
     .join(`,\n`)
@@ -74,7 +104,7 @@ function resolveFixed(image: ImageAsset, options: FixedArgs) {
     aspectRatio: dimensions.aspectRatio,
     width: Math.round(width),
     height: Math.round(height ? height : width / dimensions.aspectRatio),
-    src: `${image.url}?w=${width}`,
+    src: `${image.url}?w=${width}${format}`,
     srcSet
   }
 }
@@ -100,15 +130,16 @@ function resolveFluid(image: ImageAsset, options: FluidArgs) {
     .filter(width => width < dimensions.width)
     .concat(dimensions.width)
 
+  const format = options.toFormat ? `&fm=${options.toFormat}` : ''
   const srcSet = widths
     .map(currentWidth => {
       const currentHeight = Math.round(currentWidth / dimensions.aspectRatio)
-      const url = `${image.url}?w=${currentWidth}&h=${currentHeight}&fit=crop`
+      const url = `${image.url}?w=${currentWidth}&h=${currentHeight}&fit=crop${format}`
       return `${url} ${currentWidth}w`
     })
     .join(`,\n`)
 
-  const src = `${image.url}?w=${maxWidth}&h=${maxHeight}`
+  const src = `${image.url}?w=${maxWidth}&h=${maxHeight}${format}`
 
   return {
     base64: lqip,
@@ -117,6 +148,22 @@ function resolveFluid(image: ImageAsset, options: FluidArgs) {
     srcSet,
     sizes
   }
+}
+
+function resolveWebp(image: ImageProps) {
+  if (image.src.includes('fm=webp')) {
+    return null
+  }
+
+  return `${image.src}&fm=webp`
+}
+
+function resolveWebpSrcSet(image: ImageProps) {
+  if (image.src.includes('fm=webp')) {
+    return null
+  }
+
+  return image.srcSet.replace(/(\/[a-f0-9]+-\d+x\d+\.[a-z]+\?)/g, '$1fm=webp&')
 }
 
 const fixed = {
@@ -128,7 +175,9 @@ const fixed = {
       width: {type: GraphQLFloat},
       height: {type: GraphQLFloat},
       src: {type: GraphQLString},
-      srcSet: {type: GraphQLString}
+      srcSet: {type: GraphQLString},
+      srcWebp: {type: GraphQLString, resolve: resolveWebp},
+      srcSetWebp: {type: GraphQLString, resolve: resolveWebpSrcSet}
     }
   }),
   args: {
@@ -138,6 +187,10 @@ const fixed = {
     },
     height: {
       type: GraphQLInt
+    },
+    toFormat: {
+      type: ImageFormatType,
+      defaultValue: ''
     }
   },
   resolve: resolveFixed
@@ -151,6 +204,8 @@ const fluid = {
       aspectRatio: {type: GraphQLFloat},
       src: {type: GraphQLString},
       srcSet: {type: GraphQLString},
+      srcWebp: {type: GraphQLString, resolve: resolveWebp},
+      srcSetWebp: {type: GraphQLString, resolve: resolveWebpSrcSet},
       sizes: {type: GraphQLString}
     }
   }),
@@ -164,6 +219,10 @@ const fluid = {
     },
     sizes: {
       type: GraphQLString
+    },
+    toFormat: {
+      type: ImageFormatType,
+      defaultValue: ''
     }
   },
   resolve: resolveFluid
@@ -171,7 +230,5 @@ const fluid = {
 
 const extension = {
   fixed,
-  fluid,
-  resolutions: fixed,
-  sizes: fluid
+  fluid
 }
