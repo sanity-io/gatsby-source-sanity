@@ -187,17 +187,21 @@ function getRawAliases(doc: SanityDocument, options: ProcessingOptions) {
   const typeName = getTypeName(doc._type)
   const type = typeMap.objects[typeName]
   if (!type) {
-    return doc
+    return {}
   }
-
   const initial: {[key: string]: any} = {}
   return Object.keys(type.fields).reduce((acc, fieldName) => {
     const field = type.fields[fieldName]
-    if (typeMap.scalars.includes(field.namedType.name.value)) {
+    const namedType = field.namedType.name.value
+    if (field.aliasFor) {
+      const aliasName = '_' + camelCase(`raw_data_${field.aliasFor}`)
+      acc[aliasName] = doc[field.aliasFor]
       return acc
     }
-
-    const aliasName = '_' + camelCase(`raw ${fieldName}`)
+    if (typeMap.scalars.includes(namedType)) {
+      return acc
+    }
+    const aliasName = '_' + camelCase(`raw_data_${fieldName}`)
     acc[aliasName] = doc[fieldName]
     return acc
   }, initial)

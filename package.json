@@ -57,7 +57,7 @@
   "devDependencies": {
     "@types/debug": "^0.0.31",
     "@types/fs-extra": "^5.0.4",
-    "@types/graphql": "^14.0.3",
+    "@types/graphql": "^14.0.5",
     "@types/jest": "^23.3.12",
     "@types/lodash": "^4.14.119",
     "@types/node": "^10.0.0",

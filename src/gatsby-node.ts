@@ -185,19 +185,23 @@ export const setFieldsOnGraphQLNodeType = async (
       const aliasName = '_' + camelCase(`raw ${field.aliasFor}`)
       acc[aliasName] = {
         type: GraphQLJSON,
-        resolve: obj => obj[aliasName] || obj[fieldName] || obj[aliasFor]
+        resolve: (obj: {[key: string]: {}}) => {
+          const raw = `_${camelCase(`raw_data_${field.aliasFor}`)}`
+          return obj[raw] || obj[fieldName] || obj[aliasFor]
+        }
       }
       return acc
     }
-
     if (typeMap.scalars.includes(field.namedType.name.value)) {
       return acc
     }
-
     const aliasName = '_' + camelCase(`raw ${fieldName}`)
     acc[aliasName] = {
       type: GraphQLJSON,
-      resolve: obj => obj[aliasName] || obj[fieldName]
+      resolve: (obj: {[key: string]: {}}) => {
+        const raw = `_${camelCase(`raw_data_${field.aliasFor}`)}`
+        return obj[raw] || obj[aliasName] || obj[fieldName]
+      }
     }
     return acc
   }, fields)
