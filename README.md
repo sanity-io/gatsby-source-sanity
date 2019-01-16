@@ -23,6 +23,7 @@ This is a beta version, as such there are known problems that we are working on.
 
 - Circular references in types break mocking of example values
 - Weak references that point to non-existant documents might break the build
+- Document references in annotations in Portable Text are not joined in the build
 
 ## Basic usage
 
@@ -239,6 +240,8 @@ Arrays and object types at the root of documents will get an additional "raw JSO
 Rich text in Sanity is usually represented as [Portable Text](https://www.portabletext.org/) (previously known as "Block Content").
 
 These data structures can be deep and a chore to query (specifying all the possible fields). As [noted above](#raw-fields), there is a "raw" alternative available for these fields which is usually what you'll want to use.
+
+You can install [block-content-to-react](https://www.npmjs.com/package/@sanity/block-content-to-react) from npm and use it in your Gatsby project to serialize Portable Text. It lets you use your own React components to override defaults and render custom content types. [Learn more about Portable Text in our documentation](https://www.sanity.io/docs/content-studio/what-you-need-to-know-about-block-text).
 
 ## Using .env variables
 
