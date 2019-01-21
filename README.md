@@ -2,6 +2,8 @@
 
 Source plugin for pulling data from [Sanity.io](https://www.sanity.io/) into [Gatsby](https://www.gatsbyjs.org/) websites.
 
+[![Watch a video about the company website built with Gatsby using Sanity.io as a headless CMS](https://cdn.sanity.io/images/3do82whm/production/4f652e6d114e7010aa633b81cbcb97c335980fc8-1920x1080.png?w=500)](https://www.youtube.com/watch?v=STtpXBvJmDA)
+
 ## Table of content
 
 - [Known issues](#known-issues)
@@ -27,9 +29,9 @@ This is a beta version, as such there are known problems that we are working on.
 
 ## Basic usage
 
+[See the getting started video](https://www.youtube.com/watch?v=qU4lFYp3KiQ)
+
 ```
-yarn add gatsby-source-sanity
-# or
 npm i gatsby-source-sanity --save
 ```
 
@@ -43,7 +45,9 @@ module.exports = {
       options: {
         projectId: 'abc123',
         dataset: 'blog',
-        token: process.env.MY_SANITY_TOKEN || 'my-token'
+        // a token with read permissions is required
+        // if you have a private dataset
+        token: process.env.MY_SANITY_TOKEN
       }
     }
   ]
