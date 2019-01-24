@@ -7,6 +7,8 @@ export const sanityImageFixed = graphql`
     height
     src
     srcSet
+    srcWebp
+    srcSetWebp
   }
 `
 
@@ -16,9 +18,13 @@ export const sanityImageFixedNoBase64 = graphql`
     height
     src
     srcSet
+    srcWebp
+    srcSetWebp
   }
 `
 
+// Not actually necessary - since Sanity CDN is scaling,
+// there is no "penalty" for including WebP by default
 export const sanityImageFixedPreferWebp = graphql`
   fragment GatsbySanityImageFixed_withWebp on SanityImageFixed {
     base64
@@ -31,6 +37,8 @@ export const sanityImageFixedPreferWebp = graphql`
   }
 `
 
+// Not actually necessary - since Sanity CDN is scaling,
+// there is no "penalty" for including WebP by default
 export const sanityImageFixedPreferWebpNoBase64 = graphql`
   fragment GatsbySanityImageFixed_withWebp_noBase64 on SanityImageFixed {
     width
@@ -48,6 +56,8 @@ export const sanityImageFluid = graphql`
     aspectRatio
     src
     srcSet
+    srcWebp
+    srcSetWebp
     sizes
   }
 `
@@ -57,10 +67,14 @@ export const sanityImageFluidNoBase64 = graphql`
     aspectRatio
     src
     srcSet
+    srcWebp
+    srcSetWebp
     sizes
   }
 `
 
+// Not actually necessary - since Sanity CDN is scaling,
+// there is no "penalty" for including WebP by default
 export const sanityImageFluidPreferWebp = graphql`
   fragment GatsbySanityImageFluid_withWebp on SanityImageFluid {
     base64
@@ -73,6 +87,8 @@ export const sanityImageFluidPreferWebp = graphql`
   }
 `
 
+// Not actually necessary - since Sanity CDN is scaling,
+// there is no "penalty" for including WebP by default
 export const SanityImageAssetFluidPreferWebpNoBase64 = graphql`
   fragment GatsbySanityImageFluid_withWebp_noBase64 on SanityImageFluid {
     aspectRatio
