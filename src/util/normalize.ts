@@ -77,7 +77,7 @@ export function processDocument(doc: SanityDocument, options: ProcessingOptions)
 }
 
 // `drafts.foo-bar` => `foo.bar`
-function unprefixDraftId(id: string) {
+export function unprefixDraftId(id: string) {
   return id.replace(/^drafts\./, '')
 }
 

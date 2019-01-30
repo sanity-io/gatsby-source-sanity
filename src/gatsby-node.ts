@@ -4,13 +4,13 @@ import * as through from 'through2'
 import {copy} from 'fs-extra'
 import {camelCase} from 'lodash'
 import {filter} from 'rxjs/operators'
-import {GraphQLJSON, GraphQLFieldConfig} from 'gatsby/graphql'
+import {GraphQLJSON, GraphQLFieldConfig, GraphQLBoolean} from 'gatsby/graphql'
 import SanityClient = require('@sanity/client')
 import {GatsbyContext, GatsbyReporter, GatsbyNode, GatsbyOnNodeTypeContext} from './types/gatsby'
 import {SanityDocument} from './types/sanity'
 import {pump} from './util/pump'
 import {rejectOnApiError} from './util/rejectOnApiError'
-import {processDocument} from './util/normalize'
+import {processDocument, unprefixDraftId} from './util/normalize'
 import {getDocumentStream} from './util/getDocumentStream'
 import {getCacheKey, CACHE_KEYS} from './util/cache'
 import {removeSystemDocuments} from './util/removeSystemDocuments'
@@ -191,9 +191,15 @@ export const setFieldsOnGraphQLNodeType = async (
       const aliasName = '_' + camelCase(`raw ${field.aliasFor}`)
       acc[aliasName] = {
         type: GraphQLJSON,
-        resolve: (obj: {[key: string]: {}}) => {
+        args: {
+          materializeReferences: {type: GraphQLBoolean, defaultValue: false}
+        },
+        resolve: (obj: {[key: string]: {}}, args) => {
           const raw = `_${camelCase(`raw_data_${field.aliasFor}`)}`
-          return obj[raw] || obj[fieldName] || obj[aliasFor]
+          const value = obj[raw] || obj[fieldName] || obj[aliasFor]
+          return args.materializeReferences
+            ? materializeReferences(value, context, pluginConfig)
+            : value
         }
       }
       return acc
@@ -204,13 +210,44 @@ export const setFieldsOnGraphQLNodeType = async (
     const aliasName = '_' + camelCase(`raw ${fieldName}`)
     acc[aliasName] = {
       type: GraphQLJSON,
-      resolve: (obj: {[key: string]: {}}) => {
+      args: {
+        materializeReferences: {type: GraphQLBoolean, defaultValue: false}
+      },
+      resolve: (obj: {[key: string]: {}}, args) => {
         const raw = `_${camelCase(`raw_data_${field.aliasFor}`)}`
-        return obj[raw] || obj[aliasName] || obj[fieldName]
+        const value = obj[raw] || obj[aliasName] || obj[fieldName]
+        return args.materializeReferences
+          ? materializeReferences(value, context, pluginConfig)
+          : value
       }
     }
     return acc
   }, fields)
+}
+
+function materializeReferences(obj: any, context: GatsbyContext, pluginConfig: PluginConfig): any {
+  const {createNodeId, getNode} = context
+  const {overlayDrafts} = pluginConfig
+
+  if (Array.isArray(obj)) {
+    return obj.map(item => materializeReferences(item, context, pluginConfig))
+  }
+
+  if (obj === null || typeof obj !== 'object') {
+    return obj
+  }
+
+  if (typeof obj._ref === 'string') {
+    const id = obj._ref
+    const node = getNode(createNodeId(overlayDrafts ? unprefixDraftId(id) : id))
+    return node ? node : obj
+  }
+
+  const initial: {[key: string]: any} = {}
+  return Object.keys(obj).reduce((acc, key) => {
+    acc[key] = materializeReferences(obj[key], context, pluginConfig)
+    return acc
+  }, initial)
 }
 
 function validateConfig(config: PluginConfig, reporter: GatsbyReporter) {
