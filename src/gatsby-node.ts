@@ -143,12 +143,18 @@ export const sourceNodes = async (context: GatsbyContext, pluginConfig: PluginCo
 
 export const onPreExtractQueries = async (context: GatsbyContext, pluginConfig: PluginConfig) => {
   const {getNodes, store} = context
-  const program = store.getState().program
-  const hasImages = getNodes().some(node =>
-    Boolean(node.internal && node.internal.type === 'SanityImageAsset')
-  )
+  const typeMapKey = getCacheKey(pluginConfig, CACHE_KEYS.TYPE_MAP)
+  const typeMap = (stateCache[typeMapKey] || defaultTypeMap) as TypeMap
+  let shouldAddFragments = typeof typeMap.objects.SanityImageAsset !== 'undefined'
 
-  if (hasImages) {
+  if (!shouldAddFragments) {
+    shouldAddFragments = getNodes().some(node =>
+      Boolean(node.internal && node.internal.type === 'SanityImageAsset')
+    )
+  }
+
+  if (shouldAddFragments) {
+    const program = store.getState().program
     await copy(
       path.join(__dirname, '..', 'fragments', 'imageFragments.js'),
       `${program.directory}/.cache/fragments/sanity-image-fragments.js`
