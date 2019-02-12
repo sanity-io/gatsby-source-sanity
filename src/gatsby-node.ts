@@ -195,7 +195,7 @@ export const setFieldsOnGraphQLNodeType = async (
           materializeReferences: {type: GraphQLBoolean, defaultValue: false}
         },
         resolve: (obj: {[key: string]: {}}, args) => {
-          const raw = `_${camelCase(`raw_data_${field.aliasFor}`)}`
+          const raw = `_${camelCase(`raw_data_${field.aliasFor || fieldName}`)}`
           const value = obj[raw] || obj[fieldName] || obj[aliasFor]
           return args.materializeReferences
             ? materializeReferences(value, context, pluginConfig)
@@ -214,7 +214,7 @@ export const setFieldsOnGraphQLNodeType = async (
         materializeReferences: {type: GraphQLBoolean, defaultValue: false}
       },
       resolve: (obj: {[key: string]: {}}, args) => {
-        const raw = `_${camelCase(`raw_data_${field.aliasFor}`)}`
+        const raw = `_${camelCase(`raw_data_${field.aliasFor || fieldName}`)}`
         const value = obj[raw] || obj[aliasName] || obj[fieldName]
         return args.materializeReferences
           ? materializeReferences(value, context, pluginConfig)
