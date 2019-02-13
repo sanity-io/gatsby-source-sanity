@@ -4,7 +4,7 @@ import * as through from 'through2'
 import {copy} from 'fs-extra'
 import {camelCase} from 'lodash'
 import {filter} from 'rxjs/operators'
-import {GraphQLJSON, GraphQLFieldConfig, GraphQLBoolean} from 'gatsby/graphql'
+import {GraphQLJSON, GraphQLFieldConfig, GraphQLBoolean, GraphQLInt} from 'gatsby/graphql'
 import SanityClient = require('@sanity/client')
 import {GatsbyContext, GatsbyReporter, GatsbyNode, GatsbyOnNodeTypeContext} from './types/gatsby'
 import {SanityDocument} from './types/sanity'
@@ -185,6 +185,7 @@ export const setFieldsOnGraphQLNodeType = async (
   }
 
   return Object.keys(schemaType.fields).reduce((acc, fieldName) => {
+    let depth = 0
     const field = schemaType.fields[fieldName]
     const aliasFor = field.aliasFor
     if (field.namedType.name.value === 'JSON' && aliasFor) {
@@ -192,13 +193,14 @@ export const setFieldsOnGraphQLNodeType = async (
       acc[aliasName] = {
         type: GraphQLJSON,
         args: {
-          materializeReferences: {type: GraphQLBoolean, defaultValue: false}
+          materializeReferences: {type: GraphQLBoolean, defaultValue: false},
+          maxDepth: {type: GraphQLInt, defaultValue: 2}
         },
         resolve: (obj: {[key: string]: {}}, args) => {
           const raw = `_${camelCase(`raw_data_${field.aliasFor || fieldName}`)}`
           const value = obj[raw] || obj[fieldName] || obj[aliasFor]
           return args.materializeReferences
-            ? materializeReferences(value, context, pluginConfig)
+            ? materializeReferences(value, depth, args.maxDepth, context, pluginConfig)
             : value
         }
       }
@@ -211,13 +213,14 @@ export const setFieldsOnGraphQLNodeType = async (
     acc[aliasName] = {
       type: GraphQLJSON,
       args: {
-        materializeReferences: {type: GraphQLBoolean, defaultValue: false}
+        materializeReferences: {type: GraphQLBoolean, defaultValue: false},
+        maxDepth: {type: GraphQLInt, defaultValue: 2}
       },
       resolve: (obj: {[key: string]: {}}, args) => {
         const raw = `_${camelCase(`raw_data_${field.aliasFor || fieldName}`)}`
         const value = obj[raw] || obj[aliasName] || obj[fieldName]
         return args.materializeReferences
-          ? materializeReferences(value, context, pluginConfig)
+          ? materializeReferences(value, depth, args.maxDepth, context, pluginConfig)
           : value
       }
     }
@@ -225,12 +228,18 @@ export const setFieldsOnGraphQLNodeType = async (
   }, fields)
 }
 
-function materializeReferences(obj: any, context: GatsbyContext, pluginConfig: PluginConfig): any {
+function materializeReferences(
+  obj: any,
+  depth: number,
+  maxDepth: number,
+  context: GatsbyContext,
+  pluginConfig: PluginConfig
+): any {
   const {createNodeId, getNode} = context
   const {overlayDrafts} = pluginConfig
 
   if (Array.isArray(obj)) {
-    return obj.map(item => materializeReferences(item, context, pluginConfig))
+    return obj.map(item => materializeReferences(item, depth, maxDepth, context, pluginConfig))
   }
 
   if (obj === null || typeof obj !== 'object') {
@@ -240,12 +249,15 @@ function materializeReferences(obj: any, context: GatsbyContext, pluginConfig: P
   if (typeof obj._ref === 'string') {
     const id = obj._ref
     const node = getNode(createNodeId(overlayDrafts ? unprefixDraftId(id) : id))
-    return node ? node : obj
+    depth++
+    return node && depth < maxDepth
+      ? materializeReferences(node, depth, maxDepth, context, pluginConfig)
+      : obj
   }
 
   const initial: {[key: string]: any} = {}
   return Object.keys(obj).reduce((acc, key) => {
-    acc[key] = materializeReferences(obj[key], context, pluginConfig)
+    acc[key] = materializeReferences(obj[key], depth, maxDepth, context, pluginConfig)
     return acc
   }, initial)
 }
