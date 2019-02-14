@@ -1,0 +1,4 @@
+type Author {
+  title: String
+  friends: [Author]
+}
