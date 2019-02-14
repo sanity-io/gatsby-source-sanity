@@ -20,6 +20,7 @@ import crypto = require('crypto')
 import mockSchemaValues = require('easygraphql-mock')
 import {stringify} from 'flatted'
 import debug from '../debug'
+import {deepCopy} from './deepCopy'
 import {PluginConfig} from '../gatsby-node'
 import {GatsbyNode} from '../types/gatsby'
 import {RESTRICTED_NODE_FIELDS} from './normalize'
@@ -74,8 +75,8 @@ export const getExampleValues = (
   } catch (err) {
     debug('Failed to mock values from transformed schema: %s', err.stack)
   }
-
-  return addGatsbyNodeValues(mockedValues, config, typeMap)
+  const copiedValues = deepCopy(mockedValues, 4)
+  return addGatsbyNodeValues(copiedValues, config, typeMap)
 }
 
 function transformAst(ast: DocumentNode) {
