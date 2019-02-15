@@ -4,7 +4,16 @@ import {get} from 'lodash'
 import {getTypeMapFromGraphQLSchema} from '../src/util/remoteGraphQLSchema'
 
 const sdl = fs.readFileSync(path.join(__dirname, 'fixtures', 'schemaSdl.graphql'), 'utf8')
+const circularSdl = fs.readFileSync(
+  path.join(__dirname, 'fixtures', 'circularTypes.graphql'),
+  'utf8'
+)
 const config = {projectId: 'abc123', dataset: 'blog', graphqlApi: 'default'}
+
+test('generate circular reference', () => {
+  const {exampleValues} = getTypeMapFromGraphQLSchema(circularSdl, config)
+  expect(exampleValues.SanityAuthor).toHaveProperty('title')
+})
 
 test('generates reference field for references, list of documents', () => {
   const {exampleValues} = getTypeMapFromGraphQLSchema(sdl, config)

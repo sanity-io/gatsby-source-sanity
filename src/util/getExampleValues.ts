@@ -20,6 +20,7 @@ import crypto = require('crypto')
 import mockSchemaValues = require('easygraphql-mock')
 import {stringify} from 'flatted'
 import debug from '../debug'
+import {deepCopy} from './deepCopy'
 import {PluginConfig} from '../gatsby-node'
 import {GatsbyNode} from '../types/gatsby'
 import {RESTRICTED_NODE_FIELDS} from './normalize'
@@ -74,8 +75,8 @@ export const getExampleValues = (
   } catch (err) {
     debug('Failed to mock values from transformed schema: %s', err.stack)
   }
-
-  return addGatsbyNodeValues(mockedValues, config, typeMap)
+  const copiedValues = deepCopy(mockedValues, 20)
+  return addGatsbyNodeValues(copiedValues, config, typeMap)
 }
 
 function transformAst(ast: DocumentNode) {
@@ -314,7 +315,7 @@ function rewriteReferences(existingValue: {[key: string]: any}, options: Referen
 
     if (isExplicitRef) {
       for (let typeName in map) {
-        if (map[typeName] === existingValue[key] && existingValue[key]._id) {
+        if (map[typeName].__typename === existingValue[key].__typename && existingValue[key]._id) {
           acc[`${key}___NODE`] = `${idPrefix}-${typeName}`
           return acc
         }
@@ -398,7 +399,7 @@ function isImplicitReference(fieldValue: any, exampleValueMap: {[key: string]: a
 
 function getValueType(value: any, exampleValueMap: {[key: string]: any}): string | false {
   for (let typeName in exampleValueMap) {
-    if (exampleValueMap[typeName] === value) {
+    if (exampleValueMap[typeName].__typename === value.__typename) {
       return typeName
     }
   }
