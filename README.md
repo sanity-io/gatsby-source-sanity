@@ -21,9 +21,6 @@ Source plugin for pulling data from [Sanity.io](https://www.sanity.io/) into [Ga
 
 ## Known issues
 
-This is a beta version, as such there are known problems that we are working on.
-
-- Circular references in types break mocking of example values
 - Weak references that point to non-existant documents might break the build
 - Document references in annotations in Portable Text are not joined in the build
 
