@@ -1,11 +1,4 @@
-function isPlainObject(value: any): boolean {
-  if (Object.prototype.toString.call(value) !== '[object Object]') {
-    return false
-  } else {
-    const prototype = Object.getPrototypeOf(value)
-    return prototype === null || prototype === Object.prototype
-  }
-}
+import {isPlainObject} from 'lodash'
 
 function copyValue(value: any, maxDepth: number, currentDepth: number): any {
   const name = typeof value
