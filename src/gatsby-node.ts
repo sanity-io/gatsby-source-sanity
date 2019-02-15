@@ -257,9 +257,36 @@ function materializeReferences(
 
   const initial: {[key: string]: any} = {}
   return Object.keys(obj).reduce((acc, key) => {
-    acc[key] = materializeReferences(obj[key], depth, maxDepth, context, pluginConfig)
+    const isGatsbyRef = key.endsWith('___NODE')
+    const isRawDataField = key.startsWith('_rawData')
+    let targetKey = isGatsbyRef && depth < maxDepth ? key.slice(0, -7) : key
+
+    let value = obj[key]
+    if (isGatsbyRef && depth < maxDepth) {
+      depth++
+      value = materializeGatsbyReference(obj[key], context)
+    }
+
+    value = materializeReferences(value, depth, maxDepth, context, pluginConfig)
+
+    if (isRawDataField) {
+      targetKey = `_raw${key.slice(8)}`
+    }
+
+    acc[targetKey] = value
     return acc
   }, initial)
+}
+
+function materializeGatsbyReference(value: string | string[], context: GatsbyContext) {
+  const {getNode} = context
+  if (typeof value === 'string') {
+    return getNode(value)
+  } else if (Array.isArray(value)) {
+    return value.map(id => getNode(id))
+  } else {
+    throw new Error(`Unknown Gatsby node reference: ${value}`)
+  }
 }
 
 function validateConfig(config: PluginConfig, reporter: GatsbyReporter) {
