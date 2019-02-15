@@ -10,7 +10,7 @@ const circularSdl = fs.readFileSync(
 )
 const config = {projectId: 'abc123', dataset: 'blog', graphqlApi: 'default'}
 
-test.only('generate circular reference', () => {
+test('generate circular reference', () => {
   const {exampleValues} = getTypeMapFromGraphQLSchema(circularSdl, config)
   expect(exampleValues.SanityAuthor).toHaveProperty('title')
 })
