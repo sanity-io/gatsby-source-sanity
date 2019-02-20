@@ -59,6 +59,7 @@ export function processDocument(doc: SanityDocument, options: ProcessingOptions)
     internal: {
       mediaType: 'application/json',
       type: getTypeName(doc._type),
+      content: JSON.stringify(withRefs),
       contentDigest: createContentDigest(JSON.stringify(withRefs))
     }
   }
