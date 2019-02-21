@@ -57,7 +57,6 @@ export function processDocument(doc: SanityDocument, options: ProcessingOptions)
     parent: null,
     children: [],
     internal: {
-      mediaType: 'application/json',
       type: getTypeName(doc._type),
       contentDigest: createContentDigest(JSON.stringify(withRefs))
     }
@@ -168,7 +167,6 @@ function hoistMixedArrays(obj: any, options: ProcessingOptions, context: HoistCo
         parent,
         children: [],
         internal: {
-          mediaType: 'application/json',
           type: getTypeName(item._type), // @todo what if it doesnt have a type
           contentDigest: createContentDigest(JSON.stringify(withRefs))
         }
