@@ -5,7 +5,8 @@ export type StateCache = {
 }
 
 export enum CACHE_KEYS {
-  TYPE_MAP = 'typeMap'
+  TYPE_MAP = 'typeMap',
+  IMAGE_EXTENSIONS = 'imageExt'
 }
 
 export function getCacheKey(config: PluginConfig, suffix: CACHE_KEYS) {
