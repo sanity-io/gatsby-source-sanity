@@ -156,6 +156,22 @@ These are the fragments available on image assets, which allows easy lookup of t
 - `GatsbySanityImageFluid`
 - `GatsbySanityImageFluid_noBase64`
 
+### Usage outside of GraphQL
+
+If you are using the raw fields, or simply have an image asset ID you would like to use gatsby-image for, you can import and call the utility functions `getFluidGatsbyImage` and `getFixedGatsbyImage`:
+
+```js
+import Img from 'gatsby-image'
+import {getFluidGatsbyImage, getFixedGatsbyImage} from 'gatsby-source-sanity'
+
+const sanityConfig = {projectId: 'abc123', dataset: 'blog'}
+const imageAssetId = 'image-488e172a7283400a57e57ffa5762ac3bd837b2ee-4240x2832-jpg'
+
+const fluidProps = getFluidGatsbyImage(imageAssetId, {maxWidth: 1024}, sanityConfig)
+
+<Img fluid={fluidProps} />
+```
+
 ## Overlaying drafts
 
 Sometimes you might be working on some new content that is not yet published, which you want to make sure looks alright within your Gatsby site. By setting the `overlayDrafts` setting to `true`, the draft versions will as the option says "overlay" the regular document. In terms of Gatsby nodes, it will _replace_ the published document with the draft.
