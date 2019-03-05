@@ -59,7 +59,7 @@ declare module '@sanity/client' {
     subscribe(
       onNext: (value: ListenerMessage) => void,
       onError?: (error: Error) => void,
-      onComplete?: () => void
+      onComplete?: () => void,
     ): Subscription
 
     map<R>(callback: (value: ListenerMessage) => R): Observable

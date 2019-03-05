@@ -4,7 +4,7 @@ import {
   GraphQLFloat,
   GraphQLInt,
   GraphQLFieldConfig,
-  GraphQLEnumType
+  GraphQLEnumType,
 } from 'gatsby/graphql'
 import {GatsbyContext, GatsbyOnNodeTypeContext} from '../types/gatsby'
 import {PluginConfig} from '../gatsby-node'
@@ -15,7 +15,7 @@ import {
   FixedArgs,
   FluidArgs,
   DEFAULT_FLUID_MAX_WIDTH,
-  DEFAULT_FIXED_WIDTH
+  DEFAULT_FIXED_WIDTH,
 } from './getGatsbyImageProps'
 import {getCacheKey, CACHE_KEYS} from '../util/cache'
 
@@ -25,15 +25,15 @@ const ImageFormatType = new GraphQLEnumType({
     NO_CHANGE: {value: ''},
     JPG: {value: 'jpg'},
     PNG: {value: 'png'},
-    WEBP: {value: 'webp'}
-  }
+    WEBP: {value: 'webp'},
+  },
 })
 
 const extensions = new Map()
 
 export function extendImageNode(
   context: GatsbyContext & GatsbyOnNodeTypeContext,
-  config: PluginConfig
+  config: PluginConfig,
 ): {[key: string]: GraphQLFieldConfig<any, any>} {
   const key = getCacheKey(config, CACHE_KEYS.IMAGE_EXTENSIONS)
   if (extensions.has(key)) {
@@ -58,23 +58,23 @@ function getExtension(config: PluginConfig) {
         src: {type: GraphQLString},
         srcSet: {type: GraphQLString},
         srcWebp: {type: GraphQLString},
-        srcSetWebp: {type: GraphQLString}
-      }
+        srcSetWebp: {type: GraphQLString},
+      },
     }),
     args: {
       width: {
         type: GraphQLInt,
-        defaultValue: DEFAULT_FIXED_WIDTH
+        defaultValue: DEFAULT_FIXED_WIDTH,
       },
       height: {
-        type: GraphQLInt
+        type: GraphQLInt,
       },
       toFormat: {
         type: ImageFormatType,
-        defaultValue: ''
-      }
+        defaultValue: '',
+      },
     },
-    resolve: (image: ImageNode, args: FixedArgs) => getFixedGatsbyImage(image, args, location)
+    resolve: (image: ImageNode, args: FixedArgs) => getFixedGatsbyImage(image, args, location),
   }
 
   const fluid = {
@@ -87,26 +87,26 @@ function getExtension(config: PluginConfig) {
         srcSet: {type: GraphQLString},
         srcWebp: {type: GraphQLString},
         srcSetWebp: {type: GraphQLString},
-        sizes: {type: GraphQLString}
-      }
+        sizes: {type: GraphQLString},
+      },
     }),
     args: {
       maxWidth: {
         type: GraphQLInt,
-        defaultValue: DEFAULT_FLUID_MAX_WIDTH
+        defaultValue: DEFAULT_FLUID_MAX_WIDTH,
       },
       maxHeight: {
-        type: GraphQLInt
+        type: GraphQLInt,
       },
       sizes: {
-        type: GraphQLString
+        type: GraphQLString,
       },
       toFormat: {
         type: ImageFormatType,
-        defaultValue: ''
-      }
+        defaultValue: '',
+      },
     },
-    resolve: (image: ImageNode, args: FluidArgs) => getFluidGatsbyImage(image, args, location)
+    resolve: (image: ImageNode, args: FluidArgs) => getFluidGatsbyImage(image, args, location),
   }
 
   return {fixed, fluid}

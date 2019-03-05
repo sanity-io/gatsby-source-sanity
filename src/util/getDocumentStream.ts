@@ -11,6 +11,6 @@ export function getDocumentStream(url: string, token?: string): Promise<Readable
     method: 'get',
     responseType: 'stream',
     url,
-    headers
+    headers,
   }).then(res => res.data)
 }

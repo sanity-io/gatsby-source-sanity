@@ -9,7 +9,7 @@ enum ImageFormat {
   NO_CHANGE = '',
   WEBP = 'webp',
   JPG = 'jpg',
-  PNG = 'png'
+  PNG = 'png',
 }
 
 type GatsbyImageProps = {
@@ -111,7 +111,7 @@ function getBasicImageProps(node: ImageNode, loc: SanityLocation): ImageAssetStu
     url,
     assetId,
     extension,
-    metadata
+    metadata,
   }
 }
 
@@ -147,7 +147,7 @@ function isWebP(url: string) {
 export function getFixedGatsbyImage(
   image: ImageNode,
   args: FixedArgs,
-  loc: SanityLocation
+  loc: SanityLocation,
 ): GatsbyFixedImageProps | null {
   const props = getBasicImageProps(image, loc)
   if (!props) {
@@ -199,14 +199,14 @@ export function getFixedGatsbyImage(
     src: convertToFormat(imgUrl, forceConvert || extension),
     srcWebp: convertToFormat(imgUrl, 'webp'),
     srcSet: srcSets.base.join(',\n') || null,
-    srcSetWebp: srcSets.webp.join(',\n') || null
+    srcSetWebp: srcSets.webp.join(',\n') || null,
   }
 }
 
 export function getFluidGatsbyImage(
   image: ImageNode,
   args: FluidArgs,
-  loc: SanityLocation
+  loc: SanityLocation,
 ): GatsbyFluidImageProps | null {
   const props = getBasicImageProps(image, loc)
   if (!props) {
@@ -264,6 +264,6 @@ export function getFluidGatsbyImage(
     srcWebp,
     srcSet: srcSets.base.join(',\n') || null,
     srcSetWebp: srcSets.webp.join(',\n') || null,
-    sizes
+    sizes,
   }
 }

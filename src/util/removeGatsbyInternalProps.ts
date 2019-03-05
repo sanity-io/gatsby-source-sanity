@@ -10,6 +10,6 @@ export const removeGatsbyInternalProps = (node: GatsbyNode): GatsbyNode => {
   const {mediaType, type, contentDigest} = node.internal
   return {
     ...node,
-    internal: {mediaType, type, contentDigest}
+    internal: {mediaType, type, contentDigest},
   }
 }

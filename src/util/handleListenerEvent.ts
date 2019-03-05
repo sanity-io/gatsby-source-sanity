@@ -15,7 +15,7 @@ export function handleListenerEvent(
   event: ListenerMessage,
   publishedNodes: Map<string, GatsbyNode>,
   context: GatsbyContext,
-  processingOptions: ProcessingOptions
+  processingOptions: ProcessingOptions,
 ) {
   const {actions, createNodeId, getNode} = context
   const {createNode, deleteNode} = actions
@@ -89,7 +89,7 @@ export function handleListenerEvent(
       debug('Created/updating published document, but draft overlays it')
       publishedNodes.set(
         event.documentId,
-        processDocument(event.result, {...processingOptions, skipCreate: true})
+        processDocument(event.result, {...processingOptions, skipCreate: true}),
       )
     } else {
       // Creating/updating a published document, and there is no draft version present

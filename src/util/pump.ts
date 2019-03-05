@@ -10,6 +10,6 @@ export function pump(streams: Stream[]): Promise<undefined> {
       } else {
         resolve()
       }
-    })
+    }),
   )
 }

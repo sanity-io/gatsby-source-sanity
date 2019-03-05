@@ -11,7 +11,7 @@ import {
   valueFromAST,
   TypeNode,
   ScalarTypeDefinitionNode,
-  specifiedScalarTypes
+  specifiedScalarTypes,
 } from 'gatsby/graphql'
 import SanityClient = require('@sanity/client')
 import {getTypeName} from './normalize'
@@ -60,7 +60,7 @@ export const defaultTypeMap: TypeMap = {
   scalars: [],
   unions: {},
   objects: {},
-  exampleValues: {}
+  exampleValues: {},
 }
 
 export async function getRemoteGraphQLSchema(client: SanityClient, config: PluginConfig) {
@@ -69,7 +69,7 @@ export async function getRemoteGraphQLSchema(client: SanityClient, config: Plugi
   try {
     const api = await client.request({
       url: `/apis/graphql/${dataset}/${graphqlApi}`,
-      headers: {Accept: 'application/graphql'}
+      headers: {Accept: 'application/graphql'},
     })
 
     return api
@@ -78,12 +78,12 @@ export async function getRemoteGraphQLSchema(client: SanityClient, config: Plugi
     const message = get(
       err,
       'response.body.message',
-      get(err, 'response.statusMessage') || err.message
+      get(err, 'response.statusMessage') || err.message,
     )
 
     const gqlBenefits = [
       'Schemas will be much cleaner, and you will have less problems with missing fields',
-      'See https://github.com/sanity-io/gatsby-source-sanity#missing-fields for more info'
+      'See https://github.com/sanity-io/gatsby-source-sanity#missing-fields for more info',
     ].join('\n')
 
     const is404 = code === 404 || /schema not found/i.test(message)
@@ -100,7 +100,7 @@ export function getTypeMapFromGraphQLSchema(sdl: string, config: PluginConfig): 
     ObjectTypeDefinition: [],
     UnionTypeDefinition: [],
     ScalarTypeDefinition: [],
-    ...groupBy(remoteSchema.definitions, 'kind')
+    ...groupBy(remoteSchema.definitions, 'kind'),
   }
 
   const objects: {[key: string]: ObjectTypeDef} = {}
@@ -110,7 +110,7 @@ export function getTypeMapFromGraphQLSchema(sdl: string, config: PluginConfig): 
       name,
       kind: 'Object',
       isDocument: Boolean(
-        (typeDef.interfaces || []).find(iface => iface.name.value === 'Document')
+        (typeDef.interfaces || []).find(iface => iface.name.value === 'Document'),
       ),
       fields: (typeDef.fields || []).reduce(
         (fields, fieldDef) => ({
@@ -120,11 +120,11 @@ export function getTypeMapFromGraphQLSchema(sdl: string, config: PluginConfig): 
             isList: isListType(fieldDef.type),
             namedType: unwrapType(fieldDef.type),
             aliasFor: getAliasDirective(fieldDef),
-            isReference: Boolean(getReferenceDirective(fieldDef))
-          }
+            isReference: Boolean(getReferenceDirective(fieldDef)),
+          },
         }),
-        {}
-      )
+        {},
+      ),
     }
     return acc
   }, objects)
@@ -135,7 +135,7 @@ export function getTypeMapFromGraphQLSchema(sdl: string, config: PluginConfig): 
     acc[name] = {
       name,
       kind: 'Union',
-      types: (typeDef.types || []).map(type => type.name.value)
+      types: (typeDef.types || []).map(type => type.name.value),
     }
     return acc
   }, unions)
@@ -143,7 +143,7 @@ export function getTypeMapFromGraphQLSchema(sdl: string, config: PluginConfig): 
   typeMap.scalars = specifiedScalarTypes
     .map(scalar => scalar.name)
     .concat(
-      groups.ScalarTypeDefinition.map((typeDef: ScalarTypeDefinitionNode) => typeDef.name.value)
+      groups.ScalarTypeDefinition.map((typeDef: ScalarTypeDefinitionNode) => typeDef.name.value),
     )
 
   try {

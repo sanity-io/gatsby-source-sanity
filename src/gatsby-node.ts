@@ -10,7 +10,7 @@ import {
   GraphQLFieldConfig,
   GraphQLInt,
   GraphQLInputObjectType,
-  GraphQLNonNull
+  GraphQLNonNull,
 } from 'gatsby/graphql'
 import SanityClient = require('@sanity/client')
 import {GatsbyContext, GatsbyReporter, GatsbyNode, GatsbyOnNodeTypeContext} from './types/gatsby'
@@ -28,7 +28,7 @@ import {
   getTypeMapFromGraphQLSchema,
   getRemoteGraphQLSchema,
   defaultTypeMap,
-  TypeMap
+  TypeMap,
 } from './util/remoteGraphQLSchema'
 import debug from './debug'
 import {extendImageNode} from './images/extendImageNode'
@@ -46,7 +46,7 @@ export interface PluginConfig {
 const defaultConfig = {
   version: '1',
   overlayDrafts: false,
-  graphqlApi: 'default'
+  graphqlApi: 'default',
 }
 
 const stateCache: {[key: string]: any} = {}
@@ -112,7 +112,7 @@ export const sourceNodes = async (context: GatsbyContext, pluginConfig: PluginCo
     createNode,
     createContentDigest,
     createParentChildLink,
-    overlayDrafts
+    overlayDrafts,
   }
 
   const draftDocs: SanityDocument[] = []
@@ -128,7 +128,7 @@ export const sourceNodes = async (context: GatsbyContext, pluginConfig: PluginCo
       debug('Got document with ID %s', doc._id)
       processDocument(doc, processingOptions)
       cb()
-    })
+    }),
   ])
 
   if (draftDocs.length > 0) {
@@ -148,7 +148,7 @@ export const sourceNodes = async (context: GatsbyContext, pluginConfig: PluginCo
       .listen('*')
       .pipe(
         filter<ListenerMessage>(event => overlayDrafts || !event.documentId.startsWith('drafts.')),
-        filter<ListenerMessage>(event => !event.documentId.startsWith('_.'))
+        filter<ListenerMessage>(event => !event.documentId.startsWith('_.')),
       )
       .subscribe(event => handleListenerEvent(event, publishedNodes, context, processingOptions))
   }
@@ -164,7 +164,7 @@ export const onPreExtractQueries = async (context: GatsbyContext, pluginConfig: 
 
   if (!shouldAddFragments) {
     shouldAddFragments = getNodes().some(node =>
-      Boolean(node.internal && node.internal.type === 'SanityImageAsset')
+      Boolean(node.internal && node.internal.type === 'SanityImageAsset'),
     )
   }
 
@@ -172,7 +172,7 @@ export const onPreExtractQueries = async (context: GatsbyContext, pluginConfig: 
     const program = store.getState().program
     await copy(
       path.join(__dirname, '..', 'fragments', 'imageFragments.js'),
-      `${program.directory}/.cache/fragments/sanity-image-fragments.js`
+      `${program.directory}/.cache/fragments/sanity-image-fragments.js`,
     )
   }
 
@@ -184,14 +184,14 @@ const resolveReferencesConfig = new GraphQLInputObjectType({
   fields: {
     maxDepth: {
       type: new GraphQLNonNull(GraphQLInt),
-      description: 'Max depth to resolve references to'
-    }
-  }
+      description: 'Max depth to resolve references to',
+    },
+  },
 })
 
 export const setFieldsOnGraphQLNodeType = async (
   context: GatsbyContext & GatsbyOnNodeTypeContext,
-  pluginConfig: PluginConfig
+  pluginConfig: PluginConfig,
 ) => {
   const {type} = context
   const typeMapKey = getCacheKey(pluginConfig, CACHE_KEYS.TYPE_MAP)
@@ -217,7 +217,7 @@ export const setFieldsOnGraphQLNodeType = async (
       acc[aliasName] = {
         type: GraphQLJSON,
         args: {
-          resolveReferences: {type: resolveReferencesConfig}
+          resolveReferences: {type: resolveReferencesConfig},
         },
         resolve: (obj: {[key: string]: {}}, args) => {
           const raw = `_${camelCase(`raw_data_${field.aliasFor || fieldName}`)}`
@@ -225,7 +225,7 @@ export const setFieldsOnGraphQLNodeType = async (
           return args.resolveReferences
             ? resolveReferences(value, 0, args.resolveReferences.maxDepth, context, pluginConfig)
             : value
-        }
+        },
       }
       return acc
     }
@@ -236,7 +236,7 @@ export const setFieldsOnGraphQLNodeType = async (
     acc[aliasName] = {
       type: GraphQLJSON,
       args: {
-        resolveReferences: {type: resolveReferencesConfig}
+        resolveReferences: {type: resolveReferencesConfig},
       },
       resolve: (obj: {[key: string]: {}}, args) => {
         const raw = `_${camelCase(`raw_data_${field.aliasFor || fieldName}`)}`
@@ -244,7 +244,7 @@ export const setFieldsOnGraphQLNodeType = async (
         return args.resolveReferences
           ? resolveReferences(value, 0, args.resolveReferences.maxDepth, context, pluginConfig)
           : value
-      }
+      },
     }
     return acc
   }, fields)
@@ -255,7 +255,7 @@ function resolveReferences(
   depth: number,
   maxDepth: number,
   context: GatsbyContext,
-  pluginConfig: PluginConfig
+  pluginConfig: PluginConfig,
 ): any {
   const {createNodeId, getNode} = context
   const {overlayDrafts} = pluginConfig
@@ -327,7 +327,7 @@ function validateConfig(config: PluginConfig, reporter: GatsbyReporter) {
   const inDevelopMode = process.env.gatsby_executing_command === 'develop'
   if (config.watchMode && !inDevelopMode) {
     reporter.warn(
-      '[sanity] Using `watchMode` when not in develop mode might prevent your build from completing'
+      '[sanity] Using `watchMode` when not in develop mode might prevent your build from completing',
     )
   }
 }
@@ -338,6 +338,6 @@ function getClient(config: PluginConfig): SanityClient {
     projectId,
     dataset,
     token,
-    useCdn: false
+    useCdn: false,
   })
 }

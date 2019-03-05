@@ -69,7 +69,7 @@ export interface GatsbyCache {
       key2: string,
       val2: any,
       key3?: string,
-      val3?: any
+      val3?: any,
     ) => Promise<any>
   }
 }

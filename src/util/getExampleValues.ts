@@ -14,7 +14,7 @@ import {
   GraphQLString,
   UnionTypeDefinitionNode,
   ScalarTypeDefinitionNode,
-  NameNode
+  NameNode,
 } from 'gatsby/graphql'
 import crypto = require('crypto')
 import mockSchemaValues = require('easygraphql-mock')
@@ -37,8 +37,8 @@ const blockExample = [
     style: 'normal',
     list: 'bullet',
     markDefs: [{_key: 'abc', _type: 'link', href: 'https://www.sanity.io/'}],
-    children: [{_key: 'bcd', _type: 'span', text: 'Sanity', marks: ['em', 'abc']}]
-  }
+    children: [{_key: 'bcd', _type: 'span', text: 'Sanity', marks: ['em', 'abc']}],
+  },
 ]
 
 export type ExampleValues = {[key: string]: GatsbyNode}
@@ -46,7 +46,7 @@ export type ExampleValues = {[key: string]: GatsbyNode}
 export const getExampleValues = (
   ast: DocumentNode,
   config: PluginConfig,
-  typeMap: TypeMap
+  typeMap: TypeMap,
 ): ExampleValues => {
   const transformedAst = transformAst(ast)
   const transformed = print(transformedAst)
@@ -61,7 +61,7 @@ export const getExampleValues = (
   try {
     const mocked = mockSchemaValues(transformed, {
       Date: '2018-01-01',
-      JSON: blockExample
+      JSON: blockExample,
     })
 
     // Delete mocked values for non-object types
@@ -85,7 +85,7 @@ function transformAst(ast: DocumentNode) {
     definitions: ast.definitions
       .filter(isWantedAstNode)
       .map(transformDefinitionNode)
-      .concat(getScalarTypeDefs())
+      .concat(getScalarTypeDefs()),
   }
   return root
 }
@@ -124,8 +124,8 @@ function transformObjectTypeDefinition(astNode: DefinitionNode) {
     name: {...node.name, value: getTypeName(node.name.value)},
     fields: [
       ...fields.filter(field => !getJsonAliasTargets(field)).map(transformFieldNodeAst),
-      ...blockFields
-    ]
+      ...blockFields,
+    ],
   }
 }
 
@@ -133,7 +133,7 @@ function transformUnionTypeDefinition(node: UnionTypeDefinitionNode) {
   return {
     ...node,
     types: (node.types || []).map(maybeRewriteType),
-    name: {...node.name, value: getTypeName(node.name.value)}
+    name: {...node.name, value: getTypeName(node.name.value)},
   }
 }
 
@@ -142,7 +142,7 @@ function transformInterfaceTypeDefinition(node: InterfaceTypeDefinitionNode) {
   return {
     ...node,
     fields: fields.map(transformFieldNodeAst),
-    name: {...node.name, value: getTypeName(node.name.value)}
+    name: {...node.name, value: getTypeName(node.name.value)},
   }
 }
 
@@ -174,7 +174,7 @@ function makeBlockField(name: string): FieldDefinitionNode {
     kind: 'FieldDefinition',
     name: {
       kind: 'Name',
-      value: name
+      value: name,
     },
     arguments: [],
     directives: [],
@@ -188,12 +188,12 @@ function makeBlockField(name: string): FieldDefinitionNode {
             kind: 'NamedType',
             name: {
               kind: 'Name',
-              value: 'SanityBlock'
-            }
-          }
-        }
-      }
-    }
+              value: 'SanityBlock',
+            },
+          },
+        },
+      },
+    },
   }
 }
 
@@ -204,8 +204,8 @@ function makeNonNullable(nodeType: TypeNode): NonNullTypeNode {
       kind: 'NonNullType',
       type: {
         kind: 'ListType',
-        type: makeNonNullable(unwrapped)
-      }
+        type: makeNonNullable(unwrapped),
+      },
     }
   }
 
@@ -223,7 +223,7 @@ function transformFieldNodeAst(node: FieldDefinitionNode) {
     name: maybeRewriteFieldName(node),
     type: makeNonNullable(node.type),
     description: undefined,
-    directives: []
+    directives: [],
   }
 }
 
@@ -252,7 +252,7 @@ function maybeRewriteFieldName(field: FieldDefinitionNode): NameNode {
 
   return {
     ...field.name,
-    value: `${conflictPrefix}${upperFirst(field.name.value)}`
+    value: `${conflictPrefix}${upperFirst(field.name.value)}`,
   }
 }
 
@@ -270,7 +270,7 @@ function hash(content: any) {
 function addGatsbyNodeValues(
   map: {[key: string]: any},
   config: PluginConfig,
-  typeMap: TypeMap
+  typeMap: TypeMap,
 ): ExampleValues {
   const idPrefix = `mock--${config.projectId}-${config.dataset}`
   const initial: ExampleValues = {}
@@ -289,8 +289,8 @@ function addGatsbyNodeValues(
       ...newValue,
       internal: {
         type: typeName,
-        contentDigest: hash(newValue)
-      }
+        contentDigest: hash(newValue),
+      },
     }
 
     return {...acc, [typeName]: removeTypeName(node)}
@@ -337,7 +337,7 @@ function rewriteReferences(existingValue: {[key: string]: any}, options: Referen
       return acc
     } else if (Array.isArray(existingValue[key])) {
       acc[key] = existingValue[key].map((item: {}) =>
-        isPlainObject(item) ? rewriteReferences(item, options) : item
+        isPlainObject(item) ? rewriteReferences(item, options) : item,
       )
       return acc
     }
@@ -377,7 +377,7 @@ function getScalarTypeDefs(): ScalarTypeDefinitionNode[] {
   return wantedScalarTypes.map((name: string) => {
     const scalar: ScalarTypeDefinitionNode = {
       kind: 'ScalarTypeDefinition',
-      name: {kind: 'Name', value: name}
+      name: {kind: 'Name', value: name},
     }
 
     return scalar

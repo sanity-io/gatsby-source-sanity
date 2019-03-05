@@ -8,7 +8,7 @@ import {
   GatsbyContentDigester,
   GatsbyNode,
   GatsbyNodeCreator,
-  GatsbyParentChildLinker
+  GatsbyParentChildLinker,
 } from '../types/gatsby'
 
 const scalarTypeNames = specifiedScalarTypes.map(def => def.name).concat(['JSON', 'Date'])
@@ -42,7 +42,7 @@ export function processDocument(doc: SanityDocument, options: ProcessingOptions)
     createParentChildLink,
     createContentDigest,
     overlayDrafts,
-    skipCreate
+    skipCreate,
   } = options
 
   const hoistedNodes: object[] = []
@@ -58,8 +58,8 @@ export function processDocument(doc: SanityDocument, options: ProcessingOptions)
     children: [],
     internal: {
       type: getTypeName(doc._type),
-      contentDigest: createContentDigest(JSON.stringify(withRefs))
-    }
+      contentDigest: createContentDigest(JSON.stringify(withRefs)),
+    },
   }
 
   if (!skipCreate) {
@@ -168,8 +168,8 @@ function hoistMixedArrays(obj: any, options: ProcessingOptions, context: HoistCo
         children: [],
         internal: {
           type: getTypeName(item._type), // @todo what if it doesnt have a type
-          contentDigest: createContentDigest(JSON.stringify(withRefs))
-        }
+          contentDigest: createContentDigest(JSON.stringify(withRefs)),
+        },
       }
 
       hoistedNodes.push(childNode)

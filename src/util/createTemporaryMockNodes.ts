@@ -27,7 +27,7 @@ import debug from '../debug'
 export async function createTemporaryMockNodes(
   context: GatsbyContext,
   pluginConfig: PluginConfig,
-  stateCache: StateCache
+  stateCache: StateCache,
 ) {
   const {emitter, actions, reporter} = context
   const {createNode, deleteNode} = actions
