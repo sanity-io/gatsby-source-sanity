@@ -1,4 +1,5 @@
 import path = require('path')
+import oneline = require('oneline')
 import * as split from 'split2'
 import * as through from 'through2'
 import {copy} from 'fs-extra'
@@ -52,7 +53,15 @@ const stateCache: {[key: string]: any} = {}
 
 export const onPreBootstrap = async (context: GatsbyContext, pluginConfig: PluginConfig) => {
   const config = {...defaultConfig, ...pluginConfig}
-  const {reporter} = context
+  const {reporter, actions} = context
+
+  if (actions.createTypes) {
+    reporter.panic(oneline`
+      You are running a version of Gatsby that is not supported by gatsby-source-sanity.
+      Please downgrade to gatsby <= 2.1.22 (or see if there is an updated version of gatsby-source-sanity)
+    `)
+    return
+  }
 
   validateConfig(config, reporter)
 

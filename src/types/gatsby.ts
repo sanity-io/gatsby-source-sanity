@@ -45,6 +45,8 @@ export interface GatsbyDeleteOptions {
   node: GatsbyNode
 }
 
+export type GatsbyTypesCreator = (types: string) => null
+
 export type GatsbyNodeCreator = (node: GatsbyNode) => null
 
 export type GatsbyNodeDeletor = (options: GatsbyDeleteOptions) => null
@@ -89,6 +91,7 @@ export interface GatsbyContext {
 }
 
 export interface GatsbyActions {
+  createTypes?: GatsbyTypesCreator
   createNode: GatsbyNodeCreator
   deleteNode: GatsbyNodeDeletor
   createParentChildLink: GatsbyParentChildLinker
