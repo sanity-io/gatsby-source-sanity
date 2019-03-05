@@ -6,6 +6,7 @@ export type StateCache = {
 
 export enum CACHE_KEYS {
   TYPE_MAP = 'typeMap',
+  GRAPHQL_SDL = 'graphqlSdl',
   IMAGE_EXTENSIONS = 'imageExt',
 }
 
