@@ -1,20 +1,20 @@
 import {upperFirst} from 'lodash'
 import {
-  print,
-  DocumentNode,
   DefinitionNode,
-  TypeDefinitionNode,
-  ObjectTypeDefinitionNode,
-  InterfaceTypeDefinitionNode,
+  DocumentNode,
   FieldDefinitionNode,
-  TypeNode,
-  NonNullTypeNode,
-  NamedTypeNode,
-  valueFromAST,
   GraphQLString,
-  UnionTypeDefinitionNode,
+  InterfaceTypeDefinitionNode,
+  NamedTypeNode,
   NameNode,
+  NonNullTypeNode,
+  ObjectTypeDefinitionNode,
   parse,
+  print,
+  TypeDefinitionNode,
+  TypeNode,
+  UnionTypeDefinitionNode,
+  valueFromAST,
 } from 'gatsby/graphql'
 import {PluginConfig} from '../gatsby-node'
 import {RESTRICTED_NODE_FIELDS} from './normalize'
