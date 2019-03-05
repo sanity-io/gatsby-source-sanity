@@ -15,9 +15,7 @@ import {
 } from 'gatsby/graphql'
 import SanityClient = require('@sanity/client')
 import {getTypeName} from './normalize'
-import {ExampleValues, getExampleValues} from './getExampleValues'
 import {PluginConfig} from '../gatsby-node'
-import debug from '../debug'
 
 class RequestError extends Error {
   public isWarning: boolean
@@ -53,14 +51,12 @@ export type TypeMap = {
   scalars: string[]
   unions: {[key: string]: UnionTypeDef}
   objects: {[key: string]: ObjectTypeDef}
-  exampleValues: ExampleValues
 }
 
 export const defaultTypeMap: TypeMap = {
   scalars: [],
   unions: {},
   objects: {},
-  exampleValues: {},
 }
 
 export async function getRemoteGraphQLSchema(client: SanityClient, config: PluginConfig) {
@@ -94,7 +90,7 @@ export async function getRemoteGraphQLSchema(client: SanityClient, config: Plugi
 }
 
 export function getTypeMapFromGraphQLSchema(sdl: string, config: PluginConfig): TypeMap {
-  const typeMap: TypeMap = {objects: {}, unions: {}, scalars: [], exampleValues: {}}
+  const typeMap: TypeMap = {objects: {}, unions: {}, scalars: []}
   const remoteSchema = parse(sdl)
   const groups = {
     ObjectTypeDefinition: [],
@@ -145,14 +141,6 @@ export function getTypeMapFromGraphQLSchema(sdl: string, config: PluginConfig): 
     .concat(
       groups.ScalarTypeDefinition.map((typeDef: ScalarTypeDefinitionNode) => typeDef.name.value),
     )
-
-  try {
-    typeMap.exampleValues = getExampleValues(remoteSchema, config, typeMap)
-  } catch (err) {
-    debug('Failed to mock values:\n%s', err.stack)
-    debug('Failed to transform GraphQL schema AST: %s', err.stack)
-    debug('Original schema:\n\n', remoteSchema)
-  }
 
   return typeMap
 }

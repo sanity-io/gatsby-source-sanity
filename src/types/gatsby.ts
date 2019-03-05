@@ -91,7 +91,7 @@ export interface GatsbyContext {
 }
 
 export interface GatsbyActions {
-  createTypes?: GatsbyTypesCreator
+  createTypes: GatsbyTypesCreator
   createNode: GatsbyNodeCreator
   deleteNode: GatsbyNodeDeletor
   createParentChildLink: GatsbyParentChildLinker

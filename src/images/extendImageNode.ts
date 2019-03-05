@@ -8,6 +8,7 @@ import {
 } from 'gatsby/graphql'
 import {GatsbyContext, GatsbyOnNodeTypeContext} from '../types/gatsby'
 import {PluginConfig} from '../gatsby-node'
+import {getCacheKey, CACHE_KEYS} from '../util/cache'
 import {
   getFixedGatsbyImage,
   getFluidGatsbyImage,
@@ -17,7 +18,6 @@ import {
   DEFAULT_FLUID_MAX_WIDTH,
   DEFAULT_FIXED_WIDTH,
 } from './getGatsbyImageProps'
-import {getCacheKey, CACHE_KEYS} from '../util/cache'
 
 const ImageFormatType = new GraphQLEnumType({
   name: 'SanityImageFormat',

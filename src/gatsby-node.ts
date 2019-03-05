@@ -23,7 +23,6 @@ import {getCacheKey, CACHE_KEYS} from './util/cache'
 import {removeSystemDocuments} from './util/removeSystemDocuments'
 import {removeDrafts, extractDrafts, unprefixId} from './util/handleDrafts'
 import {handleListenerEvent, ListenerMessage} from './util/handleListenerEvent'
-import {createTemporaryMockNodes} from './util/createTemporaryMockNodes'
 import {
   getTypeMapFromGraphQLSchema,
   getRemoteGraphQLSchema,
@@ -32,6 +31,7 @@ import {
 } from './util/remoteGraphQLSchema'
 import debug from './debug'
 import {extendImageNode} from './images/extendImageNode'
+import {rewriteGraphQLSchema} from './util/rewriteGraphQLSchema'
 
 export interface PluginConfig {
   projectId: string
@@ -55,10 +55,10 @@ export const onPreBootstrap = async (context: GatsbyContext, pluginConfig: Plugi
   const config = {...defaultConfig, ...pluginConfig}
   const {reporter, actions} = context
 
-  if (actions.createTypes) {
+  if (!actions.createTypes) {
     reporter.panic(oneline`
-      You are running a version of Gatsby that is not supported by gatsby-source-sanity.
-      Please downgrade to gatsby <= 2.1.22 (or see if there is an updated version of gatsby-source-sanity)
+      You are using a version of Gatsby not supported by gatsby-source-sanity.
+      Either upgrade gatsby to >= x.x.x or downgrade to gatsby-source-sanity@^1.0.0
     `)
     return
   }
@@ -70,14 +70,13 @@ export const onPreBootstrap = async (context: GatsbyContext, pluginConfig: Plugi
     const client = getClient(config)
     const api = await getRemoteGraphQLSchema(client, config)
 
+    reporter.info('[sanity] Transforming to Gatsby-compatible GraphQL SDL')
+    const graphqlSdl = await rewriteGraphQLSchema(api, config)
+    const graphqlSdlKey = getCacheKey(pluginConfig, CACHE_KEYS.GRAPHQL_SDL)
+    stateCache[graphqlSdlKey] = graphqlSdl
+
     reporter.info('[sanity] Stitching GraphQL schemas from SDL')
     const typeMap = getTypeMapFromGraphQLSchema(api, pluginConfig)
-
-    if (Object.keys(typeMap.exampleValues).length === 0) {
-      reporter.error('[sanity] Failed to create example values, fields might be missing!')
-      reporter.error('[sanity] Run the build again with DEBUG=sanity to debug issues.')
-    }
-
     const typeMapKey = getCacheKey(pluginConfig, CACHE_KEYS.TYPE_MAP)
     stateCache[typeMapKey] = typeMap
   } catch (err) {
@@ -93,12 +92,14 @@ export const sourceNodes = async (context: GatsbyContext, pluginConfig: PluginCo
   const config = {...defaultConfig, ...pluginConfig}
   const {dataset, overlayDrafts, watchMode} = config
   const {actions, getNode, createNodeId, createContentDigest, reporter} = context
-  const {createNode, createParentChildLink} = actions
+  const {createNode, createTypes, createParentChildLink} = actions
+
+  const graphqlSdlKey = getCacheKey(pluginConfig, CACHE_KEYS.GRAPHQL_SDL)
+  const graphqlSdl = stateCache[graphqlSdlKey]
+  createTypes(graphqlSdl)
 
   const typeMapKey = getCacheKey(pluginConfig, CACHE_KEYS.TYPE_MAP)
   const typeMap = (stateCache[typeMapKey] || defaultTypeMap) as TypeMap
-
-  createTemporaryMockNodes(context, pluginConfig, stateCache)
 
   const client = getClient(config)
   const url = client.getUrl(`/data/export/${dataset}`)
@@ -175,8 +176,6 @@ export const onPreExtractQueries = async (context: GatsbyContext, pluginConfig: 
       `${program.directory}/.cache/fragments/sanity-image-fragments.js`,
     )
   }
-
-  await createTemporaryMockNodes(context, pluginConfig, stateCache)
 }
 
 const resolveReferencesConfig = new GraphQLInputObjectType({
