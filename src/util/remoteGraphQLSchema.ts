@@ -7,7 +7,6 @@ import {
   NamedTypeNode,
   NonNullTypeNode,
   ObjectTypeDefinitionNode,
-  UnionTypeDefinitionNode,
   valueFromAST,
   TypeNode,
   ScalarTypeDefinitionNode,
@@ -41,21 +40,13 @@ export type ObjectTypeDef = {
   fields: {[key: string]: FieldDef}
 }
 
-export type UnionTypeDef = {
-  name: string
-  kind: 'Union'
-  types: string[]
-}
-
 export type TypeMap = {
   scalars: string[]
-  unions: {[key: string]: UnionTypeDef}
   objects: {[key: string]: ObjectTypeDef}
 }
 
 export const defaultTypeMap: TypeMap = {
   scalars: [],
-  unions: {},
   objects: {},
 }
 
@@ -90,11 +81,10 @@ export async function getRemoteGraphQLSchema(client: SanityClient, config: Plugi
 }
 
 export function getTypeMapFromGraphQLSchema(sdl: string, config: PluginConfig): TypeMap {
-  const typeMap: TypeMap = {objects: {}, unions: {}, scalars: []}
+  const typeMap: TypeMap = {objects: {}, scalars: []}
   const remoteSchema = parse(sdl)
   const groups = {
     ObjectTypeDefinition: [],
-    UnionTypeDefinition: [],
     ScalarTypeDefinition: [],
     ...groupBy(remoteSchema.definitions, 'kind'),
   }
@@ -124,17 +114,6 @@ export function getTypeMapFromGraphQLSchema(sdl: string, config: PluginConfig): 
     }
     return acc
   }, objects)
-
-  const unions: {[key: string]: UnionTypeDef} = {}
-  typeMap.unions = groups.UnionTypeDefinition.reduce((acc, typeDef: UnionTypeDefinitionNode) => {
-    const name = getTypeName(typeDef.name.value)
-    acc[name] = {
-      name,
-      kind: 'Union',
-      types: (typeDef.types || []).map(type => type.name.value),
-    }
-    return acc
-  }, unions)
 
   typeMap.scalars = specifiedScalarTypes
     .map(scalar => scalar.name)
