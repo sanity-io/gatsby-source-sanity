@@ -58,7 +58,7 @@ export const onPreBootstrap = async (context: GatsbyContext, pluginConfig: Plugi
   if (actions.createTypes) {
     reporter.panic(oneline`
       You are running a version of Gatsby that is not supported by gatsby-source-sanity.
-      Please downgrade to gatsby <= 2.1.22 (or see if there is an updated version of gatsby-source-sanity)
+      Please downgrade to gatsby <= 2.1.22 or upgrade gatsby-source-sanity to >= 2.0.0
     `)
     return
   }
