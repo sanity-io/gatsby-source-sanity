@@ -39,9 +39,9 @@
     }
   },
   "dependencies": {
-    "@sanity/client": "^0.138.0",
-    "@sanity/image-url": "^0.138.0",
-    "@sanity/mutator": "^0.138.0",
+    "@sanity/client": "^0.140.11",
+    "@sanity/image-url": "^0.140.9",
+    "@sanity/mutator": "^0.140.0",
     "axios": "^0.18.0",
     "debug": "^4.1.0",
     "fs-extra": "^7.0.1",
@@ -49,29 +49,29 @@
     "oneline": "^1.0.2",
     "pump": "^3.0.0",
     "rxjs": "^6.3.3",
-    "split2": "^3.1.0",
-    "through2": "^3.0.0"
+    "split2": "^3.1.1",
+    "through2": "^3.0.1"
   },
   "devDependencies": {
-    "@types/debug": "^0.0.31",
+    "@types/debug": "^4.1.2",
     "@types/fs-extra": "^5.0.4",
     "@types/graphql": "^14.0.5",
     "@types/jest": "^23.3.12",
-    "@types/lodash": "^4.14.119",
+    "@types/lodash": "^4.14.123",
     "@types/node": "^10.0.0",
     "@types/pump": "^1.0.1",
     "@types/split2": "^2.1.6",
     "@types/through2": "^2.0.34",
-    "eslint": "^5.10.0",
-    "eslint-config-prettier": "^3.3.0",
-    "eslint-config-sanity": "^0.138.0",
-    "gatsby": "^2.0.118",
+    "eslint": "^5.15.3",
+    "eslint-config-prettier": "^4.1.0",
+    "eslint-config-sanity": "^0.140.0",
+    "gatsby": "^2.2.0",
     "husky": "^1.2.1",
     "jest": "^23.6.0",
     "prettier": "^1.15.3",
     "pretty-quick": "^1.8.0",
     "ts-jest": "^23.10.5",
-    "typescript": "^3.2.2"
+    "typescript": "^3.3.3333"
   },
   "peerDependencies": {
     "gatsby": "^2.2.0"
