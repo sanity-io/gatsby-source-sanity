@@ -1,5 +1,4 @@
-import {posix as posixPath} from 'path'
-import {parse as parseUrl, format as formatUrl} from 'url'
+import * as parseUrl from 'url-parse'
 
 export const DEFAULT_FIXED_WIDTH = 400
 export const DEFAULT_FLUID_MAX_WIDTH = 800
@@ -117,25 +116,25 @@ function getBasicImageProps(node: ImageNode, loc: SanityLocation): ImageAssetStu
 
 function convertToFormat(url: string, toFormat: string) {
   const parsed = parseUrl(url, true)
-  const filename = posixPath.basename(parsed.pathname || '')
-  const extension = posixPath.extname(filename).slice(1)
+  const filename = parsed.pathname.replace(/.*\//, '')
+  const extension = filename.replace(/.*\./, '')
   const isConvertedToTarget = parsed.query.fm === toFormat
   const isOriginal = extension === toFormat
 
   // If the original matches the target format, remove any explicit conversions
   if (isConvertedToTarget && isOriginal) {
-    const {query, ...parts} = parsed
-    const {fm, ...params} = query
-    return formatUrl({...parts, query: params})
+    const {fm, ...params} = parsed.query
+    parsed.set('query', params)
+    return parsed.toString()
   }
 
   if (isConvertedToTarget || isOriginal) {
     return url
   }
 
-  const {query, protocol, host, pathname} = parsed
-  const newQuery = {...query, fm: toFormat}
-  return formatUrl({protocol, host, pathname, query: newQuery})
+  const newQuery = {...parsed.query, fm: toFormat}
+  parsed.set('query', newQuery)
+  return parsed.toString()
 }
 
 function isWebP(url: string) {

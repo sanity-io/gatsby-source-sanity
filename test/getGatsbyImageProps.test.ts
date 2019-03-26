@@ -12,9 +12,9 @@ const jpegResolved = {
     dimensions: {
       width: 300,
       height: 200,
-      aspectRatio: 300 / 200
-    }
-  }
+      aspectRatio: 300 / 200,
+    },
+  },
 }
 
 const webpId = 'image-def456-4240x2832-webp'
@@ -29,18 +29,15 @@ const webpResolved = {
     dimensions: {
       width: 4240,
       height: 2832,
-      aspectRatio: 4240 / 2832
-    }
-  }
+      aspectRatio: 4240 / 2832,
+    },
+  },
 }
 
 const location = {
   projectId: 'projectId',
-  dataset: 'dataset'
+  dataset: 'dataset',
 }
-;(noop => {
-  noop(webpId, webpRef, webpResolved, jpegId, jpegRef)
-})((...args: any[]) => null)
 
 // JPEG
 test('[resolved] fixed, jpg without params', () => {
@@ -65,7 +62,7 @@ test('[resolved] fixed, jpg with width (600) + height (300)', () => {
 
 test('[resolved] fluid, jpg with max width (1200) + max height (768)', () => {
   expect(
-    getFluidGatsbyImage(jpegResolved, {maxWidth: 1200, maxHeight: 768}, location)
+    getFluidGatsbyImage(jpegResolved, {maxWidth: 1200, maxHeight: 768}, location),
   ).toMatchSnapshot()
 })
 
@@ -140,7 +137,7 @@ test('[resolved] fixed, webp with width (600) + height (300)', () => {
 
 test('[resolved] fluid, webp with max width (1200) + max height (768)', () => {
   expect(
-    getFluidGatsbyImage(webpResolved, {maxWidth: 1200, maxHeight: 768}, location)
+    getFluidGatsbyImage(webpResolved, {maxWidth: 1200, maxHeight: 768}, location),
   ).toMatchSnapshot()
 })
 
