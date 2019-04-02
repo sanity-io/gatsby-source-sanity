@@ -2,7 +2,7 @@ import * as parseUrl from 'url-parse'
 
 export const DEFAULT_FIXED_WIDTH = 400
 export const DEFAULT_FLUID_MAX_WIDTH = 800
-export type ImageNode = ImageAsset | ImageRef | string | null | undefined
+export type ImageNode = ImageAsset | ImageObject | ImageRef | string | null | undefined
 
 enum ImageFormat {
   NO_CHANGE = '',
@@ -55,6 +55,10 @@ type ImageRef = {
   _ref: string
 }
 
+type ImageObject = {
+  asset: ImageRef | ImageAsset
+}
+
 export type FluidArgs = {
   maxWidth?: number
   maxHeight?: number
@@ -91,9 +95,18 @@ function getBasicImageProps(node: ImageNode, loc: SanityLocation): ImageAssetStu
     return false
   }
 
+  const obj = node as ImageObject
   const ref = node as ImageRef
   const img = node as ImageAsset
-  const id = typeof node === 'string' ? node : ref._ref || img._id
+
+  let id: string = ''
+  if (typeof node === 'string') {
+    id = node
+  } else if (obj.asset) {
+    id = (obj.asset as ImageRef)._ref || (obj.asset as ImageAsset)._id
+  } else {
+    id = ref._ref || img._id
+  }
 
   const hasId = !id || idPattern.test(id)
   if (!hasId) {
