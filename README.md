@@ -1,28 +1,32 @@
 # gatsby-source-sanity
 
-Source plugin for pulling data from [Sanity.io](https://www.sanity.io/) into [Gatsby](https://www.gatsbyjs.org/) websites.
+Source plugin for pulling data from [Sanity.io](https://www.sanity.io/) into [Gatsby](https://www.gatsbyjs.org/) websites. Develop with real-time preview of all content changes. Compatible with `gatsby-image`. 
 
 [![Watch a video about the company website built with Gatsby using Sanity.io as a headless CMS](https://cdn.sanity.io/images/3do82whm/production/4f652e6d114e7010aa633b81cbcb97c335980fc8-1920x1080.png?w=500)](https://www.youtube.com/watch?v=STtpXBvJmDA)
 
-## Table of content
+## Table of contents
 
 - [Known issues](#known-issues)
-- [Basic Usage](#basic-usage)
+- [Basic usage](#basic-usage)
 - [Options](#options)
+- [Preview of unpublished content](#preview-of-unpublished-content)
+- [Real-time content preview with watch mode](#real-time-content-preview-with-watch-mode)
 - [Missing fields](#missing-fields)
 - [Using images](#using-images)
-- [Overlaying drafts](#overlaying-drafts)
-- [Watch mode](#watch-mode)
+  - [Fluid](#fluid)
+  - [Fixed](#fixed)
+  - [Available fragments](#available-fragments)
+  - [Usage outside of GraphQL](#usage-outside-of-graphql)
 - [Generating pages](#generating-pages)
 - ["Raw" fields](#raw-fields)
 - [Portable Text / Block Content](#portable-text--block-content)
-- [Using environment variables](#using-env-variables)
+- [Using .env variables](#using-env-variables)
 - [Credits](#credits)
 
 ## Known issues
 
-- Weak references that point to non-existant documents might break the build
-- Document references in annotations in Portable Text are not joined in the build
+- [Weak references](https://www.sanity.io/docs/schema-types/reference-type) that point to non-existent documents might break the build
+- Arrays with multiple types (union fields) doesn't work properly (fix on the way)
 
 ## Basic usage
 
@@ -52,9 +56,11 @@ module.exports = {
 }
 ```
 
-At this point you can choose to (and probably should) [set up a GraphQL API](https://www.sanity.io/help/graphql-beta) for your Sanity dataset, if you have not done so already. This will help the plugin in knowing which types and fields exists, so you can query for them even without them being present in any current documents.
+At this point you should [set up a GraphQL API](https://www.sanity.io/help/graphql-beta) for your Sanity dataset, if you have not done so already. This will help the plugin in knowing which types and fields exists, so you can query for them even without them being present in any current documents.
 
-Go through http://localhost:8000/___graphql after running `gatsby develop` to understand the created data and create a new query and checking available collections and fields by typing `CTRL + SPACE`.
+**You should redeploy the GraphQL API everytime you make changes to the schema that you want to use in Gatsby**
+
+Explore http://localhost:8000/___graphql after running `gatsby develop` to understand the created data and create a new query and checking available collections and fields by typing `CTRL + SPACE`. 
 
 ## Options
 
@@ -64,7 +70,19 @@ Go through http://localhost:8000/___graphql after running `gatsby develop` to un
 | dataset       | string  |         | **[required]** The dataset to fetch from                                                                                                       |
 | token         | string  |         | Authentication token for fetching data from private datasets, or when using `overlayDrafts` [Learn more](https://www.sanity.io/docs/http-auth) |
 | overlayDrafts | boolean | `false` | Set to `true` in order for drafts to replace their published version. By default, drafts will be skipped.                                      |
-| watchMode     | boolean | `false` | Set to `true` to keep a listener open and update with the latest changes in realtime.                                                          |
+| watchMode     | boolean | `false` | Set to `true` to keep a listener open and update with the latest changes in realtime. If you add a `token` you will get all content updates down to each keypress.                                                          |
+
+## Preview of unpublished content
+
+Sometimes you might be working on some new content that is not yet published, which you want to make sure looks alright within your Gatsby site. By setting the `overlayDrafts` setting to `true`, the draft versions will as the option says "overlay" the regular document. In terms of Gatsby nodes, it will _replace_ the published document with the draft.
+
+Keep in mind that drafts do not have to conform to any validation rules, so your frontend will usually want to double-check all nested properties before attempting to use them.
+
+## Real-time content preview with watch mode
+
+While developing, it can often be beneficial to get updates without having to manually restart the build process. By setting `watchMode` to true, this plugin will set up a listener which watches for changes. When it detects a change, the document in question is updated in real-time and will be reflected immediately.
+
+If you add [a `token` with read rights](https://www.sanity.io/docs/http-auth#robot-tokens) and set `overlayDrafts` to true, each small change to the draft will immediately be applied. 
 
 ## Missing fields
 
@@ -171,18 +189,6 @@ const fluidProps = getFluidGatsbyImage(imageAssetId, {maxWidth: 1024}, sanityCon
 
 <Img fluid={fluidProps} />
 ```
-
-## Overlaying drafts
-
-Sometimes you might be working on some new content that is not yet published, which you want to make sure looks alright within your Gatsby site. By setting the `overlayDrafts` setting to `true`, the draft versions will as the option says "overlay" the regular document. In terms of Gatsby nodes, it will _replace_ the published document with the draft.
-
-Keep in mind that drafts do not have to conform to any validation rules, so your frontend will usually want to double-check all nested properties before attempting to use them.
-
-## Watch mode
-
-While developing, it can often be beneficial to get updates without having to manually restart the build process. By setting `watchMode` to true, this plugin will set up a listener which watches for changes. When it detects a change, the document in question is updated in real-time and will be reflected immediately.
-
-When setting `overlayDrafts` to true, each small change to the draft will immediately be applied.
 
 ## Generating pages
 
