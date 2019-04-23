@@ -13,7 +13,13 @@ import {
   GraphQLNonNull,
 } from 'gatsby/graphql'
 import SanityClient = require('@sanity/client')
-import {GatsbyContext, GatsbyReporter, GatsbyNode, GatsbyOnNodeTypeContext} from './types/gatsby'
+import {
+  GatsbyContext,
+  GatsbyReporter,
+  GatsbyNode,
+  GatsbyOnNodeTypeContext,
+  GatsbyResolversCreator,
+} from './types/gatsby'
 import {SanityDocument} from './types/sanity'
 import {pump} from './util/pump'
 import {rejectOnApiError} from './util/rejectOnApiError'
@@ -32,6 +38,7 @@ import {
 import debug from './debug'
 import {extendImageNode} from './images/extendImageNode'
 import {rewriteGraphQLSchema} from './util/rewriteGraphQLSchema'
+import {getGraphQLResolverMap} from './util/getGraphQLResolverMap'
 
 export interface PluginConfig {
   projectId: string
@@ -86,6 +93,15 @@ export const onPreBootstrap = async (context: GatsbyContext, pluginConfig: Plugi
       reporter.panic(err.stack)
     }
   }
+}
+
+export const createResolvers = (
+  actions: {createResolvers: GatsbyResolversCreator},
+  pluginConfig: PluginConfig,
+) => {
+  const typeMapKey = getCacheKey(pluginConfig, CACHE_KEYS.TYPE_MAP)
+  const typeMap = (stateCache[typeMapKey] || defaultTypeMap) as TypeMap
+  actions.createResolvers(getGraphQLResolverMap(typeMap))
 }
 
 export const sourceNodes = async (context: GatsbyContext, pluginConfig: PluginConfig) => {
