@@ -1,41 +1,44 @@
-import {TypeMap} from './remoteGraphQLSchema'
-import {GatsbyResolverMap, GatsbyNodeModel} from '../types/gatsby'
+import {TypeMap, FieldDef} from './remoteGraphQLSchema'
+import {GatsbyResolverMap, GatsbyNodeModel, GatsbyGraphQLContext} from '../types/gatsby'
 import {getTypeName} from './normalize'
 import {SanityRef} from '../types/sanity'
+import {GraphQLFieldResolver} from 'graphql'
 
 export function getGraphQLResolverMap(typeMap: TypeMap): GatsbyResolverMap {
-  // Find all fields pointing to unions
   const resolvers: GatsbyResolverMap = {}
   Object.keys(typeMap.objects).forEach(typeName => {
     const objectType = typeMap.objects[typeName]
-    const unionFields = Object.keys(objectType.fields)
+    const resolveFields = Object.keys(objectType.fields)
       .map(fieldName => ({fieldName, ...objectType.fields[fieldName]}))
-      .filter(field => typeMap.unions[getTypeName(field.namedType.name.value)])
+      .filter(field => field.isReference || typeMap.unions[getTypeName(field.namedType.name.value)])
 
-    if (!unionFields.length) {
+    if (!resolveFields.length) {
       return
     }
 
-    resolvers[objectType.name] = unionFields.reduce((fields, field) => {
-      fields[field.fieldName] = {
-        resolve: (source, args, context) => {
-          if (field.isList) {
-            const items: SanityRef[] = source[field.fieldName] || []
-            return items && Array.isArray(items)
-              ? items.map(item => maybeResolveReference(item, context.nodeModel))
-              : []
-          }
-
-          const item: SanityRef | undefined = source[field.fieldName]
-          return maybeResolveReference(item, context.nodeModel)
-        },
-      }
-
+    resolvers[objectType.name] = resolveFields.reduce((fields, field) => {
+      fields[field.fieldName] = {resolve: getResolver(field)}
       return fields
     }, resolvers[objectType.name] || {})
   })
 
   return resolvers
+}
+
+function getResolver(
+  field: FieldDef & {fieldName: string},
+): GraphQLFieldResolver<{[key: string]: any}, GatsbyGraphQLContext> {
+  return (source, args, context) => {
+    if (field.isList) {
+      const items: SanityRef[] = source[field.fieldName] || []
+      return items && Array.isArray(items)
+        ? items.map(item => maybeResolveReference(item, context.nodeModel))
+        : []
+    }
+
+    const item: SanityRef | undefined = source[field.fieldName]
+    return maybeResolveReference(item, context.nodeModel)
+  }
 }
 
 function maybeResolveReference(
