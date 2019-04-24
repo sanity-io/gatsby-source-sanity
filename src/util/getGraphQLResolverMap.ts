@@ -1,6 +1,7 @@
 import {TypeMap} from './remoteGraphQLSchema'
-import {GatsbyResolverMap} from '../types/gatsby'
+import {GatsbyResolverMap, GatsbyNodeModel} from '../types/gatsby'
 import {getTypeName} from './normalize'
+import {SanityRef} from '../types/sanity'
 
 export function getGraphQLResolverMap(typeMap: TypeMap): GatsbyResolverMap {
   // Find all fields pointing to unions
@@ -19,14 +20,14 @@ export function getGraphQLResolverMap(typeMap: TypeMap): GatsbyResolverMap {
       fields[field.fieldName] = {
         resolve: (source, args, context) => {
           if (field.isList) {
-            const ids: string[] = source[`${field.fieldName}___NODE`] || []
-            return ids && Array.isArray(ids)
-              ? ids.map(id => context.nodeModel.getNodeById({id}))
+            const items: SanityRef[] = source[field.fieldName] || []
+            return items && Array.isArray(items)
+              ? items.map(item => maybeResolveReference(item, context.nodeModel))
               : []
           }
 
-          const id: string | undefined = source[`${field.fieldName}___NODE`]
-          return id ? context.nodeModel.getNodeById({id}) : null
+          const item: SanityRef | undefined = source[field.fieldName]
+          return maybeResolveReference(item, context.nodeModel)
         },
       }
 
@@ -35,4 +36,19 @@ export function getGraphQLResolverMap(typeMap: TypeMap): GatsbyResolverMap {
   })
 
   return resolvers
+}
+
+function maybeResolveReference(
+  item: {_ref?: string; _type?: string; internal?: {}} | undefined,
+  nodeModel: GatsbyNodeModel,
+) {
+  if (item && typeof item._ref === 'string') {
+    return nodeModel.getNodeById({id: item._ref})
+  }
+
+  if (item && typeof item._type === 'string' && !item.internal) {
+    return {...item, internal: {type: getTypeName(item._type)}}
+  }
+
+  return item
 }

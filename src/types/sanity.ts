@@ -4,6 +4,10 @@ export interface SanityDocument {
   [key: string]: any
 }
 
+export interface SanityRef {
+  _ref: string
+}
+
 export interface ApiError {
   statusCode: number
   error: string
