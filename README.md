@@ -1,6 +1,6 @@
 # gatsby-source-sanity
 
-Source plugin for pulling data from [Sanity.io](https://www.sanity.io/) into [Gatsby](https://www.gatsbyjs.org/) websites. Develop with real-time preview of all content changes. Compatible with `gatsby-image`. 
+Source plugin for pulling data from [Sanity.io](https://www.sanity.io/) into [Gatsby](https://www.gatsbyjs.org/) websites. Develop with real-time preview of all content changes. Compatible with `gatsby-image`.
 
 [![Watch a video about the company website built with Gatsby using Sanity.io as a headless CMS](https://cdn.sanity.io/images/3do82whm/production/4f652e6d114e7010aa633b81cbcb97c335980fc8-1920x1080.png?w=500)](https://www.youtube.com/watch?v=STtpXBvJmDA)
 
@@ -11,7 +11,7 @@ Source plugin for pulling data from [Sanity.io](https://www.sanity.io/) into [Ga
 - [Options](#options)
 - [Preview of unpublished content](#preview-of-unpublished-content)
 - [Real-time content preview with watch mode](#real-time-content-preview-with-watch-mode)
-- [Missing fields](#missing-fields)
+- [GraphQL API](#graphql-api)
 - [Using images](#using-images)
   - [Fluid](#fluid)
   - [Fixed](#fixed)
@@ -60,17 +60,17 @@ At this point you should [set up a GraphQL API](https://www.sanity.io/help/graph
 
 **You should redeploy the GraphQL API everytime you make changes to the schema that you want to use in Gatsby**
 
-Explore http://localhost:8000/___graphql after running `gatsby develop` to understand the created data and create a new query and checking available collections and fields by typing `CTRL + SPACE`. 
+Explore http://localhost:8000/___graphql after running `gatsby develop` to understand the created data and create a new query and checking available collections and fields by typing `CTRL + SPACE`.
 
 ## Options
 
-| Options       | Type    | Default | Description                                                                                                                                    |
-| ------------- | ------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| projectId     | string  |         | **[required]** Your Sanity project's ID                                                                                                        |
-| dataset       | string  |         | **[required]** The dataset to fetch from                                                                                                       |
-| token         | string  |         | Authentication token for fetching data from private datasets, or when using `overlayDrafts` [Learn more](https://www.sanity.io/docs/http-auth) |
-| overlayDrafts | boolean | `false` | Set to `true` in order for drafts to replace their published version. By default, drafts will be skipped.                                      |
-| watchMode     | boolean | `false` | Set to `true` to keep a listener open and update with the latest changes in realtime. If you add a `token` you will get all content updates down to each keypress.                                                          |
+| Options       | Type    | Default | Description                                                                                                                                                        |
+| ------------- | ------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| projectId     | string  |         | **[required]** Your Sanity project's ID                                                                                                                            |
+| dataset       | string  |         | **[required]** The dataset to fetch from                                                                                                                           |
+| token         | string  |         | Authentication token for fetching data from private datasets, or when using `overlayDrafts` [Learn more](https://www.sanity.io/docs/http-auth)                     |
+| overlayDrafts | boolean | `false` | Set to `true` in order for drafts to replace their published version. By default, drafts will be skipped.                                                          |
+| watchMode     | boolean | `false` | Set to `true` to keep a listener open and update with the latest changes in realtime. If you add a `token` you will get all content updates down to each keypress. |
 
 ## Preview of unpublished content
 
@@ -82,20 +82,13 @@ Keep in mind that drafts do not have to conform to any validation rules, so your
 
 While developing, it can often be beneficial to get updates without having to manually restart the build process. By setting `watchMode` to true, this plugin will set up a listener which watches for changes. When it detects a change, the document in question is updated in real-time and will be reflected immediately.
 
-If you add [a `token` with read rights](https://www.sanity.io/docs/http-auth#robot-tokens) and set `overlayDrafts` to true, each small change to the draft will immediately be applied. 
+If you add [a `token` with read rights](https://www.sanity.io/docs/http-auth#robot-tokens) and set `overlayDrafts` to true, each small change to the draft will immediately be applied.
 
-## Missing fields
+## GraphQL API
 
-Getting errors such as these?
+By [deploying a GraphQL API](https://www.sanity.io/help/graphql-beta) for your dataset, we are able to introspect and figure out which schema types and fields are available and make informed choices based on this information.
 
-> Cannot query field "allSanityBlogPost"
-> Unknown field `preamble` on type `BlogPost`
-
-By [deploying a GraphQL API](https://www.sanity.io/help/graphql-beta) for your dataset, we are able to introspect and figure out which schema types and fields are available and make them available to prevent this problem. Once the API is deployed it will be transparently be applied. If you have deployed your API and are still seeing similar issues, remember that you have to redeploy the API if your schema changes.
-
-Some background for this problem:
-
-Gatsby cannot know about the types and fields that exists in your data without _either_ having a declared schema available, or having documents with all available fields available in order to infer this information. If you have not deployed a GraphQL API, Gatsby _infers_ the structure of your data, which will be less structured and more prone to errors.
+Previous versions did not _require_ this, but often lead to very confusing and unpredictable behavior, which is why we have now made it a requirement.
 
 ## Using images
 
