@@ -1,5 +1,6 @@
 import {upperFirst} from 'lodash'
 import {
+  ASTNode,
   DefinitionNode,
   DocumentNode,
   FieldDefinitionNode,
@@ -30,7 +31,7 @@ export const rewriteGraphQLSchema = (schemaSdl: string, config: PluginConfig): s
   return transformed
 }
 
-function transformAst(ast: DocumentNode, config: PluginConfig) {
+function transformAst(ast: DocumentNode, config: PluginConfig): ASTNode {
   return {
     ...ast,
     definitions: ast.definitions.filter(isWantedAstNode).map(transformDefinitionNode),
@@ -42,7 +43,7 @@ function isWantedAstNode(astNode: DefinitionNode) {
   return wantedNodeTypes.includes(node.kind) && node.name.value !== 'RootQuery'
 }
 
-function transformDefinitionNode(node: DefinitionNode) {
+function transformDefinitionNode(node: DefinitionNode): DefinitionNode {
   switch (node.kind) {
     case 'ObjectTypeDefinition':
       return transformObjectTypeDefinition(node)
@@ -55,13 +56,11 @@ function transformDefinitionNode(node: DefinitionNode) {
   }
 }
 
-function transformObjectTypeDefinition(astNode: DefinitionNode) {
-  const node = astNode as ObjectTypeDefinitionNode
-
+function transformObjectTypeDefinition(node: ObjectTypeDefinitionNode): ObjectTypeDefinitionNode {
   const fields = node.fields || []
   const jsonTargets = fields.map(getJsonAliasTargets).filter(Boolean)
   const blockFields = jsonTargets.map(makeBlockField)
-  const interfaces = (node.interfaces || []).map(maybeRewriteType)
+  const interfaces = (node.interfaces || []).map(maybeRewriteType) as NamedTypeNode[]
   const isDocumentType = interfaces.some(
     item => item.kind === 'NamedType' && item.name.value === 'SanityDocument',
   )
@@ -82,10 +81,10 @@ function transformObjectTypeDefinition(astNode: DefinitionNode) {
   }
 }
 
-function transformUnionTypeDefinition(node: UnionTypeDefinitionNode) {
+function transformUnionTypeDefinition(node: UnionTypeDefinitionNode): UnionTypeDefinitionNode {
   return {
     ...node,
-    types: (node.types || []).map(maybeRewriteType),
+    types: (node.types || []).map(maybeRewriteType) as NamedTypeNode[],
     name: {...node.name, value: getTypeName(node.name.value)},
   }
 }

@@ -1,4 +1,4 @@
-import {GraphQLSchema, GraphQLNamedType} from 'graphql'
+import {GraphQLSchema, GraphQLNamedType, GraphQLFieldResolver} from 'graphql'
 
 interface GatsbyEventEmitter {
   on: (event: String, fn: Function) => null
@@ -45,7 +45,26 @@ export interface GatsbyDeleteOptions {
   node: GatsbyNode
 }
 
+export type GatsbyNodeModel = {
+  getNodeById: (args: {id: string}) => GatsbyNode
+}
+
+export type GatsbyGraphQLContext = {
+  nodeModel: GatsbyNodeModel
+}
+
 export type GatsbyTypesCreator = (types: string) => null
+
+export type GatsbyResolverMap = {
+  [typeName: string]: {
+    [fieldName: string]: {
+      type?: string
+      resolve: GraphQLFieldResolver<{[key: string]: any}, GatsbyGraphQLContext>
+    }
+  }
+}
+
+export type GatsbyResolversCreator = (resolvers: GatsbyResolverMap) => null
 
 export type GatsbyNodeCreator = (node: GatsbyNode) => null
 
@@ -92,6 +111,7 @@ export interface GatsbyContext {
 
 export interface GatsbyActions {
   createTypes: GatsbyTypesCreator
+  createResolvers: GatsbyResolversCreator
   createNode: GatsbyNodeCreator
   deleteNode: GatsbyNodeDeletor
   createParentChildLink: GatsbyParentChildLinker
