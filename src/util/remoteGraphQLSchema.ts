@@ -17,15 +17,6 @@ import SanityClient = require('@sanity/client')
 import {getTypeName} from './normalize'
 import {PluginConfig} from '../gatsby-node'
 
-class RequestError extends Error {
-  public isWarning: boolean
-
-  constructor(message: string, isWarning: boolean) {
-    super(message)
-    this.isWarning = isWarning
-  }
-}
-
 export type FieldDef = {
   type: NamedTypeNode | ListTypeNode | NonNullTypeNode
   namedType: NamedTypeNode
@@ -76,15 +67,12 @@ export async function getRemoteGraphQLSchema(client: SanityClient, config: Plugi
       get(err, 'response.statusMessage') || err.message,
     )
 
-    const gqlBenefits = [
-      'Schemas will be much cleaner, and you will have less problems with missing fields',
-      'See https://github.com/sanity-io/gatsby-source-sanity#missing-fields for more info',
-    ].join('\n')
-
     const is404 = code === 404 || /schema not found/i.test(message)
-    const hint = is404 ? ' - have you run `sanity graphql deploy` yet?\n' + gqlBenefits : ''
-
-    throw new RequestError(`${message}${hint}`, is404)
+    throw new Error(
+      is404
+        ? `GraphQL API not deployed - see https://github.com/sanity-io/gatsby-source-sanity#graphql-api for more info\n\n`
+        : `${message}`,
+    )
   }
 }
 
