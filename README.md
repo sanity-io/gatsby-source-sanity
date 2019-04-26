@@ -26,7 +26,6 @@ Source plugin for pulling data from [Sanity.io](https://www.sanity.io/) into [Ga
 ## Known issues
 
 - [Weak references](https://www.sanity.io/docs/schema-types/reference-type) that point to non-existent documents might break the build
-- Arrays with multiple types (union fields) doesn't work properly (fix on the way)
 
 ## Basic usage
 
