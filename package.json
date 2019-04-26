@@ -31,7 +31,7 @@
     "build": "tsc && tsc -t ES5 --outDir lib-es5",
     "format": "prettier --write src/**/*.{ts,tsx}",
     "watch": "tsc --watch",
-    "prepublishOnly": "tsc && npm test"
+    "prepublishOnly": "npm run build && npm test"
   },
   "husky": {
     "hooks": {
