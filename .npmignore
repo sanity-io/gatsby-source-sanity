@@ -1,5 +1,11 @@
 src
-.babelrc
+test
+.eslintrc
+.gitignore
 .editorconfig
-yarn.lock
+.prettierrc
+.travis.yml
+jest-config.js
 package-lock.json
+yarn.lock
+tsconfig.json

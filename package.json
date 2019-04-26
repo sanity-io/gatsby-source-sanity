@@ -28,7 +28,7 @@
     "test": "jest",
     "clean": "rm -f gatsby-node.*",
     "precommit": "tsc && npm test",
-    "build": "tsc",
+    "build": "tsc && tsc -t ES5 --outDir lib-es5",
     "format": "prettier --write src/**/*.{ts,tsx}",
     "watch": "tsc --watch",
     "prepublishOnly": "tsc && npm test"
