@@ -74,6 +74,7 @@ function transformObjectTypeDefinition(node: ObjectTypeDefinitionNode): ObjectTy
     ...node,
     name: {...node.name, value: getTypeName(node.name.value)},
     interfaces,
+    directives: [{kind: 'Directive', name: {kind: 'Name', value: 'dontInfer'}}],
     fields: [
       ...fields.filter(field => !getJsonAliasTargets(field)).map(transformFieldNodeAst),
       ...blockFields,
