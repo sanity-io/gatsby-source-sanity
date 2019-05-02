@@ -10,7 +10,13 @@ export function getGraphQLResolverMap(typeMap: TypeMap): GatsbyResolverMap {
     const objectType = typeMap.objects[typeName]
     const resolveFields = Object.keys(objectType.fields)
       .map(fieldName => ({fieldName, ...objectType.fields[fieldName]}))
-      .filter(field => field.isReference || typeMap.unions[getTypeName(field.namedType.name.value)])
+      .filter(
+        field =>
+          field.fieldName !== 'children' &&
+          (field.isList ||
+            field.isReference ||
+            typeMap.unions[getTypeName(field.namedType.name.value)]),
+      )
 
     if (!resolveFields.length) {
       return
