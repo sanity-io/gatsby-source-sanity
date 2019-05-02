@@ -2,6 +2,12 @@
 
 All notable changes will be documented in this file.
 
+## 4.0.1
+
+### Fixes
+
+- Try to resolve all lists with custom resolvers, since we cannot know whether or not they contain references at schema define time
+
 ## 4.0.0
 
 ### BREAKING
