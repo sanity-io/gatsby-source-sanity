@@ -16,6 +16,7 @@ import {
   TypeNode,
   UnionTypeDefinitionNode,
   valueFromAST,
+  DirectiveNode,
 } from 'gatsby/graphql'
 import {PluginConfig} from '../gatsby-node'
 import {RESTRICTED_NODE_FIELDS} from './normalize'
@@ -161,13 +162,19 @@ function makeNullable(nodeType: TypeNode): TypeNode {
 }
 
 function transformFieldNodeAst(node: FieldDefinitionNode) {
-  return {
+  const field = {
     ...node,
     name: maybeRewriteFieldName(node),
     type: rewireIdType(makeNullable(node.type)),
     description: undefined,
-    directives: [],
+    directives: [] as DirectiveNode[],
   }
+
+  if (field.type.kind === 'NamedType' && field.type.name.value === 'Date') {
+    field.directives.push({kind: 'Directive', name: {kind: 'Name', value: 'dateformat'}})
+  }
+
+  return field
 }
 
 function rewireIdType(nodeType: TypeNode): TypeNode {
