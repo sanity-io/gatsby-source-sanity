@@ -2,6 +2,12 @@
 
 All notable changes will be documented in this file.
 
+## 4.0.2
+
+### Changes
+
+- Upgrade dependencies to their latest versions
+
 ## 4.0.1
 
 ### Fixes
