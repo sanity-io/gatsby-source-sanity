@@ -2,6 +2,12 @@
 
 All notable changes will be documented in this file.
 
+## 4.0.3
+
+### Changes
+
+- Add `dateformat` directive to date fields, reintroducing `dateFormat` field-level argument
+
 ## 4.0.2
 
 ### Changes
