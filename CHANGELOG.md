@@ -2,6 +2,13 @@
 
 All notable changes will be documented in this file.
 
+## 4.0.4
+
+### Fixes
+
+- The RootQuery type from the Sanity GraphQL API is no longer added as a type in Gatsby
+- Document types that are not defined in the GraphQL schema are now skipped (with a warning) instead of preventing the build from completing
+
 ## 4.0.3
 
 ### Changes
