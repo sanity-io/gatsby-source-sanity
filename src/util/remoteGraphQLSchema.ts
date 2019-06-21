@@ -76,7 +76,7 @@ export async function getRemoteGraphQLSchema(client: SanityClient, config: Plugi
   }
 }
 
-export function getTypeMapFromGraphQLSchema(sdl: string, config: PluginConfig): TypeMap {
+export function getTypeMapFromGraphQLSchema(sdl: string): TypeMap {
   const typeMap: TypeMap = {objects: {}, scalars: [], unions: {}}
   const remoteSchema = parse(sdl)
   const groups = {
@@ -88,6 +88,10 @@ export function getTypeMapFromGraphQLSchema(sdl: string, config: PluginConfig): 
 
   const objects: {[key: string]: ObjectTypeDef} = {}
   typeMap.objects = groups.ObjectTypeDefinition.reduce((acc, typeDef: ObjectTypeDefinitionNode) => {
+    if (typeDef.name.value === 'RootQuery') {
+      return acc
+    }
+
     const name = getTypeName(typeDef.name.value)
     acc[name] = {
       name,

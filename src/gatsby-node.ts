@@ -83,7 +83,7 @@ export const onPreBootstrap = async (context: GatsbyContext, pluginConfig: Plugi
     stateCache[graphqlSdlKey] = graphqlSdl
 
     reporter.info('[sanity] Stitching GraphQL schemas from SDL')
-    const typeMap = getTypeMapFromGraphQLSchema(api, pluginConfig)
+    const typeMap = getTypeMapFromGraphQLSchema(api)
     const typeMapKey = getCacheKey(pluginConfig, CACHE_KEYS.TYPE_MAP)
     stateCache[typeMapKey] = typeMap
   } catch (err) {
