@@ -23,7 +23,7 @@ import {
 import {SanityDocument} from './types/sanity'
 import {pump} from './util/pump'
 import {rejectOnApiError} from './util/rejectOnApiError'
-import {processDocument, unprefixDraftId} from './util/normalize'
+import {processDocument, unprefixDraftId, getTypeName} from './util/normalize'
 import {getDocumentStream} from './util/getDocumentStream'
 import {getCacheKey, CACHE_KEYS} from './util/cache'
 import {removeSystemDocuments} from './util/removeSystemDocuments'
@@ -142,6 +142,16 @@ export const sourceNodes = async (context: GatsbyContext, pluginConfig: PluginCo
     overlayDrafts ? extractDrafts(draftDocs) : removeDrafts(),
     removeSystemDocuments(),
     through.obj((doc: SanityDocument, enc: string, cb: through.TransformCallback) => {
+      const type = getTypeName(doc._type)
+      if (!typeMap.objects[type]) {
+        reporter.warn(
+          `[sanity] Document "${doc._id}" has type ${doc._type} (${type}), which is not declared in the GraphQL schema. Make sure you run "graphql deploy". Skipping document.`,
+        )
+
+        cb()
+        return
+      }
+
       debug('Got document with ID %s', doc._id)
       processDocument(doc, processingOptions)
       cb()
