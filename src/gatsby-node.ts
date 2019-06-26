@@ -154,8 +154,8 @@ export const sourceNodes = async (context: GatsbyContext, pluginConfig: PluginCo
         return
       }
 
-      debug('Got document with ID %s', doc._id)
-      processDocument(doc, processingOptions)
+      const node = processDocument(doc, processingOptions)
+      debug('Got document with ID %s (mapped to %s)', doc._id, node.id)
       cb()
     }),
   ])

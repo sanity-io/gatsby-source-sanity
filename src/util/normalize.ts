@@ -2,6 +2,7 @@ import {set, startCase, camelCase, cloneDeep, upperFirst} from 'lodash'
 import {extractWithPath} from '@sanity/mutator'
 import {specifiedScalarTypes} from 'gatsby/graphql'
 import {SanityDocument} from '../types/sanity'
+import {safeId} from './documentIds'
 import {unprefixDraftId} from './unprefixDraftId'
 import {TypeMap} from './remoteGraphQLSchema'
 import {
@@ -40,7 +41,7 @@ export function processDocument(doc: SanityDocument, options: ProcessingOptions)
   const node = {
     ...withRefs,
     ...rawAliases,
-    id: createNodeId(overlayDrafts ? unprefixDraftId(doc._id) : doc._id),
+    id: safeId(overlayDrafts ? unprefixDraftId(doc._id) : doc._id, createNodeId),
     parent: null,
     children: [],
     internal: {
@@ -124,7 +125,7 @@ function rewriteNodeReferences(doc: SanityDocument, options: ProcessingOptions) 
 
   const newDoc = cloneDeep(doc)
   refs.forEach(match => {
-    set(newDoc, match.path, createNodeId(match.value))
+    set(newDoc, match.path, safeId(match.value, createNodeId))
   })
 
   return newDoc

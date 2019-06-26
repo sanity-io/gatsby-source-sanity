@@ -3,7 +3,7 @@ import {SanityDocument} from '../types/sanity'
 import {GatsbyContext, GatsbyNode} from '../types/gatsby'
 import {processDocument, ProcessingOptions} from './normalize'
 import {removeGatsbyInternalProps} from './removeGatsbyInternalProps'
-import {unprefixId, isDraftId} from './documentIds'
+import {unprefixId, isDraftId, safeId} from './documentIds'
 
 export interface ListenerMessage {
   documentId: string
@@ -20,7 +20,7 @@ export function handleListenerEvent(
   const {actions, createNodeId, getNode} = context
   const {createNode, deleteNode} = actions
   const {overlayDrafts} = processingOptions
-  const current = getNode(createNodeId(unprefixId(event.documentId)))
+  const current = getNode(safeId(unprefixId(event.documentId), createNodeId))
 
   let published = publishedNodes.get(unprefixId(event.documentId))
   if (published) {

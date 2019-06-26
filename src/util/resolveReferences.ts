@@ -1,5 +1,7 @@
 import {GatsbyNode, GatsbyNodeIdCreator} from '../types/gatsby'
 import {unprefixDraftId} from './unprefixDraftId'
+import {safeId} from './documentIds'
+import debug from '../debug'
 
 const defaultResolveOptions: ResolveReferencesOptions = {
   maxDepth: 5,
@@ -38,8 +40,10 @@ export function resolveReferences(
   }
 
   if (typeof obj._ref === 'string') {
-    const id = obj._ref
-    const node = getNode(createNodeId(overlayDrafts ? unprefixDraftId(id) : id))
+    const targetId = safeId(overlayDrafts ? unprefixDraftId(obj._ref) : obj._ref, createNodeId)
+    debug('Resolve %s (Sanity ID %s)', targetId, obj._ref)
+
+    const node = getNode(targetId)
     return node && currentDepth <= maxDepth
       ? resolveReferences(node, context, resolveOptions, currentDepth + 1)
       : obj
