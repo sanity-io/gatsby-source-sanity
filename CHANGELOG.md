@@ -2,6 +2,12 @@
 
 All notable changes will be documented in this file.
 
+## 4.0.5
+
+### Changes
+
+- Exposed `resolveReferences` method for rare cases where you need to resolve from userland/custom GraphQL resolvers
+
 ## 4.0.4
 
 ### Fixes
