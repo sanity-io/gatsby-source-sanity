@@ -23,7 +23,7 @@ import {
 import {SanityDocument} from './types/sanity'
 import {pump} from './util/pump'
 import {rejectOnApiError} from './util/rejectOnApiError'
-import {processDocument, unprefixDraftId, getTypeName} from './util/normalize'
+import {processDocument, getTypeName} from './util/normalize'
 import {getDocumentStream} from './util/getDocumentStream'
 import {getCacheKey, CACHE_KEYS} from './util/cache'
 import {removeSystemDocuments} from './util/removeSystemDocuments'
@@ -37,6 +37,7 @@ import {
 } from './util/remoteGraphQLSchema'
 import debug from './debug'
 import {extendImageNode} from './images/extendImageNode'
+import {resolveReferences} from './util/resolveReferences'
 import {rewriteGraphQLSchema} from './util/rewriteGraphQLSchema'
 import {getGraphQLResolverMap} from './util/getGraphQLResolverMap'
 
@@ -248,7 +249,10 @@ export const setFieldsOnGraphQLNodeType = async (
           const raw = `_${camelCase(`raw_data_${field.aliasFor || fieldName}`)}`
           const value = obj[raw] || obj[fieldName] || obj[aliasFor]
           return args.resolveReferences
-            ? resolveReferences(value, 0, args.resolveReferences.maxDepth, context, pluginConfig)
+            ? resolveReferences(value, context, {
+                maxDepth: args.resolveReferences.maxDepth,
+                overlayDrafts: pluginConfig.overlayDrafts,
+              })
             : value
         },
       }
@@ -267,73 +271,15 @@ export const setFieldsOnGraphQLNodeType = async (
         const raw = `_${camelCase(`raw_data_${field.aliasFor || fieldName}`)}`
         const value = obj[raw] || obj[aliasName] || obj[fieldName]
         return args.resolveReferences
-          ? resolveReferences(value, 0, args.resolveReferences.maxDepth, context, pluginConfig)
+          ? resolveReferences(value, context, {
+              maxDepth: args.resolveReferences.maxDepth,
+              overlayDrafts: pluginConfig.overlayDrafts,
+            })
           : value
       },
     }
     return acc
   }, fields)
-}
-
-function resolveReferences(
-  obj: any,
-  depth: number,
-  maxDepth: number,
-  context: GatsbyContext,
-  pluginConfig: PluginConfig,
-): any {
-  const {createNodeId, getNode} = context
-  const {overlayDrafts} = pluginConfig
-
-  if (Array.isArray(obj)) {
-    return depth <= maxDepth
-      ? obj.map(item => resolveReferences(item, depth + 1, maxDepth, context, pluginConfig))
-      : obj
-  }
-
-  if (obj === null || typeof obj !== 'object') {
-    return obj
-  }
-
-  if (typeof obj._ref === 'string') {
-    const id = obj._ref
-    const node = getNode(createNodeId(overlayDrafts ? unprefixDraftId(id) : id))
-    return node && depth <= maxDepth
-      ? resolveReferences(node, depth + 1, maxDepth, context, pluginConfig)
-      : obj
-  }
-
-  const initial: {[key: string]: any} = {}
-  return Object.keys(obj).reduce((acc, key) => {
-    const isGatsbyRef = key.endsWith('___NODE')
-    const isRawDataField = key.startsWith('_rawData')
-    let targetKey = isGatsbyRef && depth <= maxDepth ? key.slice(0, -7) : key
-
-    let value = obj[key]
-    if (isGatsbyRef && depth <= maxDepth) {
-      value = resolveGatsbyReference(obj[key], context)
-    }
-
-    value = resolveReferences(value, depth + 1, maxDepth, context, pluginConfig)
-
-    if (isRawDataField) {
-      targetKey = `_raw${key.slice(8)}`
-    }
-
-    acc[targetKey] = value
-    return acc
-  }, initial)
-}
-
-function resolveGatsbyReference(value: string | string[], context: GatsbyContext) {
-  const {getNode} = context
-  if (typeof value === 'string') {
-    return getNode(value)
-  } else if (Array.isArray(value)) {
-    return value.map(id => getNode(id))
-  } else {
-    throw new Error(`Unknown Gatsby node reference: ${value}`)
-  }
 }
 
 function validateConfig(config: PluginConfig, reporter: GatsbyReporter) {
