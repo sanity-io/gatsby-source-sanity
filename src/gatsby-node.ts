@@ -27,7 +27,7 @@ import {processDocument, getTypeName} from './util/normalize'
 import {getDocumentStream} from './util/getDocumentStream'
 import {getCacheKey, CACHE_KEYS} from './util/cache'
 import {removeSystemDocuments} from './util/removeSystemDocuments'
-import {removeDrafts, extractDrafts, unprefixId} from './util/handleDrafts'
+import {removeDrafts, extractDrafts} from './util/handleDrafts'
 import {handleListenerEvent, ListenerMessage} from './util/handleListenerEvent'
 import {
   getTypeMapFromGraphQLSchema,
@@ -40,6 +40,7 @@ import {extendImageNode} from './images/extendImageNode'
 import {resolveReferences} from './util/resolveReferences'
 import {rewriteGraphQLSchema} from './util/rewriteGraphQLSchema'
 import {getGraphQLResolverMap} from './util/getGraphQLResolverMap'
+import {unprefixId} from './util/documentIds'
 
 export interface PluginConfig {
   projectId: string

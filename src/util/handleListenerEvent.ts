@@ -2,8 +2,8 @@ import debug from '../debug'
 import {SanityDocument} from '../types/sanity'
 import {GatsbyContext, GatsbyNode} from '../types/gatsby'
 import {processDocument, ProcessingOptions} from './normalize'
-import {isDraftId, unprefixId} from './handleDrafts'
 import {removeGatsbyInternalProps} from './removeGatsbyInternalProps'
+import {unprefixId, isDraftId} from './documentIds'
 
 export interface ListenerMessage {
   documentId: string
