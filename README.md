@@ -244,7 +244,7 @@ Remember to use the GraphiQL interface to help write the queries you need - it's
 
 Arrays and object types at the root of documents will get an additional "raw JSON" representation in a field called `_raw<FieldName>`. For instance, a field named `body` will be mapped to `_rawBody`. It's important to note that this is only done for top-level nodes (documents).
 
-Quite often, you'll want to replace reference fields (eg `_ref: '<documentId>'`, or `someField___NODE: '<documentId>'`), with the actual document that is referenced. This is done automatically for regular fields, but within raw fields, you have to explicitly enable this behavior, by using the field-level `resolveReferences` argument:
+Quite often, you'll want to replace reference fields (eg `_ref: '<documentId>'`), with the actual document that is referenced. This is done automatically for regular fields, but within raw fields, you have to explicitly enable this behavior, by using the field-level `resolveReferences` argument:
 
 ```graphql
 {

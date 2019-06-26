@@ -44,34 +44,6 @@ test('uses draft id if overlayDrafts is set to false', () => {
   })
 })
 
-test('resolves Gatsby references', () => {
-  const _id = 'abc123'
-  const getNode = (id: string) => (id === 'abc123' ? {_id, id: _id, bar: 'baz'} : undefined)
-  expect(
-    resolveReferences(
-      {foo___NODE: _id},
-      {createNodeId, getNode},
-      {maxDepth: 5, overlayDrafts: true},
-    ),
-  ).toEqual({
-    foo: {_id, id: _id, bar: 'baz'},
-  })
-})
-
-test('resolves Gatsby array references', () => {
-  const _id = 'abc123'
-  const getNode = (id: string) => (id === 'abc123' ? {_id, id: _id, bar: 'baz'} : undefined)
-  expect(
-    resolveReferences(
-      {foo___NODE: [_id]},
-      {createNodeId, getNode},
-      {maxDepth: 5, overlayDrafts: true},
-    ),
-  ).toEqual({
-    foo: [{_id, id: _id, bar: 'baz'}],
-  })
-})
-
 test('resolves references in arrays', () => {
   const _id = 'abc123'
   const getNode = (id: string) => (id === 'abc123' ? {_id, id: _id, bar: 'baz'} : undefined)
