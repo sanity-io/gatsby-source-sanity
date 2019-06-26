@@ -1,5 +1,5 @@
 import {GatsbyNode, GatsbyNodeIdCreator} from '../types/gatsby'
-import {unprefixDraftId} from './normalize'
+import {unprefixDraftId} from './unprefixDraftId'
 
 const defaultResolveOptions: ResolveReferencesOptions = {
   maxDepth: 5,

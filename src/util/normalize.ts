@@ -2,6 +2,7 @@ import {set, startCase, camelCase, cloneDeep, upperFirst} from 'lodash'
 import {extractWithPath} from '@sanity/mutator'
 import {specifiedScalarTypes} from 'gatsby/graphql'
 import {SanityDocument} from '../types/sanity'
+import {unprefixDraftId} from './unprefixDraftId'
 import {TypeMap} from './remoteGraphQLSchema'
 import {
   GatsbyNodeIdCreator,
@@ -53,11 +54,6 @@ export function processDocument(doc: SanityDocument, options: ProcessingOptions)
   }
 
   return node
-}
-
-// `drafts.foo-bar` => `foo.bar`
-export function unprefixDraftId(id: string) {
-  return id.replace(/^drafts\./, '')
 }
 
 // movie => SanityMovie
