@@ -2,6 +2,14 @@
 
 All notable changes will be documented in this file.
 
+## 5.0.0
+
+### BREAKING
+
+- `resolveReferences` no longer returns `_raw` fields - they are mapped to their original field names instead
+- `resolveReferences` returns `null` if the reference cannot be resolved
+- Image and file asset documents maintain their original document ID instead of remapping to a Gatsby node ID in UUID shape
+
 ## 4.0.5
 
 ### Changes
