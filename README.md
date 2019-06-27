@@ -6,7 +6,6 @@ Source plugin for pulling data from [Sanity.io](https://www.sanity.io/) into [Ga
 
 ## Table of contents
 
-- [Known issues](#known-issues)
 - [Basic usage](#basic-usage)
 - [Options](#options)
 - [Preview of unpublished content](#preview-of-unpublished-content)
@@ -22,10 +21,6 @@ Source plugin for pulling data from [Sanity.io](https://www.sanity.io/) into [Ga
 - [Portable Text / Block Content](#portable-text--block-content)
 - [Using .env variables](#using-env-variables)
 - [Credits](#credits)
-
-## Known issues
-
-- [Weak references](https://www.sanity.io/docs/schema-types/reference-type) that point to non-existent documents might break the build
 
 ## Basic usage
 
