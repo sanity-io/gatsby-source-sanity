@@ -1,5 +1,12 @@
 import {resolveReferences} from '../src/util/resolveReferences'
 
+function reverse(id: string) {
+  return id
+    .split('')
+    .reverse()
+    .join('')
+}
+
 const createNodeId = (id: string) => id
 
 test('resolves Sanity references', () => {
@@ -40,7 +47,7 @@ test('uses draft id if overlayDrafts is set to false', () => {
       {maxDepth: 5, overlayDrafts: false},
     ),
   ).toEqual({
-    foo: {_ref: `drafts.${_id}`},
+    foo: null,
   })
 })
 
@@ -87,5 +94,35 @@ test('resolves to max depth specified', () => {
       },
       id: 'abc123',
     },
+  })
+})
+
+test('remaps raw fields from returned nodes', () => {
+  const _id = 'abc123'
+  const getNode = (id: string) => {
+    switch (id) {
+      case '321cba':
+        return {
+          _id,
+          id: '321cba',
+          bar: 'baz',
+          foo: [{_ref: 'gatsbyId'}],
+          _rawDataFoo: [{_ref: 'def'}],
+        }
+      case 'fed':
+        return {_id: 'def', id: 'fed', its: 'def'}
+      default:
+        return undefined
+    }
+  }
+
+  expect(
+    resolveReferences(
+      {foo: [{_ref: _id}]},
+      {createNodeId: reverse, getNode},
+      {maxDepth: 5, overlayDrafts: true},
+    ),
+  ).toEqual({
+    foo: [{_id, id: '321cba', bar: 'baz', foo: [{_id: 'def', id: 'fed', its: 'def'}]}],
   })
 })
