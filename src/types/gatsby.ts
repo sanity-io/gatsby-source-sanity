@@ -109,6 +109,10 @@ export interface GatsbyContext {
   reporter: GatsbyReporter
 }
 
+export interface GatsbySsrContext {
+  setHeadComponents: (components: React.ReactElement[]) => undefined
+}
+
 export interface GatsbyActions {
   createTypes: GatsbyTypesCreator
   createResolvers: GatsbyResolversCreator
