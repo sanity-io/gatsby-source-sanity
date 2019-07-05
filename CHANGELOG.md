@@ -2,6 +2,12 @@
 
 All notable changes will be documented in this file.
 
+## 5.0.1
+
+### Changes
+
+- Add `<link rel="preconnect" href="https://cdn.sanity.io">` to `<head>`, potentially speeding up loading of images
+
 ## 5.0.0
 
 ### BREAKING
