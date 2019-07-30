@@ -102,8 +102,8 @@ Object {
   "base64": null,
   "sizes": "(max-width: 1200px) 100vw, 1200px",
   "src": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=1200&h=768&fit=crop",
-  "srcSet": null,
-  "srcSetWebp": null,
+  "srcSet": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=300&h=192&fit=crop 300w",
+  "srcSetWebp": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=300&h=192&fit=crop&fm=webp 300w",
   "srcWebp": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=1200&h=768&fit=crop&fm=webp",
 }
 `;
@@ -114,8 +114,8 @@ Object {
   "base64": null,
   "sizes": "(max-width: 1200px) 100vw, 1200px",
   "src": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=1200&h=800&fit=crop",
-  "srcSet": null,
-  "srcSetWebp": null,
+  "srcSet": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=300&h=200&fit=crop 300w",
+  "srcSetWebp": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=300&h=200&fit=crop&fm=webp 300w",
   "srcWebp": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=1200&h=800&fit=crop&fm=webp",
 }
 `;
@@ -126,8 +126,10 @@ Object {
   "base64": null,
   "sizes": "(max-width: 800px) 100vw, 800px",
   "src": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=800&h=533&fit=crop",
-  "srcSet": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=200&h=133&fit=crop 200w",
-  "srcSetWebp": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=200&h=133&fit=crop&fm=webp 200w",
+  "srcSet": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=200&h=133&fit=crop 200w,
+https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=300&h=200&fit=crop 300w",
+  "srcSetWebp": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=200&h=133&fit=crop&fm=webp 200w,
+https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=300&h=200&fit=crop&fm=webp 300w",
   "srcWebp": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=800&h=533&fit=crop&fm=webp",
 }
 `;
@@ -143,13 +145,15 @@ https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=600&h=384
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=1200&h=768&fit=crop&fm=jpg 1200w,
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=1800&h=1152&fit=crop&fm=jpg 1800w,
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=2400&h=1536&fit=crop&fm=jpg 2400w,
-https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=3600&h=2304&fit=crop&fm=jpg 3600w",
+https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=3600&h=2304&fit=crop&fm=jpg 3600w,
+https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=4240&h=2714&fit=crop&fm=jpg 4240w",
   "srcSetWebp": "https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=300&h=192&fit=crop 300w,
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=600&h=384&fit=crop 600w,
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=1200&h=768&fit=crop 1200w,
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=1800&h=1152&fit=crop 1800w,
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=2400&h=1536&fit=crop 2400w,
-https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=3600&h=2304&fit=crop 3600w",
+https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=3600&h=2304&fit=crop 3600w,
+https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=4240&h=2714&fit=crop 4240w",
   "srcWebp": "https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=1200&h=768&fit=crop",
 }
 `;
@@ -165,13 +169,15 @@ https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=600&h=401
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=1200&h=802&fit=crop&fm=jpg 1200w,
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=1800&h=1202&fit=crop&fm=jpg 1800w,
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=2400&h=1603&fit=crop&fm=jpg 2400w,
-https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=3600&h=2405&fit=crop&fm=jpg 3600w",
+https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=3600&h=2405&fit=crop&fm=jpg 3600w,
+https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=4240&h=2832&fit=crop&fm=jpg 4240w",
   "srcSetWebp": "https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=300&h=200&fit=crop 300w,
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=600&h=401&fit=crop 600w,
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=1200&h=802&fit=crop 1200w,
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=1800&h=1202&fit=crop 1800w,
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=2400&h=1603&fit=crop 2400w,
-https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=3600&h=2405&fit=crop 3600w",
+https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=3600&h=2405&fit=crop 3600w,
+https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=4240&h=2832&fit=crop 4240w",
   "srcWebp": "https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=1200&h=802&fit=crop",
 }
 `;
@@ -187,13 +193,15 @@ https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=400&h=267
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=800&h=534&fit=crop&fm=jpg 800w,
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=1200&h=802&fit=crop&fm=jpg 1200w,
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=1600&h=1069&fit=crop&fm=jpg 1600w,
-https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=2400&h=1603&fit=crop&fm=jpg 2400w",
+https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=2400&h=1603&fit=crop&fm=jpg 2400w,
+https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=4240&h=2832&fit=crop&fm=jpg 4240w",
   "srcSetWebp": "https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=200&h=134&fit=crop 200w,
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=400&h=267&fit=crop 400w,
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=800&h=534&fit=crop 800w,
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=1200&h=802&fit=crop 1200w,
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=1600&h=1069&fit=crop 1600w,
-https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=2400&h=1603&fit=crop 2400w",
+https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=2400&h=1603&fit=crop 2400w,
+https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=4240&h=2832&fit=crop 4240w",
   "srcWebp": "https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=800&h=534&fit=crop",
 }
 `;
@@ -300,8 +308,8 @@ Object {
   "base64": null,
   "sizes": "(max-width: 1200px) 100vw, 1200px",
   "src": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=1200&h=768&fit=crop",
-  "srcSet": null,
-  "srcSetWebp": null,
+  "srcSet": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=300&h=192&fit=crop 300w",
+  "srcSetWebp": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=300&h=192&fit=crop&fm=webp 300w",
   "srcWebp": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=1200&h=768&fit=crop&fm=webp",
 }
 `;
@@ -312,8 +320,8 @@ Object {
   "base64": null,
   "sizes": "(max-width: 1200px) 100vw, 1200px",
   "src": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=1200&h=800&fit=crop",
-  "srcSet": null,
-  "srcSetWebp": null,
+  "srcSet": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=300&h=200&fit=crop 300w",
+  "srcSetWebp": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=300&h=200&fit=crop&fm=webp 300w",
   "srcWebp": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=1200&h=800&fit=crop&fm=webp",
 }
 `;
@@ -324,8 +332,10 @@ Object {
   "base64": null,
   "sizes": "(max-width: 800px) 100vw, 800px",
   "src": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=800&h=533&fit=crop",
-  "srcSet": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=200&h=133&fit=crop 200w",
-  "srcSetWebp": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=200&h=133&fit=crop&fm=webp 200w",
+  "srcSet": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=200&h=133&fit=crop 200w,
+https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=300&h=200&fit=crop 300w",
+  "srcSetWebp": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=200&h=133&fit=crop&fm=webp 200w,
+https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=300&h=200&fit=crop&fm=webp 300w",
   "srcWebp": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=800&h=533&fit=crop&fm=webp",
 }
 `;
@@ -341,13 +351,15 @@ https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=600&h=384
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=1200&h=768&fit=crop&fm=jpg 1200w,
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=1800&h=1152&fit=crop&fm=jpg 1800w,
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=2400&h=1536&fit=crop&fm=jpg 2400w,
-https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=3600&h=2304&fit=crop&fm=jpg 3600w",
+https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=3600&h=2304&fit=crop&fm=jpg 3600w,
+https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=4240&h=2714&fit=crop&fm=jpg 4240w",
   "srcSetWebp": "https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=300&h=192&fit=crop 300w,
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=600&h=384&fit=crop 600w,
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=1200&h=768&fit=crop 1200w,
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=1800&h=1152&fit=crop 1800w,
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=2400&h=1536&fit=crop 2400w,
-https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=3600&h=2304&fit=crop 3600w",
+https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=3600&h=2304&fit=crop 3600w,
+https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=4240&h=2714&fit=crop 4240w",
   "srcWebp": "https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=1200&h=768&fit=crop",
 }
 `;
@@ -363,13 +375,15 @@ https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=600&h=401
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=1200&h=802&fit=crop&fm=jpg 1200w,
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=1800&h=1202&fit=crop&fm=jpg 1800w,
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=2400&h=1603&fit=crop&fm=jpg 2400w,
-https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=3600&h=2405&fit=crop&fm=jpg 3600w",
+https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=3600&h=2405&fit=crop&fm=jpg 3600w,
+https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=4240&h=2832&fit=crop&fm=jpg 4240w",
   "srcSetWebp": "https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=300&h=200&fit=crop 300w,
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=600&h=401&fit=crop 600w,
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=1200&h=802&fit=crop 1200w,
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=1800&h=1202&fit=crop 1800w,
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=2400&h=1603&fit=crop 2400w,
-https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=3600&h=2405&fit=crop 3600w",
+https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=3600&h=2405&fit=crop 3600w,
+https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=4240&h=2832&fit=crop 4240w",
   "srcWebp": "https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=1200&h=802&fit=crop",
 }
 `;
@@ -385,13 +399,15 @@ https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=400&h=267
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=800&h=534&fit=crop&fm=jpg 800w,
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=1200&h=802&fit=crop&fm=jpg 1200w,
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=1600&h=1069&fit=crop&fm=jpg 1600w,
-https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=2400&h=1603&fit=crop&fm=jpg 2400w",
+https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=2400&h=1603&fit=crop&fm=jpg 2400w,
+https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=4240&h=2832&fit=crop&fm=jpg 4240w",
   "srcSetWebp": "https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=200&h=134&fit=crop 200w,
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=400&h=267&fit=crop 400w,
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=800&h=534&fit=crop 800w,
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=1200&h=802&fit=crop 1200w,
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=1600&h=1069&fit=crop 1600w,
-https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=2400&h=1603&fit=crop 2400w",
+https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=2400&h=1603&fit=crop 2400w,
+https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=4240&h=2832&fit=crop 4240w",
   "srcWebp": "https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=800&h=534&fit=crop",
 }
 `;
@@ -498,8 +514,8 @@ Object {
   "base64": "data:image/jpeg;base64,someString",
   "sizes": "(max-width: 1200px) 100vw, 1200px",
   "src": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=1200&h=768&fit=crop",
-  "srcSet": null,
-  "srcSetWebp": null,
+  "srcSet": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=300&h=192&fit=crop 300w",
+  "srcSetWebp": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=300&h=192&fit=crop&fm=webp 300w",
   "srcWebp": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=1200&h=768&fit=crop&fm=webp",
 }
 `;
@@ -510,8 +526,8 @@ Object {
   "base64": "data:image/jpeg;base64,someString",
   "sizes": "(max-width: 1200px) 100vw, 1200px",
   "src": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=1200&h=800&fit=crop",
-  "srcSet": null,
-  "srcSetWebp": null,
+  "srcSet": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=300&h=200&fit=crop 300w",
+  "srcSetWebp": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=300&h=200&fit=crop&fm=webp 300w",
   "srcWebp": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=1200&h=800&fit=crop&fm=webp",
 }
 `;
@@ -522,8 +538,10 @@ Object {
   "base64": "data:image/jpeg;base64,someString",
   "sizes": "(max-width: 800px) 100vw, 800px",
   "src": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=800&h=533&fit=crop",
-  "srcSet": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=200&h=133&fit=crop 200w",
-  "srcSetWebp": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=200&h=133&fit=crop&fm=webp 200w",
+  "srcSet": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=200&h=133&fit=crop 200w,
+https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=300&h=200&fit=crop 300w",
+  "srcSetWebp": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=200&h=133&fit=crop&fm=webp 200w,
+https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=300&h=200&fit=crop&fm=webp 300w",
   "srcWebp": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=800&h=533&fit=crop&fm=webp",
 }
 `;
@@ -539,13 +557,15 @@ https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=600&h=384
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=1200&h=768&fit=crop&fm=jpg 1200w,
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=1800&h=1152&fit=crop&fm=jpg 1800w,
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=2400&h=1536&fit=crop&fm=jpg 2400w,
-https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=3600&h=2304&fit=crop&fm=jpg 3600w",
+https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=3600&h=2304&fit=crop&fm=jpg 3600w,
+https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=4240&h=2714&fit=crop&fm=jpg 4240w",
   "srcSetWebp": "https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=300&h=192&fit=crop 300w,
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=600&h=384&fit=crop 600w,
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=1200&h=768&fit=crop 1200w,
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=1800&h=1152&fit=crop 1800w,
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=2400&h=1536&fit=crop 2400w,
-https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=3600&h=2304&fit=crop 3600w",
+https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=3600&h=2304&fit=crop 3600w,
+https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=4240&h=2714&fit=crop 4240w",
   "srcWebp": "https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=1200&h=768&fit=crop",
 }
 `;
@@ -561,13 +581,15 @@ https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=600&h=401
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=1200&h=802&fit=crop&fm=jpg 1200w,
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=1800&h=1202&fit=crop&fm=jpg 1800w,
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=2400&h=1603&fit=crop&fm=jpg 2400w,
-https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=3600&h=2405&fit=crop&fm=jpg 3600w",
+https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=3600&h=2405&fit=crop&fm=jpg 3600w,
+https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=4240&h=2832&fit=crop&fm=jpg 4240w",
   "srcSetWebp": "https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=300&h=200&fit=crop 300w,
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=600&h=401&fit=crop 600w,
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=1200&h=802&fit=crop 1200w,
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=1800&h=1202&fit=crop 1800w,
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=2400&h=1603&fit=crop 2400w,
-https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=3600&h=2405&fit=crop 3600w",
+https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=3600&h=2405&fit=crop 3600w,
+https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=4240&h=2832&fit=crop 4240w",
   "srcWebp": "https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=1200&h=802&fit=crop",
 }
 `;
@@ -583,13 +605,15 @@ https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=400&h=267
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=800&h=534&fit=crop&fm=jpg 800w,
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=1200&h=802&fit=crop&fm=jpg 1200w,
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=1600&h=1069&fit=crop&fm=jpg 1600w,
-https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=2400&h=1603&fit=crop&fm=jpg 2400w",
+https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=2400&h=1603&fit=crop&fm=jpg 2400w,
+https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=4240&h=2832&fit=crop&fm=jpg 4240w",
   "srcSetWebp": "https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=200&h=134&fit=crop 200w,
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=400&h=267&fit=crop 400w,
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=800&h=534&fit=crop 800w,
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=1200&h=802&fit=crop 1200w,
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=1600&h=1069&fit=crop 1600w,
-https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=2400&h=1603&fit=crop 2400w",
+https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=2400&h=1603&fit=crop 2400w,
+https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=4240&h=2832&fit=crop 4240w",
   "srcWebp": "https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=800&h=534&fit=crop",
 }
 `;
