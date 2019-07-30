@@ -188,7 +188,7 @@ export function getFixedGatsbyImage(
   const widths = sizeMultipliersFixed.map(scale => Math.round(width * scale))
   const initial = {webp: [] as string[], base: [] as string[]}
   const srcSets = widths
-    .filter(currentWidth => currentWidth < dimensions.width)
+    .filter(currentWidth => currentWidth <= dimensions.width)
     .reduce((acc, currentWidth, i) => {
       const resolution = `${sizeMultipliersFixed[i]}x`
       const currentHeight = Math.round(currentWidth / desiredAspectRatio)
@@ -253,7 +253,7 @@ export function getFluidGatsbyImage(
 
   const initial = {webp: [] as string[], base: [] as string[]}
   const srcSets = widths
-    .filter(currentWidth => currentWidth < dimensions.width)
+    .filter(currentWidth => currentWidth <= dimensions.width)
     .reduce((acc, currentWidth) => {
       const currentHeight = Math.round(currentWidth / desiredAspectRatio)
       const imgUrl = `${url}?w=${currentWidth}&h=${currentHeight}&fit=crop`
