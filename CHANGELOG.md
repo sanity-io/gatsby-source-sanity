@@ -2,6 +2,12 @@
 
 All notable changes will be documented in this file.
 
+## 5.0.2
+
+### Fixes
+
+- Include original image size in srcSet
+
 ## 5.0.1
 
 ### Changes
