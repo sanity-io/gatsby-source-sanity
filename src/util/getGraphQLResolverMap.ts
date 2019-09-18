@@ -1,6 +1,6 @@
 import {TypeMap, FieldDef} from './remoteGraphQLSchema'
 import {GatsbyResolverMap, GatsbyNodeModel, GatsbyGraphQLContext} from '../types/gatsby'
-import {getTypeName} from './normalize'
+import {getTypeName, getConflictFreeFieldName} from './normalize'
 import {SanityRef} from '../types/sanity'
 import {GraphQLFieldResolver} from 'graphql'
 
@@ -23,7 +23,8 @@ export function getGraphQLResolverMap(typeMap: TypeMap): GatsbyResolverMap {
     }
 
     resolvers[objectType.name] = resolveFields.reduce((fields, field) => {
-      fields[field.fieldName] = {resolve: getResolver(field)}
+      const targetField = getConflictFreeFieldName(field.fieldName)
+      fields[targetField] = {resolve: getResolver(field)}
       return fields
     }, resolvers[objectType.name] || {})
   })
