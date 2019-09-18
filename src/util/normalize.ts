@@ -79,14 +79,17 @@ function prefixConflictingKeys(obj: SanityDocument) {
   const initial: SanityDocument = {_id: '', _type: ''}
 
   return Object.keys(obj).reduce((target, key) => {
-    if (RESTRICTED_NODE_FIELDS.includes(key)) {
-      target[`${camelCase(typePrefix)}${upperFirst(key)}`] = obj[key]
-    } else {
-      target[key] = obj[key]
-    }
+    const targetKey = getConflictFreeFieldName(key)
+    target[targetKey] = obj[key]
 
     return target
   }, initial)
+}
+
+export function getConflictFreeFieldName(fieldName: string) {
+  return RESTRICTED_NODE_FIELDS.includes(fieldName)
+    ? `${camelCase(typePrefix)}${upperFirst(fieldName)}`
+    : fieldName
 }
 
 function getRawAliases(doc: SanityDocument, options: ProcessingOptions) {
