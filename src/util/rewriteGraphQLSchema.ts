@@ -1,4 +1,3 @@
-import {upperFirst} from 'lodash'
 import {
   ASTNode,
   DefinitionNode,
@@ -19,23 +18,30 @@ import {
   DirectiveNode,
 } from 'gatsby/graphql'
 import {PluginConfig} from '../gatsby-node'
-import {RESTRICTED_NODE_FIELDS} from './normalize'
+import {RESTRICTED_NODE_FIELDS, getConflictFreeFieldName} from './normalize'
+import {GatsbyReporter} from '../types/gatsby'
 
-const conflictPrefix = 'sanity'
+interface AstRewriterContext {
+  reporter: GatsbyReporter
+  config: PluginConfig
+}
+
 const builtins = ['ID', 'String', 'Boolean', 'Int', 'Float', 'JSON', 'DateTime', 'Date']
 const wantedNodeTypes = ['ObjectTypeDefinition', 'UnionTypeDefinition', 'InterfaceTypeDefinition']
 
-export const rewriteGraphQLSchema = (schemaSdl: string, config: PluginConfig): string => {
+export const rewriteGraphQLSchema = (schemaSdl: string, context: AstRewriterContext): string => {
   const ast = parse(schemaSdl)
-  const transformedAst = transformAst(ast, config)
+  const transformedAst = transformAst(ast, context)
   const transformed = print(transformedAst)
   return transformed
 }
 
-function transformAst(ast: DocumentNode, config: PluginConfig): ASTNode {
+function transformAst(ast: DocumentNode, context: AstRewriterContext): ASTNode {
   return {
     ...ast,
-    definitions: ast.definitions.filter(isWantedAstNode).map(transformDefinitionNode),
+    definitions: ast.definitions
+      .filter(isWantedAstNode)
+      .map(node => transformDefinitionNode(node, context)),
   }
 }
 
@@ -44,20 +50,26 @@ function isWantedAstNode(astNode: DefinitionNode) {
   return wantedNodeTypes.includes(node.kind) && node.name.value !== 'RootQuery'
 }
 
-function transformDefinitionNode(node: DefinitionNode): DefinitionNode {
+function transformDefinitionNode(
+  node: DefinitionNode,
+  context: AstRewriterContext,
+): DefinitionNode {
   switch (node.kind) {
     case 'ObjectTypeDefinition':
-      return transformObjectTypeDefinition(node)
+      return transformObjectTypeDefinition(node, context)
     case 'UnionTypeDefinition':
-      return transformUnionTypeDefinition(node)
+      return transformUnionTypeDefinition(node, context)
     case 'InterfaceTypeDefinition':
-      return transformInterfaceTypeDefinition(node)
+      return transformInterfaceTypeDefinition(node, context)
     default:
       return node
   }
 }
 
-function transformObjectTypeDefinition(node: ObjectTypeDefinitionNode): ObjectTypeDefinitionNode {
+function transformObjectTypeDefinition(
+  node: ObjectTypeDefinitionNode,
+  context: AstRewriterContext,
+): ObjectTypeDefinitionNode {
   const fields = node.fields || []
   const jsonTargets = fields.map(getJsonAliasTargets).filter(Boolean)
   const blockFields = jsonTargets.map(makeBlockField)
@@ -77,13 +89,18 @@ function transformObjectTypeDefinition(node: ObjectTypeDefinitionNode): ObjectTy
     interfaces,
     directives: [{kind: 'Directive', name: {kind: 'Name', value: 'dontInfer'}}],
     fields: [
-      ...fields.filter(field => !getJsonAliasTargets(field)).map(transformFieldNodeAst),
+      ...fields
+        .filter(field => !getJsonAliasTargets(field))
+        .map(field => transformFieldNodeAst(field, node, context)),
       ...blockFields,
     ],
   }
 }
 
-function transformUnionTypeDefinition(node: UnionTypeDefinitionNode): UnionTypeDefinitionNode {
+function transformUnionTypeDefinition(
+  node: UnionTypeDefinitionNode,
+  context: AstRewriterContext,
+): UnionTypeDefinitionNode {
   return {
     ...node,
     types: (node.types || []).map(maybeRewriteType) as NamedTypeNode[],
@@ -91,11 +108,14 @@ function transformUnionTypeDefinition(node: UnionTypeDefinitionNode): UnionTypeD
   }
 }
 
-function transformInterfaceTypeDefinition(node: InterfaceTypeDefinitionNode) {
+function transformInterfaceTypeDefinition(
+  node: InterfaceTypeDefinitionNode,
+  context: AstRewriterContext,
+) {
   const fields = node.fields || []
   return {
     ...node,
-    fields: fields.map(transformFieldNodeAst),
+    fields: fields.map(field => transformFieldNodeAst(field, node, context)),
     name: {...node.name, value: getTypeName(node.name.value)},
   }
 }
@@ -161,10 +181,14 @@ function makeNullable(nodeType: TypeNode): TypeNode {
   return maybeRewriteType(nodeType.type) as NamedTypeNode
 }
 
-function transformFieldNodeAst(node: FieldDefinitionNode) {
+function transformFieldNodeAst(
+  node: FieldDefinitionNode,
+  parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode,
+  context: AstRewriterContext,
+) {
   const field = {
     ...node,
-    name: maybeRewriteFieldName(node),
+    name: maybeRewriteFieldName(node, parent, context),
     type: rewireIdType(makeNullable(node.type)),
     description: undefined,
     directives: [] as DirectiveNode[],
@@ -203,14 +227,29 @@ function maybeRewriteType(nodeType: TypeNode): TypeNode {
   return {...type, name: {kind: 'Name', value: getTypeName(type.name.value)}}
 }
 
-function maybeRewriteFieldName(field: FieldDefinitionNode): NameNode {
+function maybeRewriteFieldName(
+  field: FieldDefinitionNode,
+  parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode,
+  context: AstRewriterContext,
+): NameNode {
   if (!RESTRICTED_NODE_FIELDS.includes(field.name.value)) {
     return field.name
   }
 
+  const parentTypeName = parent.name.value
+  const newFieldName = getConflictFreeFieldName(field.name.value)
+
+  if (parentTypeName !== 'Block') {
+    context.reporter.warn(
+      `[sanity] Type \`${parentTypeName}\` has field with name \`${
+        field.name.value
+      }\`, which conflicts with Gatsby's internal properties. Renaming to \`${newFieldName}\``,
+    )
+  }
+
   return {
     ...field.name,
-    value: `${conflictPrefix}${upperFirst(field.name.value)}`,
+    value: newFieldName,
   }
 }
 
