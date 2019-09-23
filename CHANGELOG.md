@@ -2,6 +2,16 @@
 
 All notable changes will be documented in this file.
 
+## 5.0.3
+
+### Fixes
+
+- Add GraphQL resolvers on conflict-free Gatsby fields
+
+### Changes
+
+- Warn when renaming fields due to Gatsby internal prop conflicts
+
 ## 5.0.2
 
 ### Fixes
