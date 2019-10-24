@@ -32,9 +32,9 @@
     "prepublishOnly": "npm run build && npm test"
   },
   "dependencies": {
-    "@sanity/client": "^0.142.6",
+    "@sanity/client": "^0.144.0",
     "@sanity/image-url": "^0.140.15",
-    "@sanity/mutator": "^0.142.6",
+    "@sanity/mutator": "^0.144.0",
     "@types/url-parse": "^1.4.3",
     "axios": "^0.19.0",
     "debug": "^4.1.0",
@@ -60,7 +60,7 @@
     "@types/through2": "^2.0.34",
     "eslint": "^6.5.1",
     "eslint-config-prettier": "^6.4.0",
-    "eslint-config-sanity": "^0.142.6",
+    "eslint-config-sanity": "^0.144.0",
     "gatsby": "^2.17.2",
     "jest": "^24.9.0",
     "prettier": "^1.18.2",
