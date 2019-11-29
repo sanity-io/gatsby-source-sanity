@@ -1,5 +1,6 @@
 import * as parseUrl from 'url-parse'
 
+export const LOWEST_FLUID_BREAKPOINT_WIDTH = 100
 export const DEFAULT_FIXED_WIDTH = 400
 export const DEFAULT_FLUID_MAX_WIDTH = 800
 export type ImageNode = ImageAsset | ImageObject | ImageRef | string | null | undefined
@@ -26,7 +27,7 @@ type GatsbyFixedImageProps = GatsbyImageProps & {
 }
 
 type GatsbyFluidImageProps = GatsbyImageProps & {
-  sizes: string
+  sizes: string | null
 }
 
 type ImageDimensions = {
@@ -171,6 +172,7 @@ export function getFixedGatsbyImage(
 
   const {url, metadata, extension} = props
   const {dimensions, lqip} = metadata
+  const isOriginalSize = (w: number, h: number) => w === dimensions.width && h === dimensions.height
   let desiredAspectRatio = dimensions.aspectRatio
 
   // If we're cropping, calculate the specified aspect ratio
@@ -185,6 +187,14 @@ export function getFixedGatsbyImage(
     forceConvert = 'jpg'
   }
 
+  const hasOriginalRatio = desiredAspectRatio === dimensions.aspectRatio
+  const outputHeight = Math.round(height ? height : width / desiredAspectRatio)
+  const imgUrl =
+    isOriginalSize(width, outputHeight) ||
+    (hasOriginalRatio && width > dimensions.width && outputHeight > dimensions.height)
+      ? url
+      : `${url}?w=${width}&h=${outputHeight}&fit=crop`
+
   const widths = sizeMultipliersFixed.map(scale => Math.round(width * scale))
   const initial = {webp: [] as string[], base: [] as string[]}
   const srcSets = widths
@@ -192,7 +202,10 @@ export function getFixedGatsbyImage(
     .reduce((acc, currentWidth, i) => {
       const resolution = `${sizeMultipliersFixed[i]}x`
       const currentHeight = Math.round(currentWidth / desiredAspectRatio)
-      const imgUrl = `${url}?w=${currentWidth}&h=${currentHeight}&fit=crop`
+      const imgUrl = isOriginalSize(currentWidth, currentHeight)
+        ? url
+        : `${url}?w=${currentWidth}&h=${currentHeight}&fit=crop`
+
       const webpUrl = convertToFormat(imgUrl, 'webp')
       const baseUrl = convertToFormat(imgUrl, forceConvert || props.extension)
       acc.webp.push(`${webpUrl} ${resolution}`)
@@ -200,8 +213,7 @@ export function getFixedGatsbyImage(
       return acc
     }, initial)
 
-  const outputHeight = Math.round(height ? height : width / desiredAspectRatio)
-  const imgUrl = `${url}?w=${width}&h=${outputHeight}&fit=crop`
+  const hasSrcSet = srcSets.base.length > 1
 
   return {
     base64: lqip || null,
@@ -210,8 +222,8 @@ export function getFixedGatsbyImage(
     height: outputHeight,
     src: convertToFormat(imgUrl, forceConvert || extension),
     srcWebp: convertToFormat(imgUrl, 'webp'),
-    srcSet: srcSets.base.join(',\n') || null,
-    srcSetWebp: srcSets.webp.join(',\n') || null,
+    srcSet: hasSrcSet ? srcSets.base.join(',\n') || null : null,
+    srcSetWebp: hasSrcSet ? srcSets.webp.join(',\n') || null : null,
   }
 }
 
@@ -227,16 +239,20 @@ export function getFluidGatsbyImage(
 
   const {url, metadata, extension} = props
   const {dimensions, lqip} = metadata
+  const isOriginalSize = (w: number, h: number) => w === dimensions.width && h === dimensions.height
 
-  const maxWidth = args.maxWidth || DEFAULT_FLUID_MAX_WIDTH
+  const maxWidth = Math.min(args.maxWidth || DEFAULT_FLUID_MAX_WIDTH, dimensions.width)
+  const specifiedMaxHeight = args.maxHeight
+    ? Math.min(args.maxHeight, dimensions.height)
+    : undefined
   let desiredAspectRatio = dimensions.aspectRatio
 
   // If we're cropping, calculate the specified aspect ratio
-  if (args.maxHeight) {
-    desiredAspectRatio = maxWidth / args.maxHeight
+  if (specifiedMaxHeight) {
+    desiredAspectRatio = maxWidth / specifiedMaxHeight
   }
 
-  const maxHeight = args.maxHeight || Math.round(maxWidth / dimensions.aspectRatio)
+  const maxHeight = specifiedMaxHeight || Math.round(maxWidth / dimensions.aspectRatio)
 
   let forceConvert: string | null = null
   if (args.toFormat) {
@@ -245,10 +261,17 @@ export function getFluidGatsbyImage(
     forceConvert = 'jpg'
   }
 
+  const baseSrc = isOriginalSize(maxWidth, maxHeight)
+    ? url
+    : `${url}?w=${maxWidth}&h=${maxHeight}&fit=crop`
+
+  const src = convertToFormat(baseSrc, forceConvert || extension)
+  const srcWebp = convertToFormat(baseSrc, 'webp')
+
   const sizes = args.sizes || `(max-width: ${maxWidth}px) 100vw, ${maxWidth}px`
   const widths = sizeMultipliersFluid
     .map(scale => Math.round(maxWidth * scale))
-    .filter(width => width < dimensions.width)
+    .filter(width => width < dimensions.width && width > LOWEST_FLUID_BREAKPOINT_WIDTH)
     .concat(dimensions.width)
 
   const initial = {webp: [] as string[], base: [] as string[]}
@@ -256,7 +279,9 @@ export function getFluidGatsbyImage(
     .filter(currentWidth => currentWidth <= dimensions.width)
     .reduce((acc, currentWidth) => {
       const currentHeight = Math.round(currentWidth / desiredAspectRatio)
-      const imgUrl = `${url}?w=${currentWidth}&h=${currentHeight}&fit=crop`
+      const imgUrl = isOriginalSize(currentWidth, currentHeight)
+        ? url
+        : `${url}?w=${currentWidth}&h=${currentHeight}&fit=crop`
 
       const webpUrl = convertToFormat(imgUrl, 'webp')
       const baseUrl = convertToFormat(imgUrl, forceConvert || props.extension)
@@ -265,17 +290,15 @@ export function getFluidGatsbyImage(
       return acc
     }, initial)
 
-  const baseSrc = `${url}?w=${maxWidth}&h=${maxHeight}&fit=crop`
-  const src = convertToFormat(baseSrc, forceConvert || extension)
-  const srcWebp = convertToFormat(baseSrc, 'webp')
+  const hasSrcSet = srcSets.base.length > 1
 
   return {
     base64: lqip || null,
     aspectRatio: desiredAspectRatio,
     src,
     srcWebp,
-    srcSet: srcSets.base.join(',\n') || null,
-    srcSetWebp: srcSets.webp.join(',\n') || null,
-    sizes,
+    srcSet: hasSrcSet ? srcSets.base.join(',\n') || null : null,
+    srcSetWebp: hasSrcSet ? srcSets.webp.join(',\n') || null : null,
+    sizes: hasSrcSet ? sizes : null,
   }
 }

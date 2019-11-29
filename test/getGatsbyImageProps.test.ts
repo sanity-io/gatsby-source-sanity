@@ -1,5 +1,6 @@
 import {getFixedGatsbyImage, getFluidGatsbyImage} from '../src/images/getGatsbyImageProps'
 
+// Smallish image
 const jpegId = 'image-abc123-300x200-jpg'
 const jpegRef = {_ref: 'image-abc123-300x200-jpg'}
 const jpegResolved = {
@@ -17,6 +18,7 @@ const jpegResolved = {
   },
 }
 
+// Largeish image
 const webpId = 'image-def456-4240x2832-webp'
 const webpRef = {_ref: 'image-def456-4240x2832-webp'}
 const webpResolved = {
@@ -34,12 +36,15 @@ const webpResolved = {
   },
 }
 
+// Tiny image, should generally not be processed apart from format
+const smallId = 'image-bf1942-70x70-jpg'
+
 const location = {
   projectId: 'projectId',
   dataset: 'dataset',
 }
 
-// JPEG
+// JPEG, smallish image
 test('[resolved] fixed, jpg without params', () => {
   expect(getFixedGatsbyImage(jpegResolved, {}, location)).toMatchSnapshot()
 })
@@ -114,7 +119,7 @@ test('[id] fluid, jpg with max width (1200) + max height (768)', () => {
   expect(getFluidGatsbyImage(jpegId, {maxWidth: 1200, maxHeight: 768}, location)).toMatchSnapshot()
 })
 
-// WebP
+// WebP, largish image
 test('[resolved] fixed, webp without params', () => {
   expect(getFixedGatsbyImage(webpResolved, {}, location)).toMatchSnapshot()
 })
@@ -187,4 +192,29 @@ test('[id] fixed, webp with width (600) + height (300)', () => {
 
 test('[id] fluid, webp with max width (1200) + max height (768)', () => {
   expect(getFluidGatsbyImage(webpId, {maxWidth: 1200, maxHeight: 768}, location)).toMatchSnapshot()
+})
+
+// No upscaling
+test('[id] fluid, jpeg with max width (300) > original size', () => {
+  expect(getFluidGatsbyImage(smallId, {maxWidth: 300}, location)).toMatchSnapshot()
+})
+
+// No upscaling for fixed with same aspect ratio
+test('[id] fixed, jpeg with width/height (300x300) > original size, same aspect', () => {
+  expect(getFixedGatsbyImage(smallId, {width: 300, height: 300}, location)).toMatchSnapshot()
+})
+
+// Upscale for fixed with different aspect ratio
+test('[id] fixed, jpeg with width/height (320x240) > original size, different aspect', () => {
+  expect(getFixedGatsbyImage(smallId, {width: 320, height: 240}, location)).toMatchSnapshot()
+})
+
+// No width/height parameters if size matches original
+test('[id] fixed, jpeg with width/height matching original', () => {
+  expect(getFixedGatsbyImage(smallId, {width: 70, height: 70}, location)).toMatchSnapshot()
+})
+
+// Does downscale
+test('[id] fixed, jpeg with width/height (50) < original size', () => {
+  expect(getFixedGatsbyImage(smallId, {width: 50, height: 50}, location)).toMatchSnapshot()
 })
