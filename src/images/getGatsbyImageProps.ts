@@ -17,8 +17,8 @@ type GatsbyImageProps = {
   aspectRatio: number
   src: string
   srcWebp: string
-  srcSet: string | null
-  srcSetWebp: string | null
+  srcSet: string
+  srcSetWebp: string
 }
 
 type GatsbyFixedImageProps = GatsbyImageProps & {
@@ -27,7 +27,7 @@ type GatsbyFixedImageProps = GatsbyImageProps & {
 }
 
 type GatsbyFluidImageProps = GatsbyImageProps & {
-  sizes: string | null
+  sizes: string
 }
 
 type ImageDimensions = {
@@ -213,17 +213,18 @@ export function getFixedGatsbyImage(
       return acc
     }, initial)
 
-  const hasSrcSet = srcSets.base.length > 1
+  const src = convertToFormat(imgUrl, forceConvert || extension)
+  const srcWebp = convertToFormat(imgUrl, 'webp')
 
   return {
     base64: lqip || null,
     aspectRatio: desiredAspectRatio,
     width: Math.round(width),
     height: outputHeight,
-    src: convertToFormat(imgUrl, forceConvert || extension),
-    srcWebp: convertToFormat(imgUrl, 'webp'),
-    srcSet: hasSrcSet ? srcSets.base.join(',\n') || null : null,
-    srcSetWebp: hasSrcSet ? srcSets.webp.join(',\n') || null : null,
+    src,
+    srcWebp,
+    srcSet: srcSets.base.join(',\n') || `${src} 1x`,
+    srcSetWebp: srcSets.webp.join(',\n') || `${srcWebp} 1x`,
   }
 }
 
@@ -261,9 +262,11 @@ export function getFluidGatsbyImage(
     forceConvert = 'jpg'
   }
 
-  const baseSrc = isOriginalSize(maxWidth, maxHeight)
-    ? url
-    : `${url}?w=${maxWidth}&h=${maxHeight}&fit=crop`
+  const baseSrc =
+    isOriginalSize(maxWidth, maxHeight) ||
+    (maxWidth >= dimensions.width && maxHeight >= dimensions.height)
+      ? url
+      : `${url}?w=${maxWidth}&h=${maxHeight}&fit=crop`
 
   const src = convertToFormat(baseSrc, forceConvert || extension)
   const srcWebp = convertToFormat(baseSrc, 'webp')
@@ -290,15 +293,13 @@ export function getFluidGatsbyImage(
       return acc
     }, initial)
 
-  const hasSrcSet = srcSets.base.length > 1
-
   return {
     base64: lqip || null,
     aspectRatio: desiredAspectRatio,
     src,
     srcWebp,
-    srcSet: hasSrcSet ? srcSets.base.join(',\n') || null : null,
-    srcSetWebp: hasSrcSet ? srcSets.webp.join(',\n') || null : null,
-    sizes: hasSrcSet ? sizes : null,
+    srcSet: srcSets.base.join(',\n'),
+    srcSetWebp: srcSets.webp.join(',\n'),
+    sizes,
   }
 }
