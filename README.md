@@ -10,7 +10,7 @@ Get up and running in minutes with a fully configured starter project:
 
 ## Table of contents
 
-- [Installation](#installation)
+- [Install](#install)
 - [Basic usage](#basic-usage)
 - [Options](#options)
 - [Preview of unpublished content](#preview-of-unpublished-content)
@@ -30,7 +30,7 @@ Get up and running in minutes with a fully configured starter project:
 
 [See the getting started video](https://www.youtube.com/watch?v=qU4lFYp3KiQ)
 
-## Installation
+## Install
 
 From the command line, use npm (node package manager) to install the plugin:
 
