@@ -50,11 +50,11 @@ export const defaultTypeMap: TypeMap = {
 }
 
 export async function getRemoteGraphQLSchema(client: SanityClient, config: PluginConfig) {
-  const {graphqlApi} = config
+  const {graphqlTag} = config
   const {dataset} = client.config()
   try {
     const api = await client.request({
-      url: `/apis/graphql/${dataset}/${graphqlApi}`,
+      url: `/apis/graphql/${dataset}/${graphqlTag}`,
       headers: {Accept: 'application/graphql'},
     })
 
