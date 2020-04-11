@@ -35,7 +35,7 @@ Get up and running in minutes with a fully configured starter project:
 From the command line, use npm (node package manager) to install the plugin:
 
 ```console
-npm i gatsby-source-sanity --save
+npm install gatsby-source-sanity
 ```
 
 
