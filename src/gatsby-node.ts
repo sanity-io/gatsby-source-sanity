@@ -47,7 +47,7 @@ export interface PluginConfig {
   dataset: string
   token?: string
   version?: string
-  graphqlApi: string
+  graphqlTag: string
   overlayDrafts?: boolean
   watchMode?: boolean
 }
@@ -55,7 +55,7 @@ export interface PluginConfig {
 const defaultConfig = {
   version: '1',
   overlayDrafts: false,
-  graphqlApi: 'default',
+  graphqlTag: 'default',
 }
 
 const stateCache: {[key: string]: any} = {}

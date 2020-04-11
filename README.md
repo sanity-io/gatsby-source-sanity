@@ -53,6 +53,10 @@ module.exports = {
         // a token with read permissions is required
         // if you have a private dataset
         token: process.env.MY_SANITY_TOKEN,
+
+        // If the Sanity GraphQL API was deployed using `--tag <name>`,
+        // use `graphqlTag` to specify the tag name. Defaults to `default`.
+        graphqlTag: 'default',
       },
     },
   // ...
@@ -65,19 +69,20 @@ module.exports = {
 
 At this point you should [set up a GraphQL API](https://www.sanity.io/help/graphql-beta) for your Sanity dataset, if you have not done so already. This will help the plugin in knowing which types and fields exists, so you can query for them even without them being present in any current documents.
 
-**You should redeploy the GraphQL API everytime you make changes to the schema that you want to use in Gatsby**
+**You should redeploy the GraphQL API everytime you make changes to the schema that you want to use in Gatsby by running ```sanity graphql deploy``` from within your Sanity project directory**
 
 Explore http://localhost:8000/___graphql after running `gatsby develop` to understand the created data and create a new query and checking available collections and fields by typing `CTRL + SPACE`.
 
 ## Options
 
-| Options       | Type    | Default | Description                                                                                                                                                        |
-| ------------- | ------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| projectId     | string  |         | **[required]** Your Sanity project's ID                                                                                                                            |
-| dataset       | string  |         | **[required]** The dataset to fetch from                                                                                                                           |
-| token         | string  |         | Authentication token for fetching data from private datasets, or when using `overlayDrafts` [Learn more](https://www.sanity.io/docs/http-auth)                     |
-| overlayDrafts | boolean | `false` | Set to `true` in order for drafts to replace their published version. By default, drafts will be skipped.                                                          |
-| watchMode     | boolean | `false` | Set to `true` to keep a listener open and update with the latest changes in realtime. If you add a `token` you will get all content updates down to each keypress. |
+| Options       | Type    | Default   | Description                                                                                                                                                        |
+| ------------- | ------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| projectId     | string  |           | **[required]** Your Sanity project's ID                                                                                                                            |
+| dataset       | string  |           | **[required]** The dataset to fetch from                                                                                                                           |
+| token         | string  |           | Authentication token for fetching data from private datasets, or when using `overlayDrafts` [Learn more](https://www.sanity.io/docs/http-auth)                     |
+| graphqlTag    | string  | `default` | If the Sanity GraphQL API was deployed using `--tag <name>`, use this to specify the tag name.                                                                     |
+| overlayDrafts | boolean | `false`   | Set to `true` in order for drafts to replace their published version. By default, drafts will be skipped.                                                          |
+| watchMode     | boolean | `false`   | Set to `true` to keep a listener open and update with the latest changes in realtime. If you add a `token` you will get all content updates down to each keypress. |
 
 ## Preview of unpublished content
 
