@@ -10,6 +10,7 @@ Get up and running in minutes with a fully configured starter project:
 
 ## Table of contents
 
+- [Install](#install)
 - [Basic usage](#basic-usage)
 - [Options](#options)
 - [Preview of unpublished content](#preview-of-unpublished-content)
@@ -26,25 +27,29 @@ Get up and running in minutes with a fully configured starter project:
 - [Using .env variables](#using-env-variables)
 - [Credits](#credits)
 
-## Basic usage
 
 [See the getting started video](https://www.youtube.com/watch?v=qU4lFYp3KiQ)
 
-```
-npm i gatsby-source-sanity --save
+## Install
+
+From the command line, use npm (node package manager) to install the plugin:
+
+```console
+npm install gatsby-source-sanity
 ```
 
+
+In the `gatsby-config.js` file in the Gatsby project's root directory, add the plugin configuration inside of the `plugins` section:  
+
 ```js
-// in your gatsby-config.js
 module.exports = {
   // ...
   plugins: [
     {
-      resolve: 'gatsby-source-sanity',
+      resolve: `gatsby-source-sanity`,
       options: {
-        projectId: 'abc123',
-        dataset: 'blog',
-
+        projectId: `abc123`,
+        dataset: `blog`,
         // a token with read permissions is required
         // if you have a private dataset
         token: process.env.MY_SANITY_TOKEN,
@@ -54,10 +59,13 @@ module.exports = {
         graphqlTag: 'default',
       },
     },
-  ],
+  // ...
+],
   // ...
 }
 ```
+
+## Basic usage
 
 At this point you should [set up a GraphQL API](https://www.sanity.io/help/graphql-beta) for your Sanity dataset, if you have not done so already. This will help the plugin in knowing which types and fields exists, so you can query for them even without them being present in any current documents.
 
