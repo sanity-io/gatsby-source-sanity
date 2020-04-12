@@ -106,15 +106,18 @@ export const createResolvers = (
   actions.createResolvers(getGraphQLResolverMap(typeMap))
 }
 
+export const createSchemaCustomization = ({actions}: GatsbyContext, pluginConfig: PluginConfig) => {
+  const {createTypes} = actions
+  const graphqlSdlKey = getCacheKey(pluginConfig, CACHE_KEYS.GRAPHQL_SDL)
+  const graphqlSdl = stateCache[graphqlSdlKey]
+  createTypes(graphqlSdl)
+}
+
 export const sourceNodes = async (context: GatsbyContext, pluginConfig: PluginConfig) => {
   const config = {...defaultConfig, ...pluginConfig}
   const {dataset, overlayDrafts, watchMode} = config
   const {actions, getNode, createNodeId, createContentDigest, reporter} = context
-  const {createNode, createTypes, createParentChildLink} = actions
-
-  const graphqlSdlKey = getCacheKey(pluginConfig, CACHE_KEYS.GRAPHQL_SDL)
-  const graphqlSdl = stateCache[graphqlSdlKey]
-  createTypes(graphqlSdl)
+  const {createNode, createParentChildLink} = actions
 
   const typeMapKey = getCacheKey(pluginConfig, CACHE_KEYS.TYPE_MAP)
   const typeMap = (stateCache[typeMapKey] || defaultTypeMap) as TypeMap
