@@ -1,4 +1,4 @@
-import {get, groupBy} from 'lodash'
+import {get, camelCase, groupBy} from 'lodash'
 import {
   parse,
   FieldDefinitionNode,
@@ -86,6 +86,12 @@ export function getTypeMapFromGraphQLSchema(sdl: string): TypeMap {
     ...groupBy(remoteSchema.definitions, 'kind'),
   }
 
+  typeMap.scalars = specifiedScalarTypes
+    .map(scalar => scalar.name)
+    .concat(
+      groups.ScalarTypeDefinition.map((typeDef: ScalarTypeDefinitionNode) => typeDef.name.value),
+    )
+
   const objects: {[key: string]: ObjectTypeDef} = {}
   typeMap.objects = groups.ObjectTypeDefinition.reduce((acc, typeDef: ObjectTypeDefinitionNode) => {
     if (typeDef.name.value === 'RootQuery') {
@@ -99,19 +105,51 @@ export function getTypeMapFromGraphQLSchema(sdl: string): TypeMap {
       isDocument: Boolean(
         (typeDef.interfaces || []).find(iface => iface.name.value === 'Document'),
       ),
-      fields: (typeDef.fields || []).reduce(
-        (fields, fieldDef) => ({
-          ...fields,
-          [fieldDef.name.value]: {
+      fields: (typeDef.fields || []).reduce((fields, fieldDef) => {
+        if (isAlias(fieldDef)) {
+          const aliasFor = getAliasDirective(fieldDef) || ''
+          fields[aliasFor] = {
             type: fieldDef.type,
-            isList: isListType(fieldDef.type),
-            namedType: unwrapType(fieldDef.type),
-            aliasFor: getAliasDirective(fieldDef),
-            isReference: Boolean(getReferenceDirective(fieldDef)),
-          },
-        }),
-        {},
-      ),
+            namedType: {kind: 'NamedType', name: {kind: 'Name', value: 'JSON'}},
+            isList: false,
+            aliasFor: null,
+            isReference: false,
+          }
+
+          const aliasName = '_' + camelCase(`raw ${aliasFor}`)
+          fields[aliasName] = {
+            type: {kind: 'NamedType', name: {kind: 'Name', value: 'JSON'}},
+            namedType: {kind: 'NamedType', name: {kind: 'Name', value: 'JSON'}},
+            aliasFor,
+            isList: false,
+            isReference: false,
+          }
+          return fields
+        }
+
+        const namedType = unwrapType(fieldDef.type)
+        fields[fieldDef.name.value] = {
+          type: fieldDef.type,
+          namedType,
+          isList: isListType(fieldDef.type),
+          aliasFor: null,
+          isReference: Boolean(getReferenceDirective(fieldDef)),
+        }
+
+        // Add raw alias if not scalar
+        if (!typeMap.scalars.includes(namedType.name.value)) {
+          const aliasName = '_' + camelCase(`raw ${fieldDef.name.value}`)
+          fields[aliasName] = {
+            type: {kind: 'NamedType', name: {kind: 'Name', value: 'JSON'}},
+            namedType: {kind: 'NamedType', name: {kind: 'Name', value: 'JSON'}},
+            aliasFor: fieldDef.name.value,
+            isList: false,
+            isReference: false,
+          }
+        }
+
+        return fields
+      }, {} as {[key: string]: FieldDef}),
     }
     return acc
   }, objects)
@@ -126,13 +164,11 @@ export function getTypeMapFromGraphQLSchema(sdl: string): TypeMap {
     return acc
   }, unions)
 
-  typeMap.scalars = specifiedScalarTypes
-    .map(scalar => scalar.name)
-    .concat(
-      groups.ScalarTypeDefinition.map((typeDef: ScalarTypeDefinitionNode) => typeDef.name.value),
-    )
-
   return typeMap
+}
+
+function isAlias(field: FieldDefinitionNode): boolean {
+  return getAliasDirective(field) !== null
 }
 
 function unwrapType(typeNode: TypeNode): NamedTypeNode {
@@ -157,7 +193,7 @@ function isListType(typeNode: TypeNode): boolean {
   return false
 }
 
-function getAliasDirective(field: FieldDefinitionNode) {
+function getAliasDirective(field: FieldDefinitionNode): string | null {
   const alias = (field.directives || []).find(dir => dir.name.value === 'jsonAlias')
   if (!alias) {
     return null

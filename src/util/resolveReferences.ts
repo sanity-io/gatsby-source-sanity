@@ -1,16 +1,11 @@
-import {GatsbyNode, GatsbyNodeIdCreator} from '../types/gatsby'
-import {unprefixDraftId} from './unprefixDraftId'
-import {safeId} from './documentIds'
+import {MinimalGatsbyContext} from '../types/gatsby'
 import debug from '../debug'
+import {safeId} from './documentIds'
+import {unprefixDraftId} from './unprefixDraftId'
 
 const defaultResolveOptions: ResolveReferencesOptions = {
   maxDepth: 5,
   overlayDrafts: false,
-}
-
-interface MinimalGatsbyContext {
-  createNodeId: GatsbyNodeIdCreator
-  getNode: (id: string) => GatsbyNode | undefined
 }
 
 interface ResolveReferencesOptions {
@@ -40,7 +35,13 @@ export function resolveReferences(
   }
 
   if (typeof obj._ref === 'string') {
-    const targetId = safeId(overlayDrafts ? unprefixDraftId(obj._ref) : obj._ref, createNodeId)
+    const targetId =
+      // If the reference starts with a '-', it means it's a Gatsby node ID,
+      // not a Sanity document ID. Thus, it does not need to be rewritten
+      obj._ref.startsWith('-')
+        ? obj._ref
+        : safeId(overlayDrafts ? unprefixDraftId(obj._ref) : obj._ref, createNodeId)
+
     debug('Resolve %s (Sanity ID %s)', targetId, obj._ref)
 
     const node = getNode(targetId)

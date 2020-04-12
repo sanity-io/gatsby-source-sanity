@@ -1,14 +1,38 @@
+import {camelCase} from 'lodash'
 import {TypeMap, FieldDef} from './remoteGraphQLSchema'
-import {GatsbyResolverMap, GatsbyNodeModel, GatsbyGraphQLContext} from '../types/gatsby'
+import {
+  GatsbyResolverMap,
+  GatsbyNodeModel,
+  GatsbyGraphQLContext,
+  MinimalGatsbyContext,
+} from '../types/gatsby'
 import {getTypeName, getConflictFreeFieldName} from './normalize'
 import {SanityRef} from '../types/sanity'
 import {GraphQLFieldResolver} from 'graphql'
+import {resolveReferences} from './resolveReferences'
+import {PluginConfig} from '../gatsby-node'
 
-export function getGraphQLResolverMap(typeMap: TypeMap): GatsbyResolverMap {
+export function getGraphQLResolverMap(
+  typeMap: TypeMap,
+  pluginConfig: PluginConfig,
+  context: MinimalGatsbyContext,
+): GatsbyResolverMap {
   const resolvers: GatsbyResolverMap = {}
   Object.keys(typeMap.objects).forEach(typeName => {
     const objectType = typeMap.objects[typeName]
-    const resolveFields = Object.keys(objectType.fields)
+    const fieldNames = Object.keys(objectType.fields)
+
+    // Add raw resolvers
+    resolvers[objectType.name] = fieldNames
+      .map(fieldName => ({fieldName, ...objectType.fields[fieldName]}))
+      .filter(field => field.aliasFor)
+      .reduce((fields, field) => {
+        fields[field.fieldName] = {resolve: getRawResolver(field, pluginConfig, context)}
+        return fields
+      }, resolvers[objectType.name] || {})
+
+    // Add resolvers for lists, referenes and unions
+    resolvers[objectType.name] = fieldNames
       .map(fieldName => ({fieldName, ...objectType.fields[fieldName]}))
       .filter(
         field =>
@@ -16,22 +40,36 @@ export function getGraphQLResolverMap(typeMap: TypeMap): GatsbyResolverMap {
           field.isReference ||
           typeMap.unions[getTypeName(field.namedType.name.value)],
       )
+      .reduce((fields, field) => {
+        const targetField = objectType.isDocument
+          ? getConflictFreeFieldName(field.fieldName)
+          : field.fieldName
 
-    if (!resolveFields.length) {
-      return
-    }
-
-    resolvers[objectType.name] = resolveFields.reduce((fields, field) => {
-      const targetField = objectType.isDocument
-        ? getConflictFreeFieldName(field.fieldName)
-        : field.fieldName
-
-      fields[targetField] = {resolve: getResolver(field)}
-      return fields
-    }, resolvers[objectType.name] || {})
+        fields[targetField] = {resolve: getResolver(field)}
+        return fields
+      }, resolvers[objectType.name] || {})
   })
 
   return resolvers
+}
+
+function getRawResolver(
+  field: FieldDef & {fieldName: string},
+  pluginConfig: PluginConfig,
+  context: MinimalGatsbyContext,
+): GraphQLFieldResolver<{[key: string]: any}, GatsbyGraphQLContext> {
+  const {fieldName} = field
+  const aliasName = '_' + camelCase(`raw ${fieldName}`)
+  return (obj, args) => {
+    const raw = `_${camelCase(`raw_data_${field.aliasFor || fieldName}`)}`
+    const value = obj[raw] || obj[aliasName] || obj[field.aliasFor || fieldName] || obj[fieldName]
+    return args.resolveReferences
+      ? resolveReferences(value, context, {
+          maxDepth: args.resolveReferences.maxDepth,
+          overlayDrafts: pluginConfig.overlayDrafts,
+        })
+      : value
+  }
 }
 
 function getResolver(
