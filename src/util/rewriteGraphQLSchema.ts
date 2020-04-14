@@ -16,7 +16,10 @@ import {
   UnionTypeDefinitionNode,
   valueFromAST,
   DirectiveNode,
+  ScalarTypeDefinitionNode,
+  specifiedScalarTypes,
 } from 'gatsby/graphql'
+import {camelCase} from 'lodash'
 import {PluginConfig} from '../gatsby-node'
 import {RESTRICTED_NODE_FIELDS, getConflictFreeFieldName} from './normalize'
 import {GatsbyReporter} from '../types/gatsby'
@@ -41,7 +44,8 @@ function transformAst(ast: DocumentNode, context: AstRewriterContext): ASTNode {
     ...ast,
     definitions: ast.definitions
       .filter(isWantedAstNode)
-      .map(node => transformDefinitionNode(node, context)),
+      .map(node => transformDefinitionNode(node, context, ast))
+      .concat(getResolveReferencesConfigType()),
   }
 }
 
@@ -53,10 +57,11 @@ function isWantedAstNode(astNode: DefinitionNode) {
 function transformDefinitionNode(
   node: DefinitionNode,
   context: AstRewriterContext,
+  ast: DocumentNode,
 ): DefinitionNode {
   switch (node.kind) {
     case 'ObjectTypeDefinition':
-      return transformObjectTypeDefinition(node, context)
+      return transformObjectTypeDefinition(node, context, ast)
     case 'UnionTypeDefinition':
       return transformUnionTypeDefinition(node, context)
     case 'InterfaceTypeDefinition':
@@ -69,11 +74,21 @@ function transformDefinitionNode(
 function transformObjectTypeDefinition(
   node: ObjectTypeDefinitionNode,
   context: AstRewriterContext,
+  ast: DocumentNode,
 ): ObjectTypeDefinitionNode {
+  const scalars = ast.definitions
+    .filter((def): def is ScalarTypeDefinitionNode => def.kind === 'ScalarTypeDefinition')
+    .map(scalar => scalar.name.value)
+    .concat(specifiedScalarTypes.map(scalar => scalar.name))
+
   const fields = node.fields || []
-  const jsonTargets = fields.map(getJsonAliasTargets).filter(Boolean)
+  const jsonTargets = fields
+    .map(getJsonAliasTarget)
+    .filter((target): target is string => target !== null)
+
   const blockFields = jsonTargets.map(makeBlockField)
   const interfaces = (node.interfaces || []).map(maybeRewriteType) as NamedTypeNode[]
+  const rawFields = getRawFields(fields, scalars)
 
   // Implement Gatsby node interface if it is a document
   if (isDocumentType(node)) {
@@ -87,11 +102,46 @@ function transformObjectTypeDefinition(
     directives: [{kind: 'Directive', name: {kind: 'Name', value: 'dontInfer'}}],
     fields: [
       ...fields
-        .filter(field => !getJsonAliasTargets(field))
+        .filter(field => !isJsonAlias(field))
         .map(field => transformFieldNodeAst(field, node, context)),
       ...blockFields,
+      ...rawFields,
     ],
   }
+}
+
+function getRawFields(
+  fields: readonly FieldDefinitionNode[],
+  scalars: string[],
+): FieldDefinitionNode[] {
+  return fields
+    .filter(field => isJsonAlias(field) || !isScalar(field, scalars))
+    .reduce((acc, field) => {
+      const jsonAlias = getJsonAliasTarget(field)
+      const name = jsonAlias || field.name.value
+
+      acc.push({
+        kind: field.kind,
+        name: {kind: 'Name', value: '_' + camelCase(`raw ${name}`)},
+        type: {kind: 'NamedType', name: {kind: 'Name', value: 'JSON'}},
+        arguments: [
+          {
+            kind: 'InputValueDefinition',
+            name: {kind: 'Name', value: 'resolveReferences'},
+            type: {
+              kind: 'NamedType',
+              name: {kind: 'Name', value: 'SanityResolveReferencesConfiguration'},
+            },
+          },
+        ],
+      })
+
+      return acc
+    }, [] as FieldDefinitionNode[])
+}
+
+function isScalar(field: FieldDefinitionNode, scalars: string[]) {
+  return scalars.includes(unwrapType(field.type).name.value)
 }
 
 function transformUnionTypeDefinition(
@@ -126,7 +176,7 @@ function unwrapType(typeNode: TypeNode): NamedTypeNode {
   return typeNode as NamedTypeNode
 }
 
-function getJsonAliasTargets(field: FieldDefinitionNode) {
+function getJsonAliasTarget(field: FieldDefinitionNode): string | null {
   const alias = (field.directives || []).find(dir => dir.name.value === 'jsonAlias')
   if (!alias) {
     return null
@@ -138,6 +188,10 @@ function getJsonAliasTargets(field: FieldDefinitionNode) {
   }
 
   return valueFromAST(forArg.value, GraphQLString, {})
+}
+
+function isJsonAlias(field: FieldDefinitionNode): boolean {
+  return getJsonAliasTarget(field) !== null
 }
 
 function makeBlockField(name: string): FieldDefinitionNode {
@@ -260,4 +314,19 @@ function isDocumentType(node: ObjectTypeDefinitionNode): boolean {
 
 function getTypeName(name: string) {
   return name.startsWith('Sanity') ? name : `Sanity${name}`
+}
+
+function getResolveReferencesConfigType(): DefinitionNode {
+  return {
+    kind: 'InputObjectTypeDefinition',
+    name: {kind: 'Name', value: 'SanityResolveReferencesConfiguration'},
+    fields: [
+      {
+        kind: 'InputValueDefinition',
+        name: {kind: 'Name', value: 'maxDepth'},
+        type: {kind: 'NonNullType', type: {kind: 'NamedType', name: {kind: 'Name', value: 'Int'}}},
+        description: {kind: 'StringValue', value: 'Max depth to resolve references to'},
+      },
+    ],
+  }
 }

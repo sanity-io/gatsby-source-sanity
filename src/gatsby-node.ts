@@ -3,15 +3,8 @@ import oneline = require('oneline')
 import * as split from 'split2'
 import * as through from 'through2'
 import {copy} from 'fs-extra'
-import {camelCase} from 'lodash'
 import {filter} from 'rxjs/operators'
-import {
-  GraphQLJSON,
-  GraphQLFieldConfig,
-  GraphQLInt,
-  GraphQLInputObjectType,
-  GraphQLNonNull,
-} from 'gatsby/graphql'
+import {GraphQLFieldConfig} from 'gatsby/graphql'
 import SanityClient = require('@sanity/client')
 import {
   GatsbyContext,
@@ -19,6 +12,7 @@ import {
   GatsbyNode,
   GatsbyOnNodeTypeContext,
   GatsbyResolversCreator,
+  GatsbyNodeIdCreator,
 } from './types/gatsby'
 import {SanityDocument} from './types/sanity'
 import {pump} from './util/pump'
@@ -37,7 +31,6 @@ import {
 } from './util/remoteGraphQLSchema'
 import debug from './debug'
 import {extendImageNode} from './images/extendImageNode'
-import {resolveReferences} from './util/resolveReferences'
 import {rewriteGraphQLSchema} from './util/rewriteGraphQLSchema'
 import {getGraphQLResolverMap} from './util/getGraphQLResolverMap'
 import {unprefixId} from './util/documentIds'
@@ -98,12 +91,16 @@ export const onPreBootstrap = async (context: GatsbyContext, pluginConfig: Plugi
 }
 
 export const createResolvers = (
-  actions: {createResolvers: GatsbyResolversCreator},
+  context: {
+    createResolvers: GatsbyResolversCreator
+    createNodeId: GatsbyNodeIdCreator
+    getNode: (id: string) => GatsbyNode | undefined
+  },
   pluginConfig: PluginConfig,
 ) => {
   const typeMapKey = getCacheKey(pluginConfig, CACHE_KEYS.TYPE_MAP)
   const typeMap = (stateCache[typeMapKey] || defaultTypeMap) as TypeMap
-  actions.createResolvers(getGraphQLResolverMap(typeMap))
+  context.createResolvers(getGraphQLResolverMap(typeMap, pluginConfig, context))
 }
 
 export const createSchemaCustomization = ({actions}: GatsbyContext, pluginConfig: PluginConfig) => {
@@ -150,9 +147,7 @@ export const sourceNodes = async (context: GatsbyContext, pluginConfig: PluginCo
       const type = getTypeName(doc._type)
       if (!typeMap.objects[type]) {
         reporter.warn(
-          `[sanity] Document "${doc._id}" has type ${
-            doc._type
-          } (${type}), which is not declared in the GraphQL schema. Make sure you run "graphql deploy". Skipping document.`,
+          `[sanity] Document "${doc._id}" has type ${doc._type} (${type}), which is not declared in the GraphQL schema. Make sure you run "graphql deploy". Skipping document.`,
         )
 
         cb()
@@ -211,81 +206,17 @@ export const onPreExtractQueries = async (context: GatsbyContext, pluginConfig: 
   }
 }
 
-const resolveReferencesConfig = new GraphQLInputObjectType({
-  name: 'SanityResolveReferencesConfiguration',
-  fields: {
-    maxDepth: {
-      type: new GraphQLNonNull(GraphQLInt),
-      description: 'Max depth to resolve references to',
-    },
-  },
-})
-
 export const setFieldsOnGraphQLNodeType = async (
   context: GatsbyContext & GatsbyOnNodeTypeContext,
   pluginConfig: PluginConfig,
 ) => {
   const {type} = context
-  const typeMapKey = getCacheKey(pluginConfig, CACHE_KEYS.TYPE_MAP)
-  const typeMap = (stateCache[typeMapKey] || defaultTypeMap) as TypeMap
-  const schemaType = typeMap.objects[type.name]
-
   let fields: {[key: string]: GraphQLFieldConfig<any, any>} = {}
-
   if (type.name === 'SanityImageAsset') {
     fields = {...fields, ...extendImageNode(context, pluginConfig)}
   }
 
-  if (!schemaType) {
-    debug('[%s] Not in type map', type.name)
-    return fields
-  }
-
-  return Object.keys(schemaType.fields).reduce((acc, fieldName) => {
-    const field = schemaType.fields[fieldName]
-    const aliasFor = field.aliasFor
-    if (field.namedType.name.value === 'JSON' && aliasFor) {
-      const aliasName = '_' + camelCase(`raw ${field.aliasFor}`)
-      acc[aliasName] = {
-        type: GraphQLJSON,
-        args: {
-          resolveReferences: {type: resolveReferencesConfig},
-        },
-        resolve: (obj: {[key: string]: {}}, args) => {
-          const raw = `_${camelCase(`raw_data_${field.aliasFor || fieldName}`)}`
-          const value = obj[raw] || obj[fieldName] || obj[aliasFor]
-          return args.resolveReferences
-            ? resolveReferences(value, context, {
-                maxDepth: args.resolveReferences.maxDepth,
-                overlayDrafts: pluginConfig.overlayDrafts,
-              })
-            : value
-        },
-      }
-      return acc
-    }
-    if (typeMap.scalars.includes(field.namedType.name.value)) {
-      return acc
-    }
-    const aliasName = '_' + camelCase(`raw ${fieldName}`)
-    acc[aliasName] = {
-      type: GraphQLJSON,
-      args: {
-        resolveReferences: {type: resolveReferencesConfig},
-      },
-      resolve: (obj: {[key: string]: {}}, args) => {
-        const raw = `_${camelCase(`raw_data_${field.aliasFor || fieldName}`)}`
-        const value = obj[raw] || obj[aliasName] || obj[fieldName]
-        return args.resolveReferences
-          ? resolveReferences(value, context, {
-              maxDepth: args.resolveReferences.maxDepth,
-              overlayDrafts: pluginConfig.overlayDrafts,
-            })
-          : value
-      },
-    }
-    return acc
-  }, fields)
+  return fields
 }
 
 function validateConfig(config: PluginConfig, reporter: GatsbyReporter) {

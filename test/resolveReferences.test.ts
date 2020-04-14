@@ -11,7 +11,7 @@ const createNodeId = (id: string) => id
 
 test('resolves Sanity references', () => {
   const _id = 'abc123'
-  const getNode = (id: string) => (id === 'abc123' ? {_id, id: _id, bar: 'baz'} : undefined)
+  const getNode = (id: string) => (id === '-abc123' ? {_id, id: _id, bar: 'baz'} : undefined)
   expect(
     resolveReferences(
       {foo: {_ref: _id}},
@@ -25,7 +25,7 @@ test('resolves Sanity references', () => {
 
 test('uses non-draft if overlayDrafts is set to true', () => {
   const _id = 'abc123'
-  const getNode = (id: string) => (id === 'abc123' ? {_id, id: _id, bar: 'baz'} : undefined)
+  const getNode = (id: string) => (id === '-abc123' ? {_id, id: _id, bar: 'baz'} : undefined)
   expect(
     resolveReferences(
       {foo: {_ref: `drafts.${_id}`}},
@@ -39,7 +39,7 @@ test('uses non-draft if overlayDrafts is set to true', () => {
 
 test('uses draft id if overlayDrafts is set to false', () => {
   const _id = 'abc123'
-  const getNode = (id: string) => (id === 'abc123' ? {_id, id: _id, bar: 'baz'} : undefined)
+  const getNode = (id: string) => (id === '-abc123' ? {_id, id: _id, bar: 'baz'} : undefined)
   expect(
     resolveReferences(
       {foo: {_ref: `drafts.${_id}`}},
@@ -53,7 +53,7 @@ test('uses draft id if overlayDrafts is set to false', () => {
 
 test('resolves references in arrays', () => {
   const _id = 'abc123'
-  const getNode = (id: string) => (id === 'abc123' ? {_id, id: _id, bar: 'baz'} : undefined)
+  const getNode = (id: string) => (id === '-abc123' ? {_id, id: _id, bar: 'baz'} : undefined)
   expect(
     resolveReferences(
       {foo: [{_ref: _id}]},
@@ -68,7 +68,7 @@ test('resolves references in arrays', () => {
 test('resolves to max depth specified', () => {
   const _id = 'abc123'
   const node = {_id, id: _id, bar: 'baz', child: {_ref: _id}}
-  const getNode = (id: string) => (id === 'abc123' ? node : undefined)
+  const getNode = (id: string) => (id === '-abc123' ? node : undefined)
   expect(
     resolveReferences(
       {foo: {_ref: _id}},
@@ -98,19 +98,20 @@ test('resolves to max depth specified', () => {
 })
 
 test('remaps raw fields from returned nodes', () => {
-  const _id = 'abc123'
+  const _id = 'abc123' // Sanity ID
+  const id = '-321cba' // Gatsby ID
   const getNode = (id: string) => {
     switch (id) {
-      case '321cba':
+      case '-321cba':
         return {
           _id,
-          id: '321cba',
+          id,
           bar: 'baz',
-          foo: [{_ref: 'gatsbyId'}],
+          foo: [{_ref: '-gatsbyId'}],
           _rawDataFoo: [{_ref: 'def'}],
         }
-      case 'fed':
-        return {_id: 'def', id: 'fed', its: 'def'}
+      case '-fed':
+        return {_id: 'def', id: '-fed', its: 'def'}
       default:
         return undefined
     }
@@ -123,6 +124,6 @@ test('remaps raw fields from returned nodes', () => {
       {maxDepth: 5, overlayDrafts: true},
     ),
   ).toEqual({
-    foo: [{_id, id: '321cba', bar: 'baz', foo: [{_id: 'def', id: 'fed', its: 'def'}]}],
+    foo: [{_id, id, bar: 'baz', foo: [{_id: 'def', id: '-fed', its: 'def'}]}],
   })
 })

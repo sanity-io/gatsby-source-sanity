@@ -53,6 +53,11 @@ export type GatsbyGraphQLContext = {
   nodeModel: GatsbyNodeModel
 }
 
+export interface MinimalGatsbyContext {
+  createNodeId: GatsbyNodeIdCreator
+  getNode: (id: string) => GatsbyNode | undefined
+}
+
 export type GatsbyTypesCreator = (types: string) => null
 
 export type GatsbyResolverMap = {
