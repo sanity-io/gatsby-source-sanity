@@ -12,10 +12,9 @@ export function getGraphQLResolverMap(typeMap: TypeMap): GatsbyResolverMap {
       .map(fieldName => ({fieldName, ...objectType.fields[fieldName]}))
       .filter(
         field =>
-          field.fieldName !== 'children' &&
-          (field.isList ||
-            field.isReference ||
-            typeMap.unions[getTypeName(field.namedType.name.value)]),
+          field.isList ||
+          field.isReference ||
+          typeMap.unions[getTypeName(field.namedType.name.value)],
       )
 
     if (!resolveFields.length) {
@@ -23,7 +22,10 @@ export function getGraphQLResolverMap(typeMap: TypeMap): GatsbyResolverMap {
     }
 
     resolvers[objectType.name] = resolveFields.reduce((fields, field) => {
-      const targetField = getConflictFreeFieldName(field.fieldName)
+      const targetField = objectType.isDocument
+        ? getConflictFreeFieldName(field.fieldName)
+        : field.fieldName
+
       fields[targetField] = {resolve: getResolver(field)}
       return fields
     }, resolvers[objectType.name] || {})

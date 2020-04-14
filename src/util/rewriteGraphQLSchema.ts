@@ -74,12 +74,9 @@ function transformObjectTypeDefinition(
   const jsonTargets = fields.map(getJsonAliasTargets).filter(Boolean)
   const blockFields = jsonTargets.map(makeBlockField)
   const interfaces = (node.interfaces || []).map(maybeRewriteType) as NamedTypeNode[]
-  const isDocumentType = interfaces.some(
-    item => item.kind === 'NamedType' && item.name.value === 'SanityDocument',
-  )
 
   // Implement Gatsby node interface if it is a document
-  if (isDocumentType) {
+  if (isDocumentType(node)) {
     interfaces.push({kind: 'NamedType', name: {kind: 'Name', value: 'Node'}})
   }
 
@@ -236,21 +233,29 @@ function maybeRewriteFieldName(
     return field.name
   }
 
+  if (parent.kind === 'ObjectTypeDefinition' && !isDocumentType(parent)) {
+    return field.name
+  }
+
   const parentTypeName = parent.name.value
   const newFieldName = getConflictFreeFieldName(field.name.value)
 
-  if (parentTypeName !== 'Block') {
-    context.reporter.warn(
-      `[sanity] Type \`${parentTypeName}\` has field with name \`${
-        field.name.value
-      }\`, which conflicts with Gatsby's internal properties. Renaming to \`${newFieldName}\``,
-    )
-  }
+  context.reporter.warn(
+    `[sanity] Type \`${parentTypeName}\` has field with name \`${field.name.value}\`, which conflicts with Gatsby's internal properties. Renaming to \`${newFieldName}\``,
+  )
 
   return {
     ...field.name,
     value: newFieldName,
   }
+}
+
+function isDocumentType(node: ObjectTypeDefinitionNode): boolean {
+  return (node.interfaces || []).some(
+    iface =>
+      iface.kind === 'NamedType' &&
+      (iface.name.value === 'SanityDocument' || iface.name.value === 'Document'),
+  )
 }
 
 function getTypeName(name: string) {
