@@ -2,6 +2,18 @@
 
 All notable changes will be documented in this file.
 
+## 6.0.0-beta.0
+
+### BREAKING
+
+- Raw fields without an underscore prefix `rawBody` vs `_rawBody` have been removed, use the underscored version instead
+- `sanity` prefix removed for fields that were not on document types (`sanityId` => `id`, `sanityChildren` => `children`)
+
+### Fixes
+
+- `_raw` fields now available in nested fields
+- Several improvements to reference resolving in raw fields
+
 ## 5.0.3
 
 ### Fixes
