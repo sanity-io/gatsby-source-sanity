@@ -12,22 +12,28 @@ enum ImageFormat {
   PNG = 'png',
 }
 
-type GatsbyImageProps = {
-  base64: string | null
-  aspectRatio: number
-  src: string
-  srcWebp: string
-  srcSet: string
-  srcSetWebp: string
-}
-
-type GatsbyFixedImageProps = GatsbyImageProps & {
+interface GatsbyFixedImageProps {
   width: number
   height: number
+  src: string
+  srcSet: string
+  base64?: string
+  tracedSVG?: string
+  srcWebp?: string
+  srcSetWebp?: string
+  media?: string
 }
 
-type GatsbyFluidImageProps = GatsbyImageProps & {
+type GatsbyFluidImageProps = {
+  aspectRatio: number
+  src: string
+  srcSet: string
   sizes: string
+  base64?: string
+  tracedSVG?: string
+  srcWebp?: string
+  srcSetWebp?: string
+  media?: string
 }
 
 type ImageDimensions = {
@@ -217,8 +223,7 @@ export function getFixedGatsbyImage(
   const srcWebp = convertToFormat(imgUrl, 'webp')
 
   return {
-    base64: lqip || null,
-    aspectRatio: desiredAspectRatio,
+    base64: lqip || undefined,
     width: Math.round(width),
     height: outputHeight,
     src,
@@ -294,7 +299,7 @@ export function getFluidGatsbyImage(
     }, initial)
 
   return {
-    base64: lqip || null,
+    base64: lqip || undefined,
     aspectRatio: desiredAspectRatio,
     src,
     srcWebp,
