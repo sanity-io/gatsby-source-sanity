@@ -5,6 +5,7 @@ import {
   GraphQLInt,
   GraphQLFieldConfig,
   GraphQLEnumType,
+  GraphQLNonNull,
 } from 'gatsby/graphql'
 import {GatsbyContext, GatsbyOnNodeTypeContext} from '../types/gatsby'
 import {PluginConfig} from '../gatsby-node'
@@ -51,12 +52,11 @@ function getExtension(config: PluginConfig) {
     type: new GraphQLObjectType({
       name: 'SanityImageFixed',
       fields: {
+        width: {type: new GraphQLNonNull(GraphQLFloat)},
+        height: {type: new GraphQLNonNull(GraphQLFloat)},
+        src: {type: new GraphQLNonNull(GraphQLString)},
+        srcSet: {type: new GraphQLNonNull(GraphQLString)},
         base64: {type: GraphQLString},
-        aspectRatio: {type: GraphQLFloat},
-        width: {type: GraphQLFloat},
-        height: {type: GraphQLFloat},
-        src: {type: GraphQLString},
-        srcSet: {type: GraphQLString},
         srcWebp: {type: GraphQLString},
         srcSetWebp: {type: GraphQLString},
       },
@@ -81,13 +81,13 @@ function getExtension(config: PluginConfig) {
     type: new GraphQLObjectType({
       name: 'SanityImageFluid',
       fields: {
+        aspectRatio: {type: new GraphQLNonNull(GraphQLFloat)},
+        src: {type: new GraphQLNonNull(GraphQLString)},
+        srcSet: {type: new GraphQLNonNull(GraphQLString)},
+        sizes: {type: new GraphQLNonNull(GraphQLString)},
         base64: {type: GraphQLString},
-        aspectRatio: {type: GraphQLFloat},
-        src: {type: GraphQLString},
-        srcSet: {type: GraphQLString},
         srcWebp: {type: GraphQLString},
         srcSetWebp: {type: GraphQLString},
-        sizes: {type: GraphQLString},
       },
     }),
     args: {
