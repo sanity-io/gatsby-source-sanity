@@ -67,7 +67,7 @@ module.exports = {
 
 ## Basic usage
 
-At this point you should [set up a GraphQL API](https://www.sanity.io/help/graphql-beta) for your Sanity dataset, if you have not done so already. This will help the plugin in knowing which types and fields exists, so you can query for them even without them being present in any current documents.
+At this point you should [set up a GraphQL API](https://www.sanity.io/docs/graphql) for your Sanity dataset, if you have not done so already. This will help the plugin in knowing which types and fields exists, so you can query for them even without them being present in any current documents.
 
 **You should redeploy the GraphQL API everytime you make changes to the schema that you want to use in Gatsby by running ```sanity graphql deploy``` from within your Sanity project directory**
 
@@ -98,7 +98,7 @@ If you add [a `token` with read rights](https://www.sanity.io/docs/http-auth#rob
 
 ## GraphQL API
 
-By [deploying a GraphQL API](https://www.sanity.io/help/graphql-beta) for your dataset, we are able to introspect and figure out which schema types and fields are available and make informed choices based on this information.
+By [deploying a GraphQL API](https://www.sanity.io/docs/graphql) for your dataset, we are able to introspect and figure out which schema types and fields are available and make informed choices based on this information.
 
 Previous versions did not _require_ this, but often lead to very confusing and unpredictable behavior, which is why we have now made it a requirement.
 
