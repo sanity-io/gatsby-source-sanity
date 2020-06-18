@@ -1,18 +1,12 @@
 import debug from '../debug'
-import {SanityDocument} from '../types/sanity'
 import {GatsbyContext, GatsbyNode} from '../types/gatsby'
 import {processDocument, ProcessingOptions} from './normalize'
 import {removeGatsbyInternalProps} from './removeGatsbyInternalProps'
 import {unprefixId, isDraftId, safeId} from './documentIds'
-
-export interface ListenerMessage {
-  documentId: string
-  transition: string
-  result: SanityDocument
-}
+import {MutationEvent} from '@sanity/client'
 
 export function handleListenerEvent(
-  event: ListenerMessage,
+  event: MutationEvent,
   publishedNodes: Map<string, GatsbyNode>,
   context: GatsbyContext,
   processingOptions: ProcessingOptions,
@@ -39,7 +33,7 @@ export function handleListenerEvent(
       return
     }
 
-    if (event.transition !== 'disappear') {
+    if (event.transition !== 'disappear' && event.result) {
       // Created/updated, replace current
       debug('Published document created or updated, replace/create')
       processDocument(event.result, processingOptions)
@@ -75,7 +69,7 @@ export function handleListenerEvent(
     }
   } else {
     // A document was updated / created
-    if (touchedIsDraft) {
+    if (touchedIsDraft && event.result) {
       debug(current ? 'Replace the current draft with a new draft' : 'New draft discovered')
       processDocument(event.result, processingOptions)
 
@@ -83,7 +77,7 @@ export function handleListenerEvent(
       if (current && !currentIsDraft) {
         publishedNodes.set(unprefixId(event.documentId), current)
       }
-    } else if (currentIsDraft) {
+    } else if (currentIsDraft && event.result) {
       // Creating/updating a published document, but we have a draft
       // Keep the draft as the current, but update our set of published docs
       debug('Created/updating published document, but draft overlays it')
@@ -91,7 +85,7 @@ export function handleListenerEvent(
         event.documentId,
         processDocument(event.result, {...processingOptions, skipCreate: true}),
       )
-    } else {
+    } else if (event.result) {
       // Creating/updating a published document, and there is no draft version present
       // Replace the current version with the new one
       debug('Created/updating published document, no draft present')

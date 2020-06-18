@@ -13,7 +13,7 @@ import {
   GatsbyParentChildLinker,
 } from '../types/gatsby'
 
-const scalarTypeNames = specifiedScalarTypes.map(def => def.name).concat(['JSON', 'Date'])
+const scalarTypeNames = specifiedScalarTypes.map((def) => def.name).concat(['JSON', 'Date'])
 
 // Movie => SanityMovie
 const typePrefix = 'Sanity'
@@ -76,7 +76,7 @@ export function getTypeName(type: string) {
 // {foo: 'bar', children: []} => {foo: 'bar', sanityChildren: []}
 function prefixConflictingKeys(obj: SanityDocument) {
   // Will be overwritten, but initialize for type safety
-  const initial: SanityDocument = {_id: '', _type: ''}
+  const initial: SanityDocument = {_id: '', _type: '', _rev: '', _createdAt: '', _updatedAt: ''}
 
   return Object.keys(obj).reduce((target, key) => {
     const targetKey = getConflictFreeFieldName(key)
@@ -127,7 +127,7 @@ function rewriteNodeReferences(doc: SanityDocument, options: ProcessingOptions) 
   }
 
   const newDoc = cloneDeep(doc)
-  refs.forEach(match => {
+  refs.forEach((match) => {
     set(newDoc, match.path, safeId(match.value, createNodeId))
   })
 

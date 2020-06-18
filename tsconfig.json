@@ -8,6 +8,7 @@
     "module": "commonjs",
     "removeComments": false,
     "preserveConstEnums": true,
+    "esModuleInterop": true,
     "sourceMap": true,
     "outDir": "./lib",
     "target": "es2017",

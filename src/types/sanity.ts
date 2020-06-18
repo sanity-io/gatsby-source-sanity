@@ -1,7 +1,11 @@
-export interface SanityDocument {
+export type SanityDocument<T extends Record<string, any> = Record<string, any>> = {
+  [P in keyof T]: T[P]
+} & {
   _id: string
+  _rev: string
   _type: string
-  [key: string]: any
+  _createdAt: string
+  _updatedAt: string
 }
 
 export interface SanityRef {

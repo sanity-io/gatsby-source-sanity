@@ -13,7 +13,7 @@ import {
   specifiedScalarTypes,
   UnionTypeDefinitionNode,
 } from 'gatsby/graphql'
-import SanityClient = require('@sanity/client')
+import {SanityClient} from '@sanity/client'
 import {getTypeName} from './normalize'
 import {PluginConfig} from '../gatsby-node'
 
@@ -87,7 +87,7 @@ export function getTypeMapFromGraphQLSchema(sdl: string): TypeMap {
   }
 
   typeMap.scalars = specifiedScalarTypes
-    .map(scalar => scalar.name)
+    .map((scalar) => scalar.name)
     .concat(
       groups.ScalarTypeDefinition.map((typeDef: ScalarTypeDefinitionNode) => typeDef.name.value),
     )
@@ -103,7 +103,7 @@ export function getTypeMapFromGraphQLSchema(sdl: string): TypeMap {
       name,
       kind: 'Object',
       isDocument: Boolean(
-        (typeDef.interfaces || []).find(iface => iface.name.value === 'Document'),
+        (typeDef.interfaces || []).find((iface) => iface.name.value === 'Document'),
       ),
       fields: (typeDef.fields || []).reduce((fields, fieldDef) => {
         if (isAlias(fieldDef)) {
@@ -159,7 +159,7 @@ export function getTypeMapFromGraphQLSchema(sdl: string): TypeMap {
     const name = getTypeName(typeDef.name.value)
     acc[name] = {
       name,
-      types: (typeDef.types || []).map(type => getTypeName(type.name.value)),
+      types: (typeDef.types || []).map((type) => getTypeName(type.name.value)),
     }
     return acc
   }, unions)
@@ -194,12 +194,12 @@ function isListType(typeNode: TypeNode): boolean {
 }
 
 function getAliasDirective(field: FieldDefinitionNode): string | null {
-  const alias = (field.directives || []).find(dir => dir.name.value === 'jsonAlias')
+  const alias = (field.directives || []).find((dir) => dir.name.value === 'jsonAlias')
   if (!alias) {
     return null
   }
 
-  const forArg = (alias.arguments || []).find(arg => arg.name.value === 'for')
+  const forArg = (alias.arguments || []).find((arg) => arg.name.value === 'for')
   if (!forArg) {
     return null
   }
@@ -208,5 +208,5 @@ function getAliasDirective(field: FieldDefinitionNode): string | null {
 }
 
 function getReferenceDirective(field: FieldDefinitionNode) {
-  return (field.directives || []).find(dir => dir.name.value === 'reference')
+  return (field.directives || []).find((dir) => dir.name.value === 'reference')
 }
