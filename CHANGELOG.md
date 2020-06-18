@@ -2,7 +2,7 @@
 
 All notable changes will be documented in this file.
 
-## 6.0.0-beta.0
+## 6.0.0
 
 ### BREAKING
 
