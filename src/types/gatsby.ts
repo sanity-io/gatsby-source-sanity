@@ -114,9 +114,9 @@ export interface GatsbyContext {
   reporter: GatsbyReporter
   webhookBody: {
     ids: {
-      created: [string]
-      deleted: [string]
-      updated: [string]
+      created: string[]
+      deleted: string[]
+      updated: string[]
     }
   }
 }

@@ -1,3 +1,3 @@
-import * as debug from 'debug'
+import debug from 'debug'
 
 export default debug('sanity')

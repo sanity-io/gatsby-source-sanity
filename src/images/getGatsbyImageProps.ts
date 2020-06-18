@@ -1,4 +1,4 @@
-import * as parseUrl from 'url-parse'
+import parseUrl from 'url-parse'
 
 export const LOWEST_FLUID_BREAKPOINT_WIDTH = 100
 export const DEFAULT_FIXED_WIDTH = 400
@@ -121,7 +121,7 @@ function getBasicImageProps(node: ImageNode, loc: SanityLocation): ImageAssetStu
   }
 
   const [, assetId, dimensions, extension] = id.split('-')
-  const [width, height] = dimensions.split('x').map(num => parseInt(num, 10))
+  const [width, height] = dimensions.split('x').map((num) => parseInt(num, 10))
   const aspectRatio = width / height
   const metadata = img.metadata || {dimensions: {width, height, aspectRatio}}
   const url = img.url || buildImageUrl(loc, {url: '', assetId, extension, metadata})
@@ -201,10 +201,10 @@ export function getFixedGatsbyImage(
       ? url
       : `${url}?w=${width}&h=${outputHeight}&fit=crop`
 
-  const widths = sizeMultipliersFixed.map(scale => Math.round(width * scale))
+  const widths = sizeMultipliersFixed.map((scale) => Math.round(width * scale))
   const initial = {webp: [] as string[], base: [] as string[]}
   const srcSets = widths
-    .filter(currentWidth => currentWidth <= dimensions.width)
+    .filter((currentWidth) => currentWidth <= dimensions.width)
     .reduce((acc, currentWidth, i) => {
       const resolution = `${sizeMultipliersFixed[i]}x`
       const currentHeight = Math.round(currentWidth / desiredAspectRatio)
@@ -278,13 +278,13 @@ export function getFluidGatsbyImage(
 
   const sizes = args.sizes || `(max-width: ${maxWidth}px) 100vw, ${maxWidth}px`
   const widths = sizeMultipliersFluid
-    .map(scale => Math.round(maxWidth * scale))
-    .filter(width => width < dimensions.width && width > LOWEST_FLUID_BREAKPOINT_WIDTH)
+    .map((scale) => Math.round(maxWidth * scale))
+    .filter((width) => width < dimensions.width && width > LOWEST_FLUID_BREAKPOINT_WIDTH)
     .concat(dimensions.width)
 
   const initial = {webp: [] as string[], base: [] as string[]}
   const srcSets = widths
-    .filter(currentWidth => currentWidth <= dimensions.width)
+    .filter((currentWidth) => currentWidth <= dimensions.width)
     .reduce((acc, currentWidth) => {
       const currentHeight = Math.round(currentWidth / desiredAspectRatio)
       const imgUrl = isOriginalSize(currentWidth, currentHeight)

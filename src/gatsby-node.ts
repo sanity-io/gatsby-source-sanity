@@ -1,11 +1,11 @@
 import path = require('path')
 import oneline = require('oneline')
-import * as split from 'split2'
-import * as through from 'through2'
+import split from 'split2'
+import through from 'through2'
 import {copy} from 'fs-extra'
 import {filter} from 'rxjs/operators'
 import {GraphQLFieldConfig} from 'gatsby/graphql'
-import SanityClient = require('@sanity/client')
+import SanityClient from '@sanity/client'
 import {
   GatsbyContext,
   GatsbyReporter,
@@ -22,7 +22,7 @@ import {getDocumentStream} from './util/getDocumentStream'
 import {getCacheKey, CACHE_KEYS} from './util/cache'
 import {removeSystemDocuments} from './util/removeSystemDocuments'
 import {removeDrafts, extractDrafts} from './util/handleDrafts'
-import {handleListenerEvent, ListenerMessage} from './util/handleListenerEvent'
+import {handleListenerEvent} from './util/handleListenerEvent'
 import {handleWebhookEvent} from './util/handleWebhookEvent'
 import {
   getTypeMapFromGraphQLSchema,
@@ -199,7 +199,7 @@ export const sourceNodes = async (context: GatsbyContext, pluginConfig: PluginCo
 
   if (draftDocs.length > 0) {
     reporter.info('[sanity] Overlaying drafts')
-    draftDocs.forEach(draft => {
+    draftDocs.forEach((draft) => {
       processDocument(draft, processingOptions)
       const published = getNode(draft.id)
       if (published) {
@@ -213,10 +213,10 @@ export const sourceNodes = async (context: GatsbyContext, pluginConfig: PluginCo
     client
       .listen('*')
       .pipe(
-        filter<ListenerMessage>(event => overlayDrafts || !event.documentId.startsWith('drafts.')),
-        filter<ListenerMessage>(event => !event.documentId.startsWith('_.')),
+        filter((event) => overlayDrafts || !event.documentId.startsWith('drafts.')),
+        filter((event) => !event.documentId.startsWith('_.')),
       )
-      .subscribe(event => handleListenerEvent(event, publishedNodes, context, processingOptions))
+      .subscribe((event) => handleListenerEvent(event, publishedNodes, context, processingOptions))
   }
 
   reporter.info('[sanity] Done exporting!')
@@ -229,7 +229,7 @@ export const onPreExtractQueries = async (context: GatsbyContext, pluginConfig: 
   let shouldAddFragments = typeof typeMap.objects.SanityImageAsset !== 'undefined'
 
   if (!shouldAddFragments) {
-    shouldAddFragments = getNodes().some(node =>
+    shouldAddFragments = getNodes().some((node) =>
       Boolean(node.internal && node.internal.type === 'SanityImageAsset'),
     )
   }
@@ -277,7 +277,7 @@ function validateConfig(config: PluginConfig, reporter: GatsbyReporter) {
   }
 }
 
-function getClient(config: PluginConfig): SanityClient {
+function getClient(config: PluginConfig) {
   const {projectId, dataset, token} = config
   return new SanityClient({
     projectId,
