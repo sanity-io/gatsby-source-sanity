@@ -23,6 +23,7 @@ import {getCacheKey, CACHE_KEYS} from './util/cache'
 import {removeSystemDocuments} from './util/removeSystemDocuments'
 import {removeDrafts, extractDrafts} from './util/handleDrafts'
 import {handleListenerEvent, ListenerMessage} from './util/handleListenerEvent'
+import {handleWebhookEvent} from './util/handleWebhookEvent'
 import {
   getTypeMapFromGraphQLSchema,
   getRemoteGraphQLSchema,
@@ -113,7 +114,7 @@ export const createSchemaCustomization = ({actions}: GatsbyContext, pluginConfig
 export const sourceNodes = async (context: GatsbyContext, pluginConfig: PluginConfig) => {
   const config = {...defaultConfig, ...pluginConfig}
   const {dataset, overlayDrafts, watchMode} = config
-  const {actions, getNode, createNodeId, createContentDigest, reporter} = context
+  const {actions, getNode, createNodeId, createContentDigest, reporter, webhookBody} = context
   const {createNode, createParentChildLink} = actions
 
   const typeMapKey = getCacheKey(pluginConfig, CACHE_KEYS.TYPE_MAP)
@@ -136,6 +137,42 @@ export const sourceNodes = async (context: GatsbyContext, pluginConfig: PluginCo
 
   const draftDocs: SanityDocument[] = []
   const publishedNodes = new Map<string, GatsbyNode>()
+
+  if (webhookBody) {
+    const {ids} = webhookBody
+    const {created, deleted, updated} = ids
+    const touchedDocs = await client.getDocuments([...created, ...updated])
+
+    if (created.length) {
+      created.forEach((_id: string) => {
+        const event = {
+          documentId: _id,
+          transition: 'created',
+          result: touchedDocs.find((doc: SanityDocument) => doc._id === _id),
+        }
+        handleWebhookEvent(event, context, processingOptions)
+      })
+    }
+    if (deleted.length) {
+      deleted.forEach((_id: string) => {
+        const event = {
+          documentId: _id,
+          transition: 'deleted',
+        }
+        handleWebhookEvent(event, context, processingOptions)
+      })
+    }
+    if (updated.length) {
+      updated.forEach((_id: string) => {
+        const event = {
+          documentId: _id,
+          transition: 'updated',
+          result: touchedDocs.find((doc: SanityDocument) => doc._id === _id),
+        }
+        handleWebhookEvent(event, context, processingOptions)
+      })
+    }
+  }
 
   await pump([
     inputStream,
