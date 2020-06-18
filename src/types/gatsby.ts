@@ -112,6 +112,13 @@ export interface GatsbyContext {
   getNode: (id: string) => GatsbyNode | undefined
   getNodes: () => GatsbyNode[]
   reporter: GatsbyReporter
+  webhookBody: {
+    ids: {
+      created: [string]
+      deleted: [string]
+      updated: [string]
+    }
+  }
 }
 
 export interface GatsbySsrContext {
