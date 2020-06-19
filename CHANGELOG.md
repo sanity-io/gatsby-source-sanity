@@ -2,6 +2,12 @@
 
 All notable changes will be documented in this file.
 
+## 6.0.1
+
+### Changes
+
+- Optimize incremental builds when using the refresh endpoint with webhooks
+
 ## 6.0.0
 
 ### BREAKING
