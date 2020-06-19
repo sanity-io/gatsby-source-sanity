@@ -8,11 +8,14 @@ import {unprefixId, safeId} from './documentIds'
 export async function handleWebhookEvent(
   context: GatsbyContext,
   options: {client: SanityClient; processingOptions: ProcessingOptions},
-) {
+): Promise<boolean> {
   const {webhookBody, reporter} = context
   if (!validatePayload(webhookBody)) {
-    throw new Error('Invalid webhook payload received')
+    debug('Invalid/non-sanity webhook payload received')
+    return false
   }
+
+  reporter.info('[sanity] Processing changed documents from webhook')
 
   const {client, processingOptions} = options
   const {ids} = webhookBody
@@ -49,6 +52,7 @@ export async function handleWebhookEvent(
   }
 
   reporter.info(`Refreshed ${numRefreshed} documents`)
+  return true
 }
 
 function handleDeletedDocuments(context: GatsbyContext, ids: string[]) {

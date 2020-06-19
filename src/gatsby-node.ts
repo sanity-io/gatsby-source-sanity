@@ -131,9 +131,14 @@ export const sourceNodes = async (context: GatsbyContext, pluginConfig: PluginCo
     overlayDrafts,
   }
 
-  if (webhookBody && webhookBody.ids) {
-    reporter.info('[sanity] Processing changed documents from webhook')
-    handleWebhookEvent(context, {client, processingOptions})
+  if (
+    webhookBody &&
+    webhookBody.ids &&
+    (await handleWebhookEvent(context, {client, processingOptions}))
+  ) {
+    // If the payload was handled by the webhook handler, fall back.
+    // Otherwise, this may not be a Sanity webhook, but we should
+    // still attempt to refresh our data
     return
   }
 
