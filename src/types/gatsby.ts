@@ -1,4 +1,5 @@
 import {GraphQLSchema, GraphQLNamedType, GraphQLFieldResolver} from 'graphql'
+import {SanityWebhookBody} from './sanity'
 
 interface GatsbyEventEmitter {
   on: (event: String, fn: Function) => null
@@ -112,13 +113,7 @@ export interface GatsbyContext {
   getNode: (id: string) => GatsbyNode | undefined
   getNodes: () => GatsbyNode[]
   reporter: GatsbyReporter
-  webhookBody: {
-    ids: {
-      created: string[]
-      deleted: string[]
-      updated: string[]
-    }
-  }
+  webhookBody?: SanityWebhookBody
 }
 
 export interface GatsbySsrContext {

@@ -122,10 +122,6 @@ export const sourceNodes = async (context: GatsbyContext, pluginConfig: PluginCo
 
   const client = getClient(config)
   const url = client.getUrl(`/data/export/${dataset}`)
-
-  reporter.info('[sanity] Fetching export stream for dataset')
-  const inputStream = await getDocumentStream(url, config.token)
-
   const processingOptions = {
     typeMap,
     createNodeId,
@@ -135,44 +131,17 @@ export const sourceNodes = async (context: GatsbyContext, pluginConfig: PluginCo
     overlayDrafts,
   }
 
+  if (webhookBody && webhookBody.ids) {
+    reporter.info('[sanity] Processing changed documents from webhook')
+    handleWebhookEvent(context, {client, processingOptions})
+    return
+  }
+
+  reporter.info('[sanity] Fetching export stream for dataset')
+  const inputStream = await getDocumentStream(url, config.token)
+
   const draftDocs: SanityDocument[] = []
   const publishedNodes = new Map<string, GatsbyNode>()
-
-  if (webhookBody) {
-    const {ids} = webhookBody
-    const {created, deleted, updated} = ids
-    const touchedDocs = await client.getDocuments([...created, ...updated])
-
-    if (created.length) {
-      created.forEach((_id: string) => {
-        const event = {
-          documentId: _id,
-          transition: 'created',
-          result: touchedDocs.find((doc: SanityDocument) => doc._id === _id),
-        }
-        handleWebhookEvent(event, context, processingOptions)
-      })
-    }
-    if (deleted.length) {
-      deleted.forEach((_id: string) => {
-        const event = {
-          documentId: _id,
-          transition: 'deleted',
-        }
-        handleWebhookEvent(event, context, processingOptions)
-      })
-    }
-    if (updated.length) {
-      updated.forEach((_id: string) => {
-        const event = {
-          documentId: _id,
-          transition: 'updated',
-          result: touchedDocs.find((doc: SanityDocument) => doc._id === _id),
-        }
-        handleWebhookEvent(event, context, processingOptions)
-      })
-    }
-  }
 
   await pump([
     inputStream,

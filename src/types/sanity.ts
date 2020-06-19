@@ -17,3 +17,11 @@ export interface ApiError {
   error: string
   message: string
 }
+
+export interface SanityWebhookBody {
+  ids: {
+    created: string[]
+    deleted: string[]
+    updated: string[]
+  }
+}
