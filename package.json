@@ -24,6 +24,7 @@
     "gatsby-source-plugin"
   ],
   "main": "index.js",
+  "types": "lib-es5/index.d.ts",
   "scripts": {
     "test": "jest",
     "build": "tsc && tsc -t ES5 --outDir lib-es5",
