@@ -185,10 +185,9 @@ export const sourceNodes = async (context: GatsbyContext, pluginConfig: PluginCo
   if (watchMode) {
     reporter.info('[sanity] Watch mode enabled, starting a listener')
     client
-      .listen('*')
+      .listen('*[!(_id in path("_.**"))]')
       .pipe(
         filter((event) => overlayDrafts || !event.documentId.startsWith('drafts.')),
-        filter((event) => !event.documentId.startsWith('_.')),
       )
       .subscribe((event) => handleListenerEvent(event, publishedNodes, context, processingOptions))
   }
