@@ -2,6 +2,13 @@
 
 All notable changes will be documented in this file.
 
+## 6.0.2
+
+### Changes
+
+- Exclude listener creation/updates from being sent in watch mode
+- Add path resolution for typescript definitions
+
 ## 6.0.1
 
 ### Changes
