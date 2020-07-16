@@ -315,6 +315,6 @@ This example is based off [Gatsby Docs' implementation](https://www.gatsbyjs.org
 
 ## Credits
 
-Huge thanks to [Henrique Cavalieri](https://github.com/hcavalieri) for doing the initial implementation of this plugin, and for donating it to the Sanity team. Mad props!
+Huge thanks to [Henrique Doro](https://github.com/hdoro) for doing the initial implementation of this plugin, and for donating it to the Sanity team. Mad props!
 
 Big thanks to the good people backing Gatsby for bringing such a joy to our developer days!
