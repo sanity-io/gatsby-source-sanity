@@ -2,6 +2,12 @@
 
 All notable changes will be documented in this file.
 
+## 6.0.3
+
+### Changes
+
+- Export image prop type interfaces
+
 ## 6.0.2
 
 ### Changes
