@@ -12,7 +12,7 @@ enum ImageFormat {
   PNG = 'png',
 }
 
-interface GatsbyFixedImageProps {
+export interface GatsbyFixedImageProps {
   width: number
   height: number
   src: string
@@ -24,7 +24,7 @@ interface GatsbyFixedImageProps {
   media?: string
 }
 
-type GatsbyFluidImageProps = {
+export type GatsbyFluidImageProps = {
   aspectRatio: number
   src: string
   srcSet: string
