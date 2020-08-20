@@ -2,6 +2,12 @@
 
 All notable changes will be documented in this file.
 
+## 6.0.4
+
+### Changes
+
+- Provide document count when sourcing nodes
+
 ## 6.0.3
 
 ### Changes
