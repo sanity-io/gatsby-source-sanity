@@ -143,6 +143,7 @@ export const sourceNodes = async (context: GatsbyContext, pluginConfig: PluginCo
   }
 
   reporter.info('[sanity] Fetching export stream for dataset')
+  let numDocuments = 0
   const inputStream = await getDocumentStream(url, config.token)
 
   const draftDocs: SanityDocument[] = []
@@ -155,6 +156,8 @@ export const sourceNodes = async (context: GatsbyContext, pluginConfig: PluginCo
     overlayDrafts ? extractDrafts(draftDocs) : removeDrafts(),
     removeSystemDocuments(),
     through.obj((doc: SanityDocument, enc: string, cb: through.TransformCallback) => {
+      numDocuments++
+
       const type = getTypeName(doc._type)
       if (!typeMap.objects[type]) {
         reporter.warn(
@@ -172,7 +175,7 @@ export const sourceNodes = async (context: GatsbyContext, pluginConfig: PluginCo
   ])
 
   if (draftDocs.length > 0) {
-    reporter.info('[sanity] Overlaying drafts')
+    reporter.info(`[sanity] Overlaying ${draftDocs.length} drafts`)
     draftDocs.forEach((draft) => {
       processDocument(draft, processingOptions)
       const published = getNode(draft.id)
@@ -186,13 +189,11 @@ export const sourceNodes = async (context: GatsbyContext, pluginConfig: PluginCo
     reporter.info('[sanity] Watch mode enabled, starting a listener')
     client
       .listen('*[!(_id in path("_.**"))]')
-      .pipe(
-        filter((event) => overlayDrafts || !event.documentId.startsWith('drafts.')),
-      )
+      .pipe(filter((event) => overlayDrafts || !event.documentId.startsWith('drafts.')))
       .subscribe((event) => handleListenerEvent(event, publishedNodes, context, processingOptions))
   }
 
-  reporter.info('[sanity] Done exporting!')
+  reporter.info(`[sanity] Done! Exported ${numDocuments} documents.`)
 }
 
 export const onPreExtractQueries = async (context: GatsbyContext, pluginConfig: PluginConfig) => {
