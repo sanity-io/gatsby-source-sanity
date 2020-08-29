@@ -39,7 +39,7 @@ npm install gatsby-source-sanity
 ```
 
 
-In the `gatsby-config.js` file in the Gatsby project's root directory, add the plugin configuration inside of the `plugins` section:  
+In the `gatsby-config.js` file in the Gatsby project's root directory, add the plugin configuration inside of the `plugins` section:
 
 ```js
 module.exports = {
@@ -64,6 +64,8 @@ module.exports = {
   // ...
 }
 ```
+
+You can access `projectId`, `dataset`, and `token` by executing `sanity debug --secrets` in the folder that is created by sanity.
 
 ## Basic usage
 
