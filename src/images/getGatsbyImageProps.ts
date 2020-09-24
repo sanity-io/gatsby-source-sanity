@@ -5,7 +5,7 @@ export const DEFAULT_FIXED_WIDTH = 400
 export const DEFAULT_FLUID_MAX_WIDTH = 800
 export type ImageNode = ImageAsset | ImageObject | ImageRef | string | null | undefined
 
-enum ImageFormat {
+export enum ImageFormat {
   NO_CHANGE = '',
   WEBP = 'webp',
   JPG = 'jpg',
