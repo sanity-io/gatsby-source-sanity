@@ -5,5 +5,6 @@ export {
   getFixedGatsbyImage,
   GatsbyFixedImageProps,
   GatsbyFluidImageProps,
+  ImageFormat,
 } from './images/getGatsbyImageProps'
 export {resolveReferences} from './util/resolveReferences'
