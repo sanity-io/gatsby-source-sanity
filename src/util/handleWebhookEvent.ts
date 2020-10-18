@@ -1,12 +1,12 @@
 import {SanityClient} from '@sanity/client'
 import debug from '../debug'
-import {GatsbyContext, GatsbyNode} from '../types/gatsby'
+import {PluginContext, GatsbyNode} from '../types/gatsby'
 import {SanityDocument, SanityWebhookBody} from '../types/sanity'
 import {processDocument, ProcessingOptions, getTypeName} from './normalize'
 import {unprefixId, safeId} from './documentIds'
 
 export async function handleWebhookEvent(
-  context: GatsbyContext,
+  context: PluginContext,
   options: {client: SanityClient; processingOptions: ProcessingOptions},
 ): Promise<boolean> {
   const {webhookBody, reporter} = context
@@ -55,7 +55,7 @@ export async function handleWebhookEvent(
   return true
 }
 
-function handleDeletedDocuments(context: GatsbyContext, ids: string[]) {
+function handleDeletedDocuments(context: PluginContext, ids: string[]) {
   const {actions, createNodeId, getNode} = context
   const {deleteNode} = actions
 
@@ -70,7 +70,7 @@ function handleDeletedDocuments(context: GatsbyContext, ids: string[]) {
 }
 
 function handleChangedDocuments(
-  context: GatsbyContext,
+  context: PluginContext,
   changedDocs: SanityDocument[],
   processingOptions: ProcessingOptions,
   action: 'created' | 'updated',

@@ -8,7 +8,7 @@ import {
 } from '../types/gatsby'
 import {getTypeName, getConflictFreeFieldName} from './normalize'
 import {SanityRef} from '../types/sanity'
-import {GraphQLFieldResolver} from 'graphql'
+import {GraphQLFieldResolver} from 'gatsby/graphql'
 import {resolveReferences} from './resolveReferences'
 import {PluginConfig} from '../gatsby-node'
 

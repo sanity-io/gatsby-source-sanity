@@ -22,10 +22,10 @@ import {
 import {camelCase} from 'lodash'
 import {PluginConfig} from '../gatsby-node'
 import {RESTRICTED_NODE_FIELDS, getConflictFreeFieldName} from './normalize'
-import {GatsbyReporter} from '../types/gatsby'
+import { Reporter } from 'gatsby'
 
 interface AstRewriterContext {
-  reporter: GatsbyReporter
+  reporter: Reporter
   config: PluginConfig
 }
 
