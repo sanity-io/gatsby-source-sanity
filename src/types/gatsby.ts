@@ -1,10 +1,6 @@
-import {GraphQLSchema, GraphQLNamedType, GraphQLFieldResolver} from 'graphql'
 import {SanityWebhookBody} from './sanity'
-
-interface GatsbyEventEmitter {
-  on: (event: String, fn: Function) => null
-  off: (event: String, fn: Function) => null
-}
+import { Reporter, Actions, GatsbyCache } from 'gatsby'
+import {GraphQLSchema, GraphQLNamedType, GraphQLFieldResolver} from 'gatsby/graphql'
 
 interface GatsbyStoreState {
   program: {
@@ -19,9 +15,10 @@ interface GatsbyStore {
 export interface GatsbyNode {
   id: string // Gatsby node ID
   _id: string // Sanity document ID
-  parent?: string | null
-  children?: string[]
-  internal?: {
+  parent: string
+  children: string[]
+  internal: {
+    owner: string,
     mediaType?: string
     type: string
     contentDigest: string
@@ -72,62 +69,38 @@ export type GatsbyResolverMap = {
 
 export type GatsbyResolversCreator = (resolvers: GatsbyResolverMap) => null
 
-export type GatsbyNodeCreator = (node: GatsbyNode) => null
+export type GatsbyNodeCreator = (node: GatsbyNode) => void
 
-export type GatsbyNodeDeletor = (options: GatsbyDeleteOptions) => null
+export type GatsbyNodeDeletor = (options: GatsbyDeleteOptions) => void
 
 export type GatsbyNodeIdCreator = (id: string, namespace?: string) => string
 
 export type GatsbyContentDigester = (content: string) => string
 
-export type GatsbyParentChildLinker = (link: GatsbyParentChildLink) => null
-
-export interface GatsbyCache {
-  name: string
-  cache: {
-    del: (key: string) => Promise<any>
-    get: (key: string) => Promise<any>
-    set: (key: string, value: any) => Promise<any>
-    mset: (
-      key1: string,
-      val1: any,
-      key2: string,
-      val2: any,
-      key3?: string,
-      val3?: any,
-    ) => Promise<any>
-  }
-}
+export type GatsbyParentChildLinker = (link: GatsbyParentChildLink) => void
 
 export interface GatsbyOnNodeTypeContext {
   type: GraphQLNamedType
 }
 
-export interface GatsbyContext {
-  emitter: GatsbyEventEmitter
+export interface PluginContext {
+  // Gatsby-defined cache
   cache: GatsbyCache
-  actions: GatsbyActions
+  // Gatsby-defined actions
+  actions: Actions
   createNodeId: GatsbyNodeIdCreator
   createContentDigest: GatsbyContentDigester
+  // Internally-defined store object (direct use of the *Gatsby-defined* Store API is unsafe)
   store: GatsbyStore
   getNode: (id: string) => GatsbyNode | undefined
   getNodes: () => GatsbyNode[]
-  reporter: GatsbyReporter
+  // Gatsby-defined reporter
+  reporter: Reporter
   webhookBody?: SanityWebhookBody
 }
 
 export interface GatsbySsrContext {
   setHeadComponents: (components: React.ReactElement[]) => undefined
-}
-
-export interface GatsbyActions {
-  createTypes: GatsbyTypesCreator
-  createResolvers: GatsbyResolversCreator
-  createNode: GatsbyNodeCreator
-  deleteNode: GatsbyNodeDeletor
-  createParentChildLink: GatsbyParentChildLinker
-  touchNode: (options: {nodeId: string}) => null
-  addThirdPartySchema: (schema: {schema: GraphQLSchema | string}) => null
 }
 
 export interface ReduxSetSchemaAction {

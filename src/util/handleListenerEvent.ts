@@ -1,5 +1,5 @@
 import debug from '../debug'
-import {GatsbyContext, GatsbyNode} from '../types/gatsby'
+import {PluginContext, GatsbyNode} from '../types/gatsby'
 import {processDocument, ProcessingOptions} from './normalize'
 import {removeGatsbyInternalProps} from './removeGatsbyInternalProps'
 import {unprefixId, isDraftId, safeId} from './documentIds'
@@ -8,7 +8,7 @@ import {MutationEvent} from '@sanity/client'
 export function handleListenerEvent(
   event: MutationEvent,
   publishedNodes: Map<string, GatsbyNode>,
-  context: GatsbyContext,
+  context: PluginContext,
   processingOptions: ProcessingOptions,
 ) {
   const {actions, createNodeId, getNode} = context

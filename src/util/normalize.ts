@@ -42,9 +42,12 @@ export function processDocument(doc: SanityDocument, options: ProcessingOptions)
     ...withRefs,
     ...rawAliases,
     id: safeId(overlayDrafts ? unprefixDraftId(doc._id) : doc._id, createNodeId),
-    parent: null,
     children: [],
+    // TODO: Set to the ID of the parent node, or null if it's a source node without a parent
+    parent: ``,
     internal: {
+      // TODO: Determine what this should be set to
+      owner: ``,
       type: getTypeName(doc._type),
       contentDigest: createContentDigest(JSON.stringify(withRefs)),
     },
