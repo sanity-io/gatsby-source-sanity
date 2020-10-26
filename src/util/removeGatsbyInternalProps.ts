@@ -1,8 +1,8 @@
-import {SanityNode} from '../types/gatsby'
+import {SanityInputNode, SanityNode} from '../types/gatsby'
 
 // Gatsby mutates (...tm) the `internal` object, adding `owner`.
 // This function helps "clean" the internal representation if we are readding/reusing the node
-export const removeGatsbyInternalProps = (node: SanityNode): SanityNode => {
+export const removeGatsbyInternalProps = (node: SanityNode | SanityInputNode): SanityInputNode => {
   if (!node || typeof node.internal === 'undefined') {
     return node
   }
@@ -11,8 +11,6 @@ export const removeGatsbyInternalProps = (node: SanityNode): SanityNode => {
   return {
     ...node,
     internal: {
-      // TODO: Figure out what to set this to
-      owner: ``,
       mediaType,
       type,
       contentDigest,

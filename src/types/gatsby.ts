@@ -1,7 +1,11 @@
-import {Node} from 'gatsby'
+import {Node, NodeInput} from 'gatsby'
 import {GraphQLFieldResolver} from 'gatsby/graphql'
 
 export interface SanityNode extends Node {
+  _id: string // Sanity document ID
+}
+
+export interface SanityInputNode extends NodeInput {
   _id: string // Sanity document ID
 }
 
