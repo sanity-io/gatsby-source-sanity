@@ -62,7 +62,7 @@
     "eslint": "^7.12.0",
     "eslint-config-prettier": "^6.14.0",
     "eslint-config-sanity": "^1.150.8",
-    "gatsby": "^2.23.4",
+    "gatsby": "^2.24.87",
     "jest": "^26.6.1",
     "prettier": "^2.1.2",
     "ts-jest": "^26.4.2",
