@@ -1,14 +1,14 @@
 import {SourceNodesArgs} from 'gatsby'
 import {MutationEvent} from '@sanity/client'
 import debug from '../debug'
-import {SanityNode} from '../types/gatsby'
+import {SanityInputNode, SanityNode} from '../types/gatsby'
 import {processDocument, ProcessingOptions} from './normalize'
 import {removeGatsbyInternalProps} from './removeGatsbyInternalProps'
 import {unprefixId, isDraftId, safeId} from './documentIds'
 
 export function handleListenerEvent(
   event: MutationEvent,
-  publishedNodes: Map<string, SanityNode>,
+  publishedNodes: Map<string, SanityNode | SanityInputNode>,
   args: SourceNodesArgs,
   processingOptions: ProcessingOptions,
 ) {

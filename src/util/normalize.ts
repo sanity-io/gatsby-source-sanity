@@ -6,6 +6,7 @@ import {SanityDocument} from '../types/sanity'
 import {safeId} from './documentIds'
 import {unprefixDraftId} from './unprefixDraftId'
 import {TypeMap} from './remoteGraphQLSchema'
+import {SanityInputNode} from '../types/gatsby'
 
 const scalarTypeNames = specifiedScalarTypes.map((def) => def.name).concat(['JSON', 'Date'])
 
@@ -26,7 +27,7 @@ export interface ProcessingOptions {
 }
 
 // Transform a Sanity document into a Gatsby node
-export function processDocument(doc: SanityDocument, options: ProcessingOptions): NodeInput {
+export function processDocument(doc: SanityDocument, options: ProcessingOptions): SanityInputNode {
   const {createNode, createNodeId, createContentDigest, overlayDrafts, skipCreate} = options
 
   const rawAliases = getRawAliases(doc, options)
