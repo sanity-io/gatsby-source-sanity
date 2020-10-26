@@ -4,18 +4,18 @@ import {copy} from 'fs-extra'
 import {filter} from 'rxjs/operators'
 import {GraphQLFieldConfig} from 'gatsby/graphql'
 import SanityClient from '@sanity/client'
+import {SanityNode} from './types/gatsby'
 import {
   GatsbyNode,
-  GatsbyOnNodeTypeContext,
-  GatsbyResolversCreator,
-  GatsbyNodeIdCreator,
-  PluginContext,
-} from './types/gatsby'
-import {
   ParentSpanPluginArgs,
   Reporter,
-} from "gatsby"
-import {SanityDocument} from './types/sanity'
+  PluginOptions,
+  CreateResolversArgs,
+  CreateSchemaCustomizationArgs,
+  SourceNodesArgs,
+  SetFieldsOnGraphQLNodeTypeArgs,
+} from 'gatsby'
+import {SanityDocument, SanityWebhookBody} from './types/sanity'
 import {pump} from './util/pump'
 import {rejectOnApiError} from './util/rejectOnApiError'
 import {processDocument, getTypeName} from './util/normalize'
@@ -36,13 +36,12 @@ import {extendImageNode} from './images/extendImageNode'
 import {rewriteGraphQLSchema} from './util/rewriteGraphQLSchema'
 import {getGraphQLResolverMap} from './util/getGraphQLResolverMap'
 import {unprefixId} from './util/documentIds'
-import { ERROR_MAP, prefixId, CODES } from './util/errorMap'
+import {ERROR_MAP, prefixId, CODES} from './util/errorMap'
 
 import path = require('path')
 import oneline = require('oneline')
 
-
-export interface PluginConfig {
+export interface PluginConfig extends PluginOptions {
   projectId: string
   dataset: string
   token?: string
@@ -60,35 +59,40 @@ const defaultConfig = {
 
 const stateCache: {[key: string]: any} = {}
 
-export const onPreInit = async ({ reporter }: {reporter : Reporter}) => {
+export const onPreInit: GatsbyNode['onPreInit'] = async ({reporter}: ParentSpanPluginArgs) => {
+  // Old versions of Gatsby does not have this method
   if (reporter.setErrorMap) {
     reporter.setErrorMap(ERROR_MAP)
   }
 }
 
-export const onPreBootstrap = async (context: ParentSpanPluginArgs, pluginConfig: PluginConfig) => {
-  const config = {...defaultConfig, ...pluginConfig}
-  const {reporter, actions} = context
+export const onPreBootstrap: GatsbyNode['onPreBootstrap'] = async (
+  args: ParentSpanPluginArgs,
+  pluginOptions?: PluginConfig,
+) => {
+  const config = {...defaultConfig, ...pluginOptions}
+  const {reporter, actions} = args
 
   if (!actions.createTypes) {
-
-    const usupportedVersionMessage = oneline`
+    const unsupportedVersionMessage = oneline`
     You are using a version of Gatsby not supported by gatsby-source-sanity.
     Either upgrade gatsby to >= 2.2.0 or downgrade to gatsby-source-sanity@^1.0.0`
 
     reporter.panic(
-    {
-      id: prefixId(CODES.UnsupportedGatsbyVersion),
-      context: {
-        sourceMessage: usupportedVersionMessage
-      }
-    },
-    new Error(usupportedVersionMessage))
-    
+      {
+        id: prefixId(CODES.UnsupportedGatsbyVersion),
+        context: {sourceMessage: unsupportedVersionMessage},
+      },
+      new Error(unsupportedVersionMessage),
+    )
+
     return
   }
 
-  validateConfig(config, reporter)
+  // Actually throws in validation function, but helps typescript perform type narrowing
+  if (!validateConfig(config, reporter)) {
+    throw new Error('Invalid config')
+  }
 
   try {
     reporter.info('[sanity] Fetching remote GraphQL schema')
@@ -97,12 +101,12 @@ export const onPreBootstrap = async (context: ParentSpanPluginArgs, pluginConfig
 
     reporter.info('[sanity] Transforming to Gatsby-compatible GraphQL SDL')
     const graphqlSdl = await rewriteGraphQLSchema(api, {config, reporter})
-    const graphqlSdlKey = getCacheKey(pluginConfig, CACHE_KEYS.GRAPHQL_SDL)
+    const graphqlSdlKey = getCacheKey(config, CACHE_KEYS.GRAPHQL_SDL)
     stateCache[graphqlSdlKey] = graphqlSdl
 
     reporter.info('[sanity] Stitching GraphQL schemas from SDL')
     const typeMap = getTypeMapFromGraphQLSchema(api)
-    const typeMapKey = getCacheKey(pluginConfig, CACHE_KEYS.TYPE_MAP)
+    const typeMapKey = getCacheKey(config, CACHE_KEYS.TYPE_MAP)
     stateCache[typeMapKey] = typeMap
   } catch (err) {
     if (err.isWarning) {
@@ -111,40 +115,40 @@ export const onPreBootstrap = async (context: ParentSpanPluginArgs, pluginConfig
       reporter.panic(
         {
           id: prefixId(CODES.SchemaFetchError),
-          context: {
-            sourceMessage: err.stack
-          }
+          context: {sourceMessage: err.stack},
         },
-        err.stack
+        err.stack,
       )
     }
   }
 }
 
-export const createResolvers = (
-  context: {
-    createResolvers: GatsbyResolversCreator
-    createNodeId: GatsbyNodeIdCreator
-    getNode: (id: string) => GatsbyNode | undefined
-  },
-  pluginConfig: PluginConfig,
-) => {
-  const typeMapKey = getCacheKey(pluginConfig, CACHE_KEYS.TYPE_MAP)
+export const createResolvers: GatsbyNode['createResolvers'] = (
+  args: CreateResolversArgs,
+  pluginOptions: PluginConfig,
+): any => {
+  const typeMapKey = getCacheKey(pluginOptions, CACHE_KEYS.TYPE_MAP)
   const typeMap = (stateCache[typeMapKey] || defaultTypeMap) as TypeMap
-  context.createResolvers(getGraphQLResolverMap(typeMap, pluginConfig, context))
+  args.createResolvers(getGraphQLResolverMap(typeMap, pluginOptions, args))
 }
 
-export const createSchemaCustomization = ({actions}: ParentSpanPluginArgs, pluginConfig: PluginConfig) => {
+export const createSchemaCustomization: GatsbyNode['createSchemaCustomization'] = (
+  {actions}: CreateSchemaCustomizationArgs,
+  pluginConfig: PluginConfig,
+): any => {
   const {createTypes} = actions
   const graphqlSdlKey = getCacheKey(pluginConfig, CACHE_KEYS.GRAPHQL_SDL)
   const graphqlSdl = stateCache[graphqlSdlKey]
   createTypes(graphqlSdl)
 }
 
-export const sourceNodes = async (context: PluginContext, pluginConfig: PluginConfig) => {
+export const sourceNodes: GatsbyNode['sourceNodes'] = async (
+  args: SourceNodesArgs & {webhookBody?: SanityWebhookBody},
+  pluginConfig: PluginConfig,
+) => {
   const config = {...defaultConfig, ...pluginConfig}
   const {dataset, overlayDrafts, watchMode} = config
-  const {actions, getNode, createNodeId, createContentDigest, reporter, webhookBody} = context
+  const {actions, getNode, createNodeId, createContentDigest, reporter, webhookBody} = args
   const {createNode, createParentChildLink} = actions
 
   const typeMapKey = getCacheKey(pluginConfig, CACHE_KEYS.TYPE_MAP)
@@ -166,7 +170,7 @@ export const sourceNodes = async (context: PluginContext, pluginConfig: PluginCo
   if (
     webhookBody &&
     webhookBody.ids &&
-    (await handleWebhookEvent(context, {client, processingOptions}))
+    (await handleWebhookEvent(args, {client, processingOptions}))
   ) {
     // If the payload was handled by the webhook handler, fall back.
     // Otherwise, this may not be a Sanity webhook, but we should
@@ -179,7 +183,7 @@ export const sourceNodes = async (context: PluginContext, pluginConfig: PluginCo
   const inputStream = await getDocumentStream(url, config.token)
 
   const draftDocs: SanityDocument[] = []
-  const publishedNodes = new Map<string, GatsbyNode>()
+  const publishedNodes = new Map<string, SanityNode>()
 
   await pump([
     inputStream,
@@ -210,7 +214,7 @@ export const sourceNodes = async (context: PluginContext, pluginConfig: PluginCo
     reporter.info(`[sanity] Overlaying ${draftDocs.length} drafts`)
     draftDocs.forEach((draft) => {
       processDocument(draft, processingOptions)
-      const published = getNode(draft.id)
+      const published = getNode(draft.id) as SanityNode
       if (published) {
         publishedNodes.set(unprefixId(draft._id), published)
       }
@@ -222,13 +226,16 @@ export const sourceNodes = async (context: PluginContext, pluginConfig: PluginCo
     client
       .listen('*[!(_id in path("_.**"))]')
       .pipe(filter((event) => overlayDrafts || !event.documentId.startsWith('drafts.')))
-      .subscribe((event) => handleListenerEvent(event, publishedNodes, context, processingOptions))
+      .subscribe((event) => handleListenerEvent(event, publishedNodes, args, processingOptions))
   }
 
   reporter.info(`[sanity] Done! Exported ${numDocuments} documents.`)
 }
 
-export const onPreExtractQueries = async (context: ParentSpanPluginArgs, pluginConfig: PluginConfig) => {
+export const onPreExtractQueries: GatsbyNode['onPreExtractQueries'] = async (
+  context: ParentSpanPluginArgs,
+  pluginConfig: PluginConfig,
+) => {
   const {getNodes, store} = context
   const typeMapKey = getCacheKey(pluginConfig, CACHE_KEYS.TYPE_MAP)
   const typeMap = (stateCache[typeMapKey] || defaultTypeMap) as TypeMap
@@ -249,20 +256,20 @@ export const onPreExtractQueries = async (context: ParentSpanPluginArgs, pluginC
   }
 }
 
-export const setFieldsOnGraphQLNodeType = async (
-  context: PluginContext & GatsbyOnNodeTypeContext,
+export const setFieldsOnGraphQLNodeType: GatsbyNode['setFieldsOnGraphQLNodeType'] = async (
+  context: SetFieldsOnGraphQLNodeTypeArgs,
   pluginConfig: PluginConfig,
 ) => {
   const {type} = context
   let fields: {[key: string]: GraphQLFieldConfig<any, any>} = {}
   if (type.name === 'SanityImageAsset') {
-    fields = {...fields, ...extendImageNode(context, pluginConfig)}
+    fields = {...fields, ...extendImageNode(pluginConfig)}
   }
 
   return fields
 }
 
-function validateConfig(config: PluginConfig, reporter: Reporter) {
+function validateConfig(config: Partial<PluginConfig>, reporter: Reporter): config is PluginConfig {
   if (!config.projectId) {
     throw new Error('[sanity] `projectId` must be specified')
   }
@@ -281,6 +288,8 @@ function validateConfig(config: PluginConfig, reporter: Reporter) {
       '[sanity] Using `watchMode` when not in develop mode might prevent your build from completing',
     )
   }
+
+  return true
 }
 
 function getClient(config: PluginConfig) {

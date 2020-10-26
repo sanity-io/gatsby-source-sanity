@@ -1,20 +1,21 @@
+import {SourceNodesArgs} from 'gatsby'
+import {MutationEvent} from '@sanity/client'
 import debug from '../debug'
-import {PluginContext, GatsbyNode} from '../types/gatsby'
+import {SanityNode} from '../types/gatsby'
 import {processDocument, ProcessingOptions} from './normalize'
 import {removeGatsbyInternalProps} from './removeGatsbyInternalProps'
 import {unprefixId, isDraftId, safeId} from './documentIds'
-import {MutationEvent} from '@sanity/client'
 
 export function handleListenerEvent(
   event: MutationEvent,
-  publishedNodes: Map<string, GatsbyNode>,
-  context: PluginContext,
+  publishedNodes: Map<string, SanityNode>,
+  args: SourceNodesArgs,
   processingOptions: ProcessingOptions,
 ) {
-  const {actions, createNodeId, getNode} = context
+  const {actions, createNodeId, getNode} = args
   const {createNode, deleteNode} = actions
   const {overlayDrafts} = processingOptions
-  const current = getNode(safeId(unprefixId(event.documentId), createNodeId))
+  const current = getNode(safeId(unprefixId(event.documentId), createNodeId)) as SanityNode
 
   let published = publishedNodes.get(unprefixId(event.documentId))
   if (published) {

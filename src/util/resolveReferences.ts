@@ -1,4 +1,4 @@
-import {MinimalGatsbyContext} from '../types/gatsby'
+import {NodePluginArgs} from 'gatsby'
 import debug from '../debug'
 import {safeId} from './documentIds'
 import {unprefixDraftId} from './unprefixDraftId'
@@ -16,7 +16,7 @@ interface ResolveReferencesOptions {
 // NOTE: This is now a public API and should be treated as such
 export function resolveReferences(
   obj: any,
-  context: MinimalGatsbyContext,
+  context: Pick<NodePluginArgs, 'createNodeId' | 'getNode'>,
   options: Partial<ResolveReferencesOptions> = {},
   currentDepth = 0,
 ): any {
@@ -26,7 +26,7 @@ export function resolveReferences(
 
   if (Array.isArray(obj)) {
     return currentDepth <= maxDepth
-      ? obj.map(item => resolveReferences(item, context, resolveOptions, currentDepth + 1))
+      ? obj.map((item) => resolveReferences(item, context, resolveOptions, currentDepth + 1))
       : obj
   }
 

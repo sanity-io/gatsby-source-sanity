@@ -1,8 +1,9 @@
 import {createElement} from 'react'
-import {GatsbySsrContext} from './types/gatsby'
-import {PluginConfig} from './gatsby-node'
+import {GatsbySSR, RenderBodyArgs} from 'gatsby'
 
-export const onRenderBody = ({setHeadComponents}: GatsbySsrContext, config: PluginConfig) => {
+export const onRenderBody: GatsbySSR['onRenderBody'] = ({
+  setHeadComponents,
+}: RenderBodyArgs): any => {
   setHeadComponents([
     createElement('link', {
       rel: 'preconnect',

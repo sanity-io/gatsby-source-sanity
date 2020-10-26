@@ -1,15 +1,16 @@
+import {SourceNodesArgs} from 'gatsby'
 import {SanityClient} from '@sanity/client'
 import debug from '../debug'
-import {PluginContext, GatsbyNode} from '../types/gatsby'
+import {SanityNode} from '../types/gatsby'
 import {SanityDocument, SanityWebhookBody} from '../types/sanity'
 import {processDocument, ProcessingOptions, getTypeName} from './normalize'
 import {unprefixId, safeId} from './documentIds'
 
 export async function handleWebhookEvent(
-  context: PluginContext,
+  args: SourceNodesArgs & {webhookBody?: SanityWebhookBody},
   options: {client: SanityClient; processingOptions: ProcessingOptions},
 ): Promise<boolean> {
-  const {webhookBody, reporter} = context
+  const {webhookBody, reporter} = args
   if (!validatePayload(webhookBody)) {
     debug('Invalid/non-sanity webhook payload received')
     return false
@@ -25,7 +26,7 @@ export async function handleWebhookEvent(
   let numRefreshed = 0
 
   if (deleted.length > 0) {
-    numRefreshed += handleDeletedDocuments(context, deleted)
+    numRefreshed += handleDeletedDocuments(args, deleted)
   }
 
   let touchedDocs: SanityDocument[] = []
@@ -40,7 +41,7 @@ export async function handleWebhookEvent(
       .map((id) => touchedDocs.find((doc) => doc && doc._id === id))
       .filter(isDocument)
 
-    numRefreshed += handleChangedDocuments(context, createdDocs, processingOptions, 'created')
+    numRefreshed += handleChangedDocuments(args, createdDocs, processingOptions, 'created')
   }
 
   if (updated.length > 0) {
@@ -48,20 +49,20 @@ export async function handleWebhookEvent(
       .map((id) => touchedDocs.find((doc) => doc && doc._id === id))
       .filter(isDocument)
 
-    numRefreshed += handleChangedDocuments(context, updatedDocs, processingOptions, 'created')
+    numRefreshed += handleChangedDocuments(args, updatedDocs, processingOptions, 'created')
   }
 
   reporter.info(`Refreshed ${numRefreshed} documents`)
   return true
 }
 
-function handleDeletedDocuments(context: PluginContext, ids: string[]) {
+function handleDeletedDocuments(context: SourceNodesArgs, ids: string[]) {
   const {actions, createNodeId, getNode} = context
   const {deleteNode} = actions
 
   return ids
     .map((documentId) => getNode(safeId(unprefixId(documentId), createNodeId)))
-    .filter((node): node is GatsbyNode => typeof node !== 'undefined')
+    .filter((node): node is SanityNode => typeof node !== 'undefined')
     .reduce((count, node) => {
       debug('Deleted document with ID %s', node._id)
       deleteNode({node})
@@ -70,12 +71,12 @@ function handleDeletedDocuments(context: PluginContext, ids: string[]) {
 }
 
 function handleChangedDocuments(
-  context: PluginContext,
+  args: SourceNodesArgs,
   changedDocs: SanityDocument[],
   processingOptions: ProcessingOptions,
   action: 'created' | 'updated',
 ) {
-  const {reporter} = context
+  const {reporter} = args
   const {typeMap} = processingOptions
 
   return changedDocs.reduce((count, doc) => {

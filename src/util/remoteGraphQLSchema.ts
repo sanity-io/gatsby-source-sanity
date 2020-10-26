@@ -1,21 +1,21 @@
 import {get, camelCase, groupBy} from 'lodash'
 import {
-  parse,
   FieldDefinitionNode,
   GraphQLString,
   ListTypeNode,
   NamedTypeNode,
   NonNullTypeNode,
   ObjectTypeDefinitionNode,
-  valueFromAST,
-  TypeNode,
+  parse,
   ScalarTypeDefinitionNode,
   specifiedScalarTypes,
+  TypeNode,
   UnionTypeDefinitionNode,
+  valueFromAST,
 } from 'gatsby/graphql'
 import {SanityClient} from '@sanity/client'
-import {getTypeName} from './normalize'
 import {PluginConfig} from '../gatsby-node'
+import {getTypeName} from './normalize'
 
 export type FieldDef = {
   type: NamedTypeNode | ListTypeNode | NonNullTypeNode
