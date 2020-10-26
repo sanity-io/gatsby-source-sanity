@@ -1,4 +1,4 @@
-import {Actions, NodeInput, NodePluginArgs} from 'gatsby'
+import {Actions, NodePluginArgs} from 'gatsby'
 import {extractWithPath} from '@sanity/mutator'
 import {specifiedScalarTypes} from 'gatsby/graphql'
 import {set, startCase, camelCase, cloneDeep, upperFirst} from 'lodash'
