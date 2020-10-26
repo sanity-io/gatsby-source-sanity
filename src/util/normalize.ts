@@ -1,17 +1,11 @@
-import {set, startCase, camelCase, cloneDeep, upperFirst} from 'lodash'
+import {Actions, NodeInput, NodePluginArgs} from 'gatsby'
 import {extractWithPath} from '@sanity/mutator'
 import {specifiedScalarTypes} from 'gatsby/graphql'
+import {set, startCase, camelCase, cloneDeep, upperFirst} from 'lodash'
 import {SanityDocument} from '../types/sanity'
 import {safeId} from './documentIds'
 import {unprefixDraftId} from './unprefixDraftId'
 import {TypeMap} from './remoteGraphQLSchema'
-import {
-  GatsbyNodeIdCreator,
-  GatsbyContentDigester,
-  GatsbyNode,
-  GatsbyNodeCreator,
-  GatsbyParentChildLinker,
-} from '../types/gatsby'
 
 const scalarTypeNames = specifiedScalarTypes.map((def) => def.name).concat(['JSON', 'Date'])
 
@@ -23,16 +17,16 @@ export const RESTRICTED_NODE_FIELDS = ['id', 'children', 'parent', 'fields', 'in
 
 export interface ProcessingOptions {
   typeMap: TypeMap
-  createNode: GatsbyNodeCreator
-  createNodeId: GatsbyNodeIdCreator
-  createContentDigest: GatsbyContentDigester
-  createParentChildLink: GatsbyParentChildLinker
+  createNode: Actions['createNode']
+  createNodeId: NodePluginArgs['createNodeId']
+  createContentDigest: NodePluginArgs['createContentDigest']
+  createParentChildLink: Actions['createParentChildLink']
   overlayDrafts: boolean
   skipCreate?: boolean
 }
 
 // Transform a Sanity document into a Gatsby node
-export function processDocument(doc: SanityDocument, options: ProcessingOptions): GatsbyNode {
+export function processDocument(doc: SanityDocument, options: ProcessingOptions): NodeInput {
   const {createNode, createNodeId, createContentDigest, overlayDrafts, skipCreate} = options
 
   const rawAliases = getRawAliases(doc, options)
@@ -43,11 +37,7 @@ export function processDocument(doc: SanityDocument, options: ProcessingOptions)
     ...rawAliases,
     id: safeId(overlayDrafts ? unprefixDraftId(doc._id) : doc._id, createNodeId),
     children: [],
-    // TODO: Set to the ID of the parent node, or null if it's a source node without a parent
-    parent: ``,
     internal: {
-      // TODO: Determine what this should be set to
-      owner: ``,
       type: getTypeName(doc._type),
       contentDigest: createContentDigest(JSON.stringify(withRefs)),
     },

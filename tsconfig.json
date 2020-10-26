@@ -13,7 +13,6 @@
     "outDir": "./lib",
     "target": "es2017",
     "declaration": true,
-    "lib": ["es2017", "dom", "esnext.asynciterable"],
-    "skipLibCheck": true
+    "lib": ["es2017", "dom", "esnext.asynciterable"]
   }
 }

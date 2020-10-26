@@ -14,8 +14,8 @@ export function getDocumentStream(url: string, token?: string): Promise<Readable
     url,
     headers,
   })
-    .then(res => res.data)
-    .catch(async err => {
+    .then((res) => res.data)
+    .catch(async (err) => {
       if (!err.response || !err.response.data) {
         throw err
       }
