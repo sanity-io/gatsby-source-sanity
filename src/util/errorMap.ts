@@ -20,6 +20,8 @@ enum ReporterCategory {
 export const CODES = {
   UnsupportedGatsbyVersion: '10000',
   SchemaFetchError: '10001',
+  MissingProjectId: '10002',
+  MissingDataset: '10002',
 }
 
 export const ERROR_MAP = {
@@ -32,5 +34,15 @@ export const ERROR_MAP = {
     text: (context: any) => context.sourceMessage,
     level: ReporterLevel.Error,
     category: ReporterCategory.ThirdParty,
+  },
+  [CODES.MissingProjectId]: {
+    text: (context: any) => context.sourceMessage,
+    level: ReporterLevel.Error,
+    category: ReporterCategory.User,
+  },
+  [CODES.MissingDataset]: {
+    text: (context: any) => context.sourceMessage,
+    level: ReporterLevel.Error,
+    category: ReporterCategory.User,
   },
 }
