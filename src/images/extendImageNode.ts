@@ -15,6 +15,7 @@ import {
   ImageNode,
   FixedArgs,
   FluidArgs,
+  SanityImagePipelineArgs,
   DEFAULT_FLUID_MAX_WIDTH,
   DEFAULT_FIXED_WIDTH,
 } from './getGatsbyImageProps'
@@ -72,6 +73,10 @@ function getExtension(config: PluginConfig) {
         type: ImageFormatType,
         defaultValue: '',
       },
+      imagePipelineArgs: {
+        type: SanityImagePipelineArgs,
+        defaultValue: {}
+      },
     },
     resolve: (image: ImageNode, args: FixedArgs) => getFixedGatsbyImage(image, args, location),
   }
@@ -103,6 +108,10 @@ function getExtension(config: PluginConfig) {
       toFormat: {
         type: ImageFormatType,
         defaultValue: '',
+      },
+      imagePipelineArgs: {
+        type: SanityImagePipelineArgs,
+        defaultValue: {}
       },
     },
     resolve: (image: ImageNode, args: FluidArgs) => getFluidGatsbyImage(image, args, location),
