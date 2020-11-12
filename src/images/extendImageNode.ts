@@ -31,6 +31,33 @@ const ImageFormatType = new GraphQLEnumType({
   },
 })
 
+const ImagePipelineType = new GraphQLInputObjectType({
+  name: "SanityImagePipelineArgsFormat",
+  fields: {
+    bg: {
+      type: GraphQLString,
+    },
+    blur: {
+      type: GraphQLInt,
+    },
+    fm: {
+      type: GraphQLString,
+    },
+    invert: {
+      type: GraphQLBoolean,
+    },
+    q: {
+      type: GraphQLInt,
+    },
+    sat: {
+      type: GraphQLInt,
+    },
+    sharpen: {
+      type: GraphQLInt,
+    },
+  }
+})
+
 const extensions = new Map()
 
 export function extendImageNode(
@@ -75,32 +102,7 @@ function getExtension(config: PluginConfig) {
         defaultValue: '',
       },
       imagePipelineArgs: {
-        type: new GraphQLInputObjectType({
-          name: "SanityImagePipelineArgs",
-          fields: {
-            bg: {
-              type: GraphQLString,
-            },
-            blur: {
-              type: GraphQLInt,
-            },
-            fm: {
-              type: GraphQLString,
-            },
-            invert: {
-              type: GraphQLBoolean,
-            },
-            q: {
-              type: GraphQLInt,
-            },
-            sat: {
-              type: GraphQLInt,
-            },
-            sharpen: {
-              type: GraphQLInt,
-            },
-          }
-        })
+        type: ImagePipelineType
       }
     },
     resolve: (image: ImageNode, args: FixedArgs) => getFixedGatsbyImage(image, args, location),
@@ -135,32 +137,7 @@ function getExtension(config: PluginConfig) {
         defaultValue: '',
       },
       imagePipelineArgs: {
-        type: new GraphQLInputObjectType({
-          name: "SanityImagePipelineArgs",
-          fields: {
-            bg: {
-              type: GraphQLString,
-            },
-            blur: {
-              type: GraphQLInt,
-            },
-            fm: {
-              type: GraphQLString,
-            },
-            invert: {
-              type: GraphQLBoolean,
-            },
-            q: {
-              type: GraphQLInt,
-            },
-            sat: {
-              type: GraphQLInt,
-            },
-            sharpen: {
-              type: GraphQLInt,
-            },
-          }
-        })
+        type: ImagePipelineType
       },
     },
     resolve: (image: ImageNode, args: FluidArgs) => getFluidGatsbyImage(image, args, location),
