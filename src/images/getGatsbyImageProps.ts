@@ -66,17 +66,36 @@ type ImageObject = {
   asset: ImageRef | ImageAsset
 }
 
+// A subset of the options available for Sanity Image Transformations. We dont
+// supply definition for the full list of options due to much of the work in
+// these functions being specific to resizing and anticipating the widths.
+// That is, we don't want to allow customization here that may impact expected
+// image ratios when generating the fixed/fluid images for Gatsby.
+//
+// See more at https://www.sanity.io/docs/image-urls.
+export type SanityImagePipelineArgs = {
+  bg?: string,
+  blur?: number,
+  fm?: string,
+  invert?: boolean,
+  q?: number,
+  sat?: number,
+  sharpen?: number
+}
+
 export type FluidArgs = {
   maxWidth?: number
   maxHeight?: number
   sizes?: string
-  toFormat?: ImageFormat
+  toFormat?: ImageFormat,
+  imagePipelineArgs?: SanityImagePipelineArgs
 }
 
 export type FixedArgs = {
   width?: number
   height?: number
-  toFormat?: ImageFormat
+  toFormat?: ImageFormat,
+  imagePipelineArgs?: SanityImagePipelineArgs
 }
 
 type SanityLocation = {
@@ -193,13 +212,18 @@ export function getFixedGatsbyImage(
     forceConvert = 'jpg'
   }
 
+  const sanityImagePipelineArgs = args.imagePipelineArgs || {}
+  const sanityImagePipelineParams = Object.keys(sanityImagePipelineArgs).map(
+    key => key + '=' + sanityImagePipelineArgs[key]
+  ).join('&')
+
   const hasOriginalRatio = desiredAspectRatio === dimensions.aspectRatio
   const outputHeight = Math.round(height ? height : width / desiredAspectRatio)
   const imgUrl =
     isOriginalSize(width, outputHeight) ||
     (hasOriginalRatio && width > dimensions.width && outputHeight > dimensions.height)
-      ? url
-      : `${url}?w=${width}&h=${outputHeight}&fit=crop`
+      ? `${url}?${sanityImagePipelineParams}`
+      : `${url}?w=${width}&h=${outputHeight}&fit=crop&${sanityImagePipelineParams}`
 
   const widths = sizeMultipliersFixed.map((scale) => Math.round(width * scale))
   const initial = {webp: [] as string[], base: [] as string[]}
@@ -209,8 +233,8 @@ export function getFixedGatsbyImage(
       const resolution = `${sizeMultipliersFixed[i]}x`
       const currentHeight = Math.round(currentWidth / desiredAspectRatio)
       const imgUrl = isOriginalSize(currentWidth, currentHeight)
-        ? url
-        : `${url}?w=${currentWidth}&h=${currentHeight}&fit=crop`
+        ? `${url}?${sanityImagePipelineParams}`
+        : `${url}?w=${currentWidth}&h=${currentHeight}&fit=crop&${sanityImagePipelineParams}`
 
       const webpUrl = convertToFormat(imgUrl, 'webp')
       const baseUrl = convertToFormat(imgUrl, forceConvert || props.extension)
@@ -267,11 +291,16 @@ export function getFluidGatsbyImage(
     forceConvert = 'jpg'
   }
 
+  const sanityImagePipelineArgs = args.imagePipelineArgs || {};
+  const sanityImagePipelineParams = Object.keys(sanityImagePipelineArgs).map(
+    key => key + '=' + sanityImagePipelineArgs[key]
+  ).join('&');
+
   const baseSrc =
     isOriginalSize(maxWidth, maxHeight) ||
     (maxWidth >= dimensions.width && maxHeight >= dimensions.height)
-      ? url
-      : `${url}?w=${maxWidth}&h=${maxHeight}&fit=crop`
+      ? `${url}?${sanityImagePipelineParams}`
+      : `${url}?w=${maxWidth}&h=${maxHeight}&fit=crop&${sanityImagePipelineParams}`
 
   const src = convertToFormat(baseSrc, forceConvert || extension)
   const srcWebp = convertToFormat(baseSrc, 'webp')
@@ -288,8 +317,8 @@ export function getFluidGatsbyImage(
     .reduce((acc, currentWidth) => {
       const currentHeight = Math.round(currentWidth / desiredAspectRatio)
       const imgUrl = isOriginalSize(currentWidth, currentHeight)
-        ? url
-        : `${url}?w=${currentWidth}&h=${currentHeight}&fit=crop`
+        ? `${url}?${sanityImagePipelineParams}`
+        : `${url}?w=${currentWidth}&h=${currentHeight}&fit=crop&${sanityImagePipelineParams}`
 
       const webpUrl = convertToFormat(imgUrl, 'webp')
       const baseUrl = convertToFormat(imgUrl, forceConvert || props.extension)
