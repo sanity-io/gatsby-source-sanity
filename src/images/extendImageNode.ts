@@ -74,8 +74,7 @@ function getExtension(config: PluginConfig) {
         defaultValue: '',
       },
       imagePipelineArgs: {
-        type: SanityImagePipelineArgs,
-        defaultValue: {}
+        type: SanityImagePipelineArgs
       },
     },
     resolve: (image: ImageNode, args: FixedArgs) => getFixedGatsbyImage(image, args, location),
@@ -110,8 +109,7 @@ function getExtension(config: PluginConfig) {
         defaultValue: '',
       },
       imagePipelineArgs: {
-        type: SanityImagePipelineArgs,
-        defaultValue: {}
+        type: SanityImagePipelineArgs
       },
     },
     resolve: (image: ImageNode, args: FluidArgs) => getFluidGatsbyImage(image, args, location),
