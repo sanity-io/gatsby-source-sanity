@@ -222,8 +222,8 @@ export function getFixedGatsbyImage(
   const imgUrl =
     isOriginalSize(width, outputHeight) ||
     (hasOriginalRatio && width > dimensions.width && outputHeight > dimensions.height)
-      ? `${url}?${sanityImagePipelineParams}`
-      : `${url}?w=${width}&h=${outputHeight}&fit=crop&${sanityImagePipelineParams}`
+      ? `${url}${sanityImagePipelineParams ? ("?" + sanityImagePipelineParams) : ""}`
+      : `${url}?w=${width}&h=${outputHeight}&fit=crop${sanityImagePipelineParams ? ("&" + sanityImagePipelineParams) : ""}`
 
   const widths = sizeMultipliersFixed.map((scale) => Math.round(width * scale))
   const initial = {webp: [] as string[], base: [] as string[]}
@@ -233,8 +233,8 @@ export function getFixedGatsbyImage(
       const resolution = `${sizeMultipliersFixed[i]}x`
       const currentHeight = Math.round(currentWidth / desiredAspectRatio)
       const imgUrl = isOriginalSize(currentWidth, currentHeight)
-        ? `${url}?${sanityImagePipelineParams}`
-        : `${url}?w=${currentWidth}&h=${currentHeight}&fit=crop&${sanityImagePipelineParams}`
+        ? `${url}${sanityImagePipelineParams ? ("?" + sanityImagePipelineParams) : ""}`
+        : `${url}?w=${currentWidth}&h=${currentHeight}&fit=crop${sanityImagePipelineParams ? ("&" + sanityImagePipelineParams) : ""}`
 
       const webpUrl = convertToFormat(imgUrl, 'webp')
       const baseUrl = convertToFormat(imgUrl, forceConvert || props.extension)
@@ -299,8 +299,8 @@ export function getFluidGatsbyImage(
   const baseSrc =
     isOriginalSize(maxWidth, maxHeight) ||
     (maxWidth >= dimensions.width && maxHeight >= dimensions.height)
-      ? `${url}?${sanityImagePipelineParams}`
-      : `${url}?w=${maxWidth}&h=${maxHeight}&fit=crop&${sanityImagePipelineParams}`
+      ? `${url}${sanityImagePipelineParams ? ("?" + sanityImagePipelineParams) : ""}`
+      : `${url}?w=${maxWidth}&h=${maxHeight}&fit=crop${sanityImagePipelineParams ? ("&" + sanityImagePipelineParams) : ""}`
 
   const src = convertToFormat(baseSrc, forceConvert || extension)
   const srcWebp = convertToFormat(baseSrc, 'webp')
@@ -317,8 +317,8 @@ export function getFluidGatsbyImage(
     .reduce((acc, currentWidth) => {
       const currentHeight = Math.round(currentWidth / desiredAspectRatio)
       const imgUrl = isOriginalSize(currentWidth, currentHeight)
-        ? `${url}?${sanityImagePipelineParams}`
-        : `${url}?w=${currentWidth}&h=${currentHeight}&fit=crop&${sanityImagePipelineParams}`
+        ? `${url}${sanityImagePipelineParams ? ("?" + sanityImagePipelineParams) : ""}`
+        : `${url}?w=${currentWidth}&h=${currentHeight}&fit=crop${sanityImagePipelineParams ? ("&" + sanityImagePipelineParams) : ""}`
 
       const webpUrl = convertToFormat(imgUrl, 'webp')
       const baseUrl = convertToFormat(imgUrl, forceConvert || props.extension)
