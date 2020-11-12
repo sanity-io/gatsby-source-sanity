@@ -1,4 +1,5 @@
 import {
+  GraphQLBoolean,
   GraphQLObjectType,
   GraphQLString,
   GraphQLFloat,
@@ -73,8 +74,27 @@ function getExtension(config: PluginConfig) {
         defaultValue: '',
       },
       imagePipelineArgs: {
-        type: GraphQLObjectType,
-        defaultValue: {}
+        bg: {
+          type: GraphQLString,
+        },
+        blur: {
+          type: GraphQLInt,
+        },
+        fm: {
+          type: GraphQLString,
+        },
+        invert: {
+          type: GraphQLBoolean,
+        },
+        q: {
+          type: GraphQLInt,
+        },
+        sat: {
+          type: GraphQLInt,
+        },
+        sharpen: {
+          type: GraphQLInt,
+        },
       },
     },
     resolve: (image: ImageNode, args: FixedArgs) => getFixedGatsbyImage(image, args, location),
@@ -109,8 +129,27 @@ function getExtension(config: PluginConfig) {
         defaultValue: '',
       },
       imagePipelineArgs: {
-        type: GraphQLObjectType,
-        defaultValue: {}
+        bg: {
+          type: GraphQLString,
+        },
+        blur: {
+          type: GraphQLInt,
+        },
+        fm: {
+          type: GraphQLString,
+        },
+        invert: {
+          type: GraphQLBoolean,
+        },
+        q: {
+          type: GraphQLInt,
+        },
+        sat: {
+          type: GraphQLInt,
+        },
+        sharpen: {
+          type: GraphQLInt,
+        },
       },
     },
     resolve: (image: ImageNode, args: FluidArgs) => getFluidGatsbyImage(image, args, location),
