@@ -66,13 +66,6 @@ type ImageObject = {
   asset: ImageRef | ImageAsset
 }
 
-// A subset of the options available for Sanity Image Transformations. We dont
-// supply definition for the full list of options due to much of the work in
-// these functions being specific to resizing and anticipating the widths.
-// That is, we don't want to allow customization here that may impact expected
-// image ratios when generating the fixed/fluid images for Gatsby.
-//
-// See more at https://www.sanity.io/docs/image-urls.
 export type SanityImagePipelineArgs = {
   bg?: string,
   blur?: number,

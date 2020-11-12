@@ -2,7 +2,7 @@
 
 Source plugin for pulling data from [Sanity.io](https://www.sanity.io/) into [Gatsby](https://www.gatsbyjs.org/) websites. Develop with real-time preview of all content changes. Compatible with `gatsby-image`.
 
-Get up and running in minutes with a fully configured starter project: 
+Get up and running in minutes with a fully configured starter project:
 * [Blog with Gatsby](https://www.sanity.io/create?template=sanity-io/sanity-template-gatsby-blog)
 * [Portfolio with Gatsby](https://www.sanity.io/create?template=sanity-io/sanity-template-gatsby-portfolio).
 
@@ -195,6 +195,57 @@ const imageAssetId = 'image-488e172a7283400a57e57ffa5762ac3bd837b2ee-4240x2832-j
 const fluidProps = getFluidGatsbyImage(imageAssetId, {maxWidth: 1024}, sanityConfig)
 
 <Img fluid={fluidProps} />
+```
+
+### Interacting with the Image Pipeline
+
+As part of its [Image Pipeline](https://www.sanity.io/docs/presenting-images),Sanity provides many useful [options for transforming images](https://www.sanity.io/docs/image-urls) by manipulating their URL when requesting them from the Sanity CDN.
+
+In this package we expose a subset of the options available for Sanity Image Transformations. We dont supply definition for the full list of options due to much of the work in these functions being specific to resizing and anticipating the widths. That is, we don't want to allow customization here that may impact expected image ratios when generating the fixed/fluid images for Gatsby.
+
+The exposed options are: `bg`, `blur`, `fm`, `invert`, `q`, `sat`, and `sharpen`. You can read more about each of these options in the [Image URL documentation](https://www.sanity.io/docs/image-urls).
+
+##### Usage with GraphQL
+
+To pass these arguments using the GraphQL API, you may include an additional argument, `imagePipelineArgs`, block when calling both `fixed` and `fluid`. For example, the following query will add Image Pipeline arguments, passing `q` to specify an image quality:
+
+```js
+export const query = graphql`
+  query PersonQuery {
+    sanityPerson {
+      name
+      profileImage {
+        asset {
+          fixed(
+            width: 400
+            imagePipelineArgs: {
+              q: 30
+            }
+          ) {
+            ...GatsbySanityImageFixed
+          }
+        }
+      }
+    }
+  }
+`
+```
+
+##### Usage outside of GraphQL
+
+Likewise, to pass Image Pipeline arguments with using `getFixedGatsbyImage` or `getFluidGatsbyImage`, you may include an additional argument, `imagePipelineArgs`, block when calling either utility function. For example, the following query will add Image Pipeline arguments, passing `q` to specify an image quality:
+
+```js
+const fluidProps = getFluidGatsbyImage(
+  imageAssetId,
+  {
+    maxWidth: 1024,
+    imagePipelineArgs: {
+      q: 30
+    }
+  },
+  sanityConfig
+)
 ```
 
 ## Generating pages
