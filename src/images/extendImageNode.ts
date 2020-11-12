@@ -5,7 +5,6 @@ import {
   GraphQLInt,
   GraphQLEnumType,
   GraphQLNonNull,
-  GraphQLObjectType,
   GraphQLFieldConfig,
 } from 'gatsby/graphql'
 import {PluginConfig} from '../gatsby-node'
