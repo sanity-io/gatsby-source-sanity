@@ -214,7 +214,7 @@ export function getFixedGatsbyImage(
 
   const sanityImagePipelineArgs = args.imagePipelineArgs || {}
   const sanityImagePipelineParams = Object.keys(sanityImagePipelineArgs).map(
-    key => key + '=' + sanityImagePipelineArgs[key]
+    key => key + '=' + (sanityImagePipelineArgs as any)[key]
   ).join('&')
 
   const hasOriginalRatio = desiredAspectRatio === dimensions.aspectRatio
@@ -293,7 +293,7 @@ export function getFluidGatsbyImage(
 
   const sanityImagePipelineArgs = args.imagePipelineArgs || {};
   const sanityImagePipelineParams = Object.keys(sanityImagePipelineArgs).map(
-    key => key + '=' + sanityImagePipelineArgs[key]
+    key => key + '=' + (sanityImagePipelineArgs as any)[key]
   ).join('&');
 
   const baseSrc =

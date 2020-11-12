@@ -30,7 +30,6 @@
     "build": "tsc && tsc -t ES5 --outDir lib-es5",
     "format": "prettier --write src/**/*.{ts,tsx}",
     "watch": "tsc --watch",
-    "prepare": "npm run build",
     "prepublishOnly": "npm run build && npm test"
   },
   "dependencies": {
@@ -58,6 +57,7 @@
     "@types/lodash": "^4.14.162",
     "@types/node": "^14.14.3",
     "@types/pump": "^1.0.1",
+    "@types/react-dom": "^16.9.9",
     "@types/split2": "^2.1.6",
     "@types/through2": "^2.0.36",
     "eslint": "^7.12.0",
