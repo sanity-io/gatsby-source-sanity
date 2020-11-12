@@ -73,7 +73,8 @@ function getExtension(config: PluginConfig) {
         defaultValue: '',
       },
       imagePipelineArgs: {
-        type: GraphQLObjectType
+        type: GraphQLObjectType,
+        defaultValue: {}
       },
     },
     resolve: (image: ImageNode, args: FixedArgs) => getFixedGatsbyImage(image, args, location),
@@ -108,7 +109,8 @@ function getExtension(config: PluginConfig) {
         defaultValue: '',
       },
       imagePipelineArgs: {
-        type: GraphQLObjectType
+        type: GraphQLObjectType,
+        defaultValue: {}
       },
     },
     resolve: (image: ImageNode, args: FluidArgs) => getFluidGatsbyImage(image, args, location),
