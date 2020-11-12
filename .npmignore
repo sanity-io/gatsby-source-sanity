@@ -1,0 +1,10 @@
+test
+.eslintrc
+.gitignore
+.editorconfig
+.prettierrc
+.travis.yml
+jest-config.js
+package-lock.json
+yarn.lock
+tsconfig.json

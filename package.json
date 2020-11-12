@@ -30,7 +30,6 @@
     "build": "tsc && tsc -t ES5 --outDir lib-es5",
     "format": "prettier --write src/**/*.{ts,tsx}",
     "watch": "tsc --watch",
-    "prepare": "npm run build",
     "prepublishOnly": "npm run build && npm test"
   },
   "dependencies": {
