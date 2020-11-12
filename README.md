@@ -201,7 +201,7 @@ const fluidProps = getFluidGatsbyImage(imageAssetId, {maxWidth: 1024}, sanityCon
 
 As part of its [Image Pipeline](https://www.sanity.io/docs/presenting-images),Sanity provides many useful [options for transforming images](https://www.sanity.io/docs/image-urls) by manipulating their URL when requesting them from the Sanity CDN.
 
-In this package we expose a subset of the options available for Sanity Image Transformations. We dont supply definition for the full list of options due to much of the work in these functions being specific to resizing and anticipating the widths. That is, we don't want to allow customization here that may impact expected image ratios when generating the fixed/fluid images for Gatsby.
+In this package we expose a subset of the options available for Sanity Image Transformations. We dont supply definition for the full list of options due to much of the work in these functions being specific to resizing and anticipating image dimensions for responsive sizing. That is, we don't want to allow customization here that may impact expected image ratios when generating the fixed/fluid images for Gatsby.
 
 The exposed options are: `bg`, `blur`, `fm`, `invert`, `q`, `sat`, and `sharpen`. You can read more about each of these options in the [Image URL documentation](https://www.sanity.io/docs/image-urls).
 
