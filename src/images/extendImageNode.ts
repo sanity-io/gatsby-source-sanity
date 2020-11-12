@@ -5,6 +5,7 @@ import {
   GraphQLInt,
   GraphQLEnumType,
   GraphQLNonNull,
+  GraphQLObjectType,
   GraphQLFieldConfig,
 } from 'gatsby/graphql'
 import {PluginConfig} from '../gatsby-node'
@@ -15,7 +16,6 @@ import {
   ImageNode,
   FixedArgs,
   FluidArgs,
-  SanityImagePipelineArgs,
   DEFAULT_FLUID_MAX_WIDTH,
   DEFAULT_FIXED_WIDTH,
 } from './getGatsbyImageProps'
@@ -74,7 +74,7 @@ function getExtension(config: PluginConfig) {
         defaultValue: '',
       },
       imagePipelineArgs: {
-        type: SanityImagePipelineArgs
+        type: GraphQLObjectType
       },
     },
     resolve: (image: ImageNode, args: FixedArgs) => getFixedGatsbyImage(image, args, location),
@@ -109,7 +109,7 @@ function getExtension(config: PluginConfig) {
         defaultValue: '',
       },
       imagePipelineArgs: {
-        type: SanityImagePipelineArgs
+        type: GraphQLObjectType
       },
     },
     resolve: (image: ImageNode, args: FluidArgs) => getFluidGatsbyImage(image, args, location),
