@@ -73,29 +73,36 @@ type ImageObject = {
 // image ratios when generating the fixed/fluid images for Gatsby.
 //
 // See more at https://www.sanity.io/docs/image-urls.
-export type SanityImagePipelineArgs = {
-  bg?: string,
-  blur?: number,
-  fm?: string,
-  invert?: boolean,
-  q?: number,
-  sat?: number,
-  sharpen?: number
-}
 
 export type FluidArgs = {
   maxWidth?: number
   maxHeight?: number
   sizes?: string
   toFormat?: ImageFormat,
-  imagePipelineArgs?: SanityImagePipelineArgs
+  imagePipelineArgs?: {
+    bg?: string,
+    blur?: number,
+    fm?: string,
+    invert?: boolean,
+    q?: number,
+    sat?: number,
+    sharpen?: number
+  }
 }
 
 export type FixedArgs = {
   width?: number
   height?: number
   toFormat?: ImageFormat,
-  imagePipelineArgs?: SanityImagePipelineArgs
+  imagePipelineArgs?: {
+    bg?: string,
+    blur?: number,
+    fm?: string,
+    invert?: boolean,
+    q?: number,
+    sat?: number,
+    sharpen?: number
+  }
 }
 
 type SanityLocation = {
