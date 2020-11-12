@@ -1,18 +1,18 @@
 {
-  "name": "gatsby-source-sanity",
+  "name": "@bradleygriffith/gatsby-source-sanity",
   "description": "Gatsby source plugin for building websites using Sanity.io as a backend.",
   "version": "6.0.4",
   "author": "Sanity.io <hello@sanity.io>",
   "contributors": [
-    {
-      "name": "Henrique Doro",
-      "email": "opensource@hdoro.dev"
-    }
+    "Henrique Doro <opensource@hdoro.dev>"
   ],
   "engines": {
     "node": ">=8.0.0"
   },
-  "repository": "https://github.com/sanity-io/gatsby-source-sanity",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sanity-io/gatsby-source-sanity.git"
+  },
   "homepage": "https://github.com/sanity-io/gatsby-source-sanity#readme",
   "license": "MIT",
   "bugs": {
@@ -71,5 +71,9 @@
   },
   "peerDependencies": {
     "gatsby": "^2.2.0"
+  },
+  "directories": {
+    "lib": "lib",
+    "test": "test"
   }
 }
