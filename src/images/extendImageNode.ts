@@ -1,4 +1,5 @@
 import {
+  GraphQLBoolean,
   GraphQLObjectType,
   GraphQLString,
   GraphQLFloat,
@@ -6,6 +7,7 @@ import {
   GraphQLEnumType,
   GraphQLNonNull,
   GraphQLFieldConfig,
+  GraphQLInputObjectType,
 } from 'gatsby/graphql'
 import {PluginConfig} from '../gatsby-node'
 import {getCacheKey, CACHE_KEYS} from '../util/cache'
@@ -27,6 +29,33 @@ const ImageFormatType = new GraphQLEnumType({
     PNG: {value: 'png'},
     WEBP: {value: 'webp'},
   },
+})
+
+const ImagePipelineType = new GraphQLInputObjectType({
+  name: "SanityImagePipelineArgsFormat",
+  fields: {
+    bg: {
+      type: GraphQLString,
+    },
+    blur: {
+      type: GraphQLInt,
+    },
+    fm: {
+      type: GraphQLString,
+    },
+    invert: {
+      type: GraphQLBoolean,
+    },
+    q: {
+      type: GraphQLInt,
+    },
+    sat: {
+      type: GraphQLInt,
+    },
+    sharpen: {
+      type: GraphQLInt,
+    },
+  }
 })
 
 const extensions = new Map()
@@ -72,6 +101,9 @@ function getExtension(config: PluginConfig) {
         type: ImageFormatType,
         defaultValue: '',
       },
+      imagePipelineArgs: {
+        type: ImagePipelineType
+      }
     },
     resolve: (image: ImageNode, args: FixedArgs) => getFixedGatsbyImage(image, args, location),
   }
@@ -103,6 +135,9 @@ function getExtension(config: PluginConfig) {
       toFormat: {
         type: ImageFormatType,
         defaultValue: '',
+      },
+      imagePipelineArgs: {
+        type: ImagePipelineType
       },
     },
     resolve: (image: ImageNode, args: FluidArgs) => getFluidGatsbyImage(image, args, location),
