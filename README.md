@@ -1,6 +1,6 @@
 # gatsby-source-sanity
 
-Source plugin for pulling data from [Sanity.io](https://www.sanity.io/) into [Gatsby](https://www.gatsbyjs.org/) websites. Develop with real-time preview of all content changes. Compatible with `gatsby-image`.
+Source plugin for pulling data from [Sanity.io](https://www.sanity.io/) into [Gatsby](https://www.gatsbyjs.org/) websites. Develop with real-time preview of all content changes. Compatible with `gatsby-image`. Uses your project's GraphQL schema definitions to avoid accidental missing fields (no dummy-content needed).
 
 Get up and running in minutes with a fully configured starter project: 
 * [Blog with Gatsby](https://www.sanity.io/create?template=sanity-io/sanity-template-gatsby-blog)
@@ -25,6 +25,7 @@ Get up and running in minutes with a fully configured starter project:
 - ["Raw" fields](#raw-fields)
 - [Portable Text / Block Content](#portable-text--block-content)
 - [Using .env variables](#using-env-variables)
+- [How this plugin works](#how-this-source-plugin-works)
 - [Credits](#credits)
 
 
@@ -314,6 +315,12 @@ module.exports = {
 ```
 
 This example is based off [Gatsby Docs' implementation](https://www.gatsbyjs.org/docs/environment-variables/).
+
+## How this source plugin works
+
+When starting Gatsby in development or building a website, the source plugin will first fetch the GraphQL Schema Definitions from Sanity deployed GraphQL API. The source plugin uses this to tell Gatsby which fields should be available to prevent it from breaking if the content for certain fields happens to disappear. Then it will hit the project’s export endpoint, which streams all the accessible documents to Gatsby’s in-memory datastore.
+
+In order words, the whole site is built with two requests. Running the development server, will also set up a listener that pushes whatever changes come from Sanity to Gatsby in real-time, without doing additional API queries. If you give the source plugin a token with permission to read drafts, you’ll see the changes instantly. This can also be experienced with [Gatsby Preview](https://www.gatsbyjs.com/preview/).
 
 ## Credits
 
