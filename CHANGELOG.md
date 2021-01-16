@@ -2,6 +2,14 @@
 
 All notable changes will be documented in this file.
 
+## 6.0.5
+
+### Changes
+
+- Use official Gatsby type definitions where possible
+- Add structured reporting for improved Gatsby Cloud integration
+- Export `ImageFormat` type definition
+
 ## 6.0.4
 
 ### Changes
