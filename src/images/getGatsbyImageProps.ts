@@ -1,9 +1,31 @@
 import parseUrl from 'url-parse'
-
+import {
+  generateImageData,
+  IGatsbyImageData,
+  IGatsbyImageHelperArgs,
+  Layout,
+} from 'gatsby-plugin-image'
 export const LOWEST_FLUID_BREAKPOINT_WIDTH = 100
 export const DEFAULT_FIXED_WIDTH = 400
 export const DEFAULT_FLUID_MAX_WIDTH = 800
 export type ImageNode = ImageAsset | ImageObject | ImageRef | string | null | undefined
+import imageUrlBuilder from '@sanity/image-url'
+import {ImageUrlBuilder} from '@sanity/image-url/lib/types/builder'
+
+export const EVERY_BREAKPOINT = [
+  320,
+  654,
+  768,
+  1024,
+  1366,
+  1600,
+  1920,
+  2048,
+  2560,
+  3440,
+  3840,
+  4096,
+]
 
 export enum ImageFormat {
   NO_CHANGE = '',
@@ -36,6 +58,23 @@ export type GatsbyFluidImageProps = {
   media?: string
 }
 
+type ImagePalette = {
+  darkMuted: ImagePaletteSwatch
+  lightVibrant: ImagePaletteSwatch
+  darkVibrant: ImagePaletteSwatch
+  vibrant: ImagePaletteSwatch
+  dominant: ImagePaletteSwatch
+  lightMuted: ImagePaletteSwatch
+  muted: ImagePaletteSwatch
+}
+
+type ImagePaletteSwatch = {
+  background: string
+  foreground: string
+  population: number
+  title: string
+}
+
 type ImageDimensions = {
   width: number
   height: number
@@ -43,6 +82,7 @@ type ImageDimensions = {
 }
 
 type ImageMetadata = {
+  palette: ImagePalette
   dimensions: ImageDimensions
   lqip?: string
 }
@@ -307,4 +347,90 @@ export function getFluidGatsbyImage(
     srcSetWebp: srcSets.webp.join(',\n'),
     sizes,
   }
+}
+
+const fitMap = new Map<ImageFit, IGatsbyImageHelperArgs['fit']>([
+  [`clip`, `inside`],
+  [`crop`, `cover`],
+  [`fill`, `contain`],
+  [`fillmax`, `contain`],
+  [`max`, `inside`],
+  [`scale`, `fill`],
+  [`min`, `inside`],
+])
+
+const generateImageSource: IGatsbyImageHelperArgs['generateImageSource'] = (
+  filename,
+  width,
+  height,
+  toFormat,
+  fit,
+  options,
+) => {
+  const {builder} = options as {builder: ImageUrlBuilder}
+  const src = builder.width(width).height(height).url() as string
+  return {width, height, format: 'auto', src}
+}
+
+type ImageFit = 'clip' | 'crop' | 'fill' | 'fillmax' | 'max' | 'scale' | 'min'
+
+export type GatsbyImageDataArgs = {
+  width?: number
+  height?: number
+  aspectRatio?: number
+  layout?: Layout
+  sizes?: string
+  placeholder?: 'blurred' | 'dominantColor' | 'none'
+  fit?: ImageFit
+}
+
+// gatsby-plugin-image
+export function getGatsbyImageData(
+  image: ImageNode,
+  {fit, ...args}: GatsbyImageDataArgs,
+  loc: SanityLocation,
+): IGatsbyImageData | null {
+  const imageStub = getBasicImageProps(image, loc)
+
+  if (!imageStub || !image) {
+    return null
+  }
+
+  const {width, height} = imageStub.metadata.dimensions
+
+  const builder = imageUrlBuilder(loc).image(image)
+
+  const imageProps = generateImageData({
+    ...args,
+    pluginName: `gatsby-source-sanity`,
+    sourceMetadata: {
+      format: imageStub.extension as ImageFormat,
+      width,
+      height,
+    },
+    fit: fit ? fitMap.get(fit) : undefined,
+    filename: imageStub.url,
+    generateImageSource,
+    options: {builder},
+    formats: ['auto'],
+    breakpoints: EVERY_BREAKPOINT,
+  })
+
+  let placeholderDataURI: string | undefined
+
+  if (args.placeholder === `dominantColor`) {
+    imageProps.backgroundColor = imageStub.metadata.palette.dominant.background
+  }
+
+  if (args.placeholder === `blurred`) {
+    imageProps.placeholder = imageStub.metadata.lqip
+      ? {fallback: imageStub.metadata.lqip}
+      : undefined
+  }
+
+  if (placeholderDataURI) {
+    imageProps.placeholder = {fallback: placeholderDataURI}
+  }
+
+  return imageProps
 }

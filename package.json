@@ -40,6 +40,7 @@
     "axios": "^0.21.0",
     "debug": "^4.2.0",
     "fs-extra": "^9.0.1",
+    "gatsby-plugin-image": "next",
     "get-stream": "^5.1.0",
     "lodash": "^4.17.20",
     "oneline": "^1.0.2",
