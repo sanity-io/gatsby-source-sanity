@@ -82,7 +82,7 @@ type ImageDimensions = {
 }
 
 type ImageMetadata = {
-  palette: ImagePalette
+  palette?: ImagePalette
   dimensions: ImageDimensions
   lqip?: string
 }
@@ -419,7 +419,7 @@ export function getGatsbyImageData(
   let placeholderDataURI: string | undefined
 
   if (args.placeholder === `dominantColor`) {
-    imageProps.backgroundColor = imageStub.metadata.palette.dominant.background
+    imageProps.backgroundColor = imageStub.metadata.palette?.dominant?.background
   }
 
   if (args.placeholder === `blurred`) {
