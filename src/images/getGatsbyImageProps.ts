@@ -368,7 +368,7 @@ const generateImageSource: IGatsbyImageHelperArgs['generateImageSource'] = (
   options,
 ) => {
   const {builder} = options as {builder: ImageUrlBuilder}
-  const src = builder.width(width).height(height).url() as string
+  const src = builder.width(width).height(height).auto('format').url() as string
   return {width, height, format: 'auto', src}
 }
 
