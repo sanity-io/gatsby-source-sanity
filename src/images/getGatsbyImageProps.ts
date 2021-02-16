@@ -59,20 +59,20 @@ export type GatsbyFluidImageProps = {
 }
 
 type ImagePalette = {
-  darkMuted: ImagePaletteSwatch
-  lightVibrant: ImagePaletteSwatch
-  darkVibrant: ImagePaletteSwatch
-  vibrant: ImagePaletteSwatch
-  dominant: ImagePaletteSwatch
-  lightMuted: ImagePaletteSwatch
-  muted: ImagePaletteSwatch
+  darkMuted?: ImagePaletteSwatch
+  lightVibrant?: ImagePaletteSwatch
+  darkVibrant?: ImagePaletteSwatch
+  vibrant?: ImagePaletteSwatch
+  dominant?: ImagePaletteSwatch
+  lightMuted?: ImagePaletteSwatch
+  muted?: ImagePaletteSwatch
 }
 
 type ImagePaletteSwatch = {
-  background: string
-  foreground: string
-  population: number
-  title: string
+  background?: string
+  foreground?: string
+  population?: number
+  title?: string
 }
 
 type ImageDimensions = {
