@@ -2,12 +2,13 @@ import {
   getFixedGatsbyImage,
   getFluidGatsbyImage,
   getGatsbyImageData,
+  ImageNode,
 } from '../src/images/getGatsbyImageProps'
 
 // Smallish image
 const jpegId = 'image-abc123-300x200-jpg'
 const jpegRef = {_ref: 'image-abc123-300x200-jpg'}
-const jpegResolved = {
+const jpegResolved: ImageNode = {
   _id: 'image-abc123-300x200-jpg',
   url: 'https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg',
   assetId: 'abc123',
@@ -19,13 +20,18 @@ const jpegResolved = {
       height: 200,
       aspectRatio: 300 / 200,
     },
+    palette: {
+      dominant: {
+        background: 'rebeccapurple',
+      },
+    },
   },
 }
 
 // Largeish image
 const webpId = 'image-def456-4240x2832-webp'
 const webpRef = {_ref: 'image-def456-4240x2832-webp'}
-const webpResolved = {
+const webpResolved: ImageNode = {
   _id: 'image-def456-4240x2832-webp',
   url: 'https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp',
   assetId: 'def456',
@@ -36,6 +42,11 @@ const webpResolved = {
       width: 4240,
       height: 2832,
       aspectRatio: 4240 / 2832,
+    },
+    palette: {
+      dominant: {
+        background: 'papayawhip',
+      },
     },
   },
 }
@@ -67,6 +78,16 @@ test('[resolved] gatsbyImageData fullWidth jpg', () => {
 
 test('[resolved] gatsbyImageData fixed jpg', () => {
   expect(getGatsbyImageData(jpegResolved, {layout: 'fixed'}, location)).toMatchSnapshot()
+})
+
+test('[resolved] gatsbyImageData blurred placeholder', () => {
+  expect(getGatsbyImageData(jpegResolved, {placeholder: 'blurred'}, location)).toMatchSnapshot()
+})
+
+test('[resolved] gatsbyImageData dominantColor placeholder', () => {
+  expect(
+    getGatsbyImageData(jpegResolved, {placeholder: 'dominantColor'}, location),
+  ).toMatchSnapshot()
 })
 
 test('[resolved] fixed, jpg with width (600)', () => {
@@ -180,6 +201,10 @@ test('[resolved] fixed, webp without params', () => {
 })
 
 test('[resolved] gatsbyImageData webp without params', () => {
+  expect(getGatsbyImageData(webpResolved, {}, location)).toMatchSnapshot()
+})
+
+test('[resolved] gatsbyImageData webp dominant color', () => {
   expect(getGatsbyImageData(webpResolved, {}, location)).toMatchSnapshot()
 })
 
