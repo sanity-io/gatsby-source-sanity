@@ -264,6 +264,133 @@ https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp 4240w",
 }
 `;
 
+exports[`[id] gatsbyImageData constrained jpg with width (600) 1`] = `
+Object {
+  "backgroundColor": undefined,
+  "height": 400,
+  "images": Object {
+    "fallback": Object {
+      "sizes": "(min-width: 300px) 300px, 100vw",
+      "src": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=300&h=200&auto=format",
+      "srcSet": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=300&h=200&auto=format 300w",
+    },
+    "sources": Array [],
+  },
+  "layout": "constrained",
+  "width": 600,
+}
+`;
+
+exports[`[id] gatsbyImageData fixed jpg 1`] = `
+Object {
+  "backgroundColor": undefined,
+  "height": 200,
+  "images": Object {
+    "fallback": Object {
+      "sizes": "300px",
+      "src": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=300&h=200&auto=format",
+      "srcSet": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=300&h=200&auto=format 300w",
+    },
+    "sources": Array [],
+  },
+  "layout": "fixed",
+  "width": 300,
+}
+`;
+
+exports[`[id] gatsbyImageData fullWidth jpg 1`] = `
+Object {
+  "backgroundColor": undefined,
+  "height": 0.6666666666666666,
+  "images": Object {
+    "fallback": Object {
+      "sizes": "100vw",
+      "src": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=300&h=200&auto=format",
+      "srcSet": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=300&h=200&auto=format 300w",
+    },
+    "sources": Array [],
+  },
+  "layout": "fullWidth",
+  "width": 1,
+}
+`;
+
+exports[`[id] gatsbyImageData jpeg with width/height (300x300) > original size, same aspect 1`] = `
+Object {
+  "backgroundColor": undefined,
+  "images": Object {
+    "fallback": Object {
+      "sizes": undefined,
+      "src": "https://cdn.sanity.io/images/projectId/dataset/bf1942-70x70.jpg?w=70&h=70&auto=format",
+      "srcSet": "https://cdn.sanity.io/images/projectId/dataset/bf1942-70x70.jpg?w=70&h=70&auto=format 70w",
+    },
+    "sources": Array [],
+  },
+  "layout": undefined,
+}
+`;
+
+exports[`[id] gatsbyImageData jpeg with width/height (320x240) > original size, different aspect 1`] = `
+Object {
+  "backgroundColor": undefined,
+  "images": Object {
+    "fallback": Object {
+      "sizes": undefined,
+      "src": "https://cdn.sanity.io/images/projectId/dataset/bf1942-70x70.jpg?rect=0,8,70,53&w=70&h=53&auto=format",
+      "srcSet": "https://cdn.sanity.io/images/projectId/dataset/bf1942-70x70.jpg?rect=0,8,70,53&w=70&h=53&auto=format 70w",
+    },
+    "sources": Array [],
+  },
+  "layout": undefined,
+}
+`;
+
+exports[`[id] gatsbyImageData jpg with width (600) + height (300) 1`] = `
+Object {
+  "base64": undefined,
+  "height": 300,
+  "src": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=600&h=300&fit=crop",
+  "srcSet": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=600&h=300&fit=crop 1x",
+  "srcSetWebp": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=600&h=300&fit=crop&fm=webp 1x",
+  "srcWebp": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=600&h=300&fit=crop&fm=webp",
+  "width": 600,
+}
+`;
+
+exports[`[id] gatsbyImageData jpg without params 1`] = `
+Object {
+  "backgroundColor": undefined,
+  "height": 200,
+  "images": Object {
+    "fallback": Object {
+      "sizes": "(min-width: 300px) 300px, 100vw",
+      "src": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=300&h=200&auto=format",
+      "srcSet": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=300&h=200&auto=format 300w",
+    },
+    "sources": Array [],
+  },
+  "layout": "constrained",
+  "width": 300,
+}
+`;
+
+exports[`[id] gatsbyImageData, jpeg with width (300) > original size 1`] = `
+Object {
+  "backgroundColor": undefined,
+  "height": 300,
+  "images": Object {
+    "fallback": Object {
+      "sizes": "(min-width: 70px) 70px, 100vw",
+      "src": "https://cdn.sanity.io/images/projectId/dataset/bf1942-70x70.jpg?w=70&h=70&auto=format",
+      "srcSet": "https://cdn.sanity.io/images/projectId/dataset/bf1942-70x70.jpg?w=70&h=70&auto=format 70w",
+    },
+    "sources": Array [],
+  },
+  "layout": "constrained",
+  "width": 300,
+}
+`;
+
 exports[`[ref] fixed, jpg with width (600) + height (300) 1`] = `
 Object {
   "base64": undefined,
@@ -468,6 +595,74 @@ https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp 4240w",
 }
 `;
 
+exports[`[ref] gatabyImageData jpg without params 1`] = `
+Object {
+  "backgroundColor": undefined,
+  "height": 200,
+  "images": Object {
+    "fallback": Object {
+      "sizes": "(min-width: 300px) 300px, 100vw",
+      "src": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=300&h=200&auto=format",
+      "srcSet": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=300&h=200&auto=format 300w",
+    },
+    "sources": Array [],
+  },
+  "layout": "constrained",
+  "width": 300,
+}
+`;
+
+exports[`[ref] gatsbyImageData constrained jpg with width (600) 1`] = `
+Object {
+  "backgroundColor": undefined,
+  "height": 400,
+  "images": Object {
+    "fallback": Object {
+      "sizes": "(min-width: 300px) 300px, 100vw",
+      "src": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=300&h=200&auto=format",
+      "srcSet": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=300&h=200&auto=format 300w",
+    },
+    "sources": Array [],
+  },
+  "layout": "constrained",
+  "width": 600,
+}
+`;
+
+exports[`[ref] gatsbyImageData fixed jpg 1`] = `
+Object {
+  "backgroundColor": undefined,
+  "height": 200,
+  "images": Object {
+    "fallback": Object {
+      "sizes": "300px",
+      "src": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=300&h=200&auto=format",
+      "srcSet": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=300&h=200&auto=format 300w",
+    },
+    "sources": Array [],
+  },
+  "layout": "fixed",
+  "width": 300,
+}
+`;
+
+exports[`[ref] gatsbyImageData fullWidth jpg 1`] = `
+Object {
+  "backgroundColor": undefined,
+  "height": 0.6666666666666666,
+  "images": Object {
+    "fallback": Object {
+      "sizes": "100vw",
+      "src": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=300&h=200&auto=format",
+      "srcSet": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=300&h=200&auto=format 300w",
+    },
+    "sources": Array [],
+  },
+  "layout": "fullWidth",
+  "width": 1,
+}
+`;
+
 exports[`[resolved] fixed, jpg with width (600) + height (300) 1`] = `
 Object {
   "base64": "data:image/jpeg;base64,someString",
@@ -669,5 +864,132 @@ https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=1600&h=10
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=2400&h=1603&fit=crop 2400w,
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp 4240w",
   "srcWebp": "https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=800&h=534&fit=crop",
+}
+`;
+
+exports[`[resolved] gatabyImageData jpg without params 1`] = `
+Object {
+  "backgroundColor": undefined,
+  "height": 200,
+  "images": Object {
+    "fallback": Object {
+      "sizes": "(min-width: 300px) 300px, 100vw",
+      "src": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=300&h=200&auto=format",
+      "srcSet": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=300&h=200&auto=format 300w",
+    },
+    "sources": Array [],
+  },
+  "layout": "constrained",
+  "width": 300,
+}
+`;
+
+exports[`[resolved] gatsbyImageData constrained jpg with width (600) 1`] = `
+Object {
+  "backgroundColor": undefined,
+  "height": 400,
+  "images": Object {
+    "fallback": Object {
+      "sizes": "(min-width: 300px) 300px, 100vw",
+      "src": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=300&h=200&auto=format",
+      "srcSet": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=300&h=200&auto=format 300w",
+    },
+    "sources": Array [],
+  },
+  "layout": "constrained",
+  "width": 600,
+}
+`;
+
+exports[`[resolved] gatsbyImageData fixed jpg 1`] = `
+Object {
+  "backgroundColor": undefined,
+  "height": 200,
+  "images": Object {
+    "fallback": Object {
+      "sizes": "300px",
+      "src": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=300&h=200&auto=format",
+      "srcSet": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=300&h=200&auto=format 300w",
+    },
+    "sources": Array [],
+  },
+  "layout": "fixed",
+  "width": 300,
+}
+`;
+
+exports[`[resolved] gatsbyImageData fullWidth jpg 1`] = `
+Object {
+  "backgroundColor": undefined,
+  "height": 0.6666666666666666,
+  "images": Object {
+    "fallback": Object {
+      "sizes": "100vw",
+      "src": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=300&h=200&auto=format",
+      "srcSet": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=300&h=200&auto=format 300w",
+    },
+    "sources": Array [],
+  },
+  "layout": "fullWidth",
+  "width": 1,
+}
+`;
+
+exports[`[resolved] gatsbyImageData webp fullWidth 1`] = `
+Object {
+  "backgroundColor": undefined,
+  "height": 0.6679245283018868,
+  "images": Object {
+    "sources": Array [
+      Object {
+        "sizes": "100vw",
+        "srcSet": "https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?rect=3,0,4235,2832&w=320&h=214&auto=format 320w,
+https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?rect=1,0,4238,2832&w=654&h=437&auto=format 654w,
+https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=768&h=513&auto=format 768w,
+https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=1024&h=684&auto=format 1024w,
+https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?rect=0,0,4240,2831&w=1366&h=912&auto=format 1366w,
+https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?rect=1,0,4239,2832&w=1600&h=1069&auto=format 1600w,
+https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?rect=0,0,4240,2831&w=1920&h=1282&auto=format 1920w,
+https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=2048&h=1368&auto=format 2048w,
+https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=2560&h=1710&auto=format 2560w,
+https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?rect=0,0,4239,2832&w=3440&h=2298&auto=format 3440w,
+https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=3840&h=2565&auto=format 3840w,
+https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=4096&h=2736&auto=format 4096w",
+        "type": "image/webp",
+      },
+    ],
+  },
+  "layout": "fullWidth",
+  "width": 1,
+}
+`;
+
+exports[`[resolved] gatsbyImageData webp without params 1`] = `
+Object {
+  "backgroundColor": undefined,
+  "height": 2832,
+  "images": Object {
+    "sources": Array [
+      Object {
+        "sizes": "(min-width: 4240px) 4240px, 100vw",
+        "srcSet": "https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?rect=3,0,4235,2832&w=320&h=214&auto=format 320w,
+https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?rect=1,0,4238,2832&w=654&h=437&auto=format 654w,
+https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=768&h=513&auto=format 768w,
+https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=1024&h=684&auto=format 1024w,
+https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?rect=0,0,4240,2831&w=1366&h=912&auto=format 1366w,
+https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?rect=1,0,4239,2832&w=1600&h=1069&auto=format 1600w,
+https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?rect=0,0,4240,2831&w=1920&h=1282&auto=format 1920w,
+https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=2048&h=1368&auto=format 2048w,
+https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=2560&h=1710&auto=format 2560w,
+https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?rect=0,0,4239,2832&w=3440&h=2298&auto=format 3440w,
+https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=3840&h=2565&auto=format 3840w,
+https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=4096&h=2736&auto=format 4096w,
+https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=4240&h=2832&auto=format 4240w",
+        "type": "image/webp",
+      },
+    ],
+  },
+  "layout": "constrained",
+  "width": 4240,
 }
 `;
