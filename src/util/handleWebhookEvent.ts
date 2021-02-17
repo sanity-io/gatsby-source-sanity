@@ -65,7 +65,7 @@ function handleDeletedDocuments(context: SourceNodesArgs, ids: string[]) {
     .filter((node): node is SanityNode => typeof node !== 'undefined')
     .reduce((count, node) => {
       debug('Deleted document with ID %s', node._id)
-      deleteNode({node})
+      deleteNode(node)
       return count + 1
     }, 0)
 }

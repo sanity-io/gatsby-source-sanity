@@ -41,7 +41,7 @@ export function handleListenerEvent(
     } else if (current) {
       // Deleted a node that we currently have, delete it
       debug('Published document deleted, remove')
-      deleteNode({node: current})
+      deleteNode(current)
     }
 
     return
@@ -59,13 +59,13 @@ export function handleListenerEvent(
       createNode(published)
     } else if (touchedIsDraft && !published && current) {
       debug('Draft deleted, no published version exist, delete node')
-      deleteNode({node: current})
+      deleteNode(current)
     } else if (!touchedIsDraft && currentIsDraft && published) {
       debug('Published version deleted, but we have draft, remove published from working set')
       publishedNodes.delete(event.documentId)
     } else if (!touchedIsDraft && !currentIsDraft && current) {
       debug('Published version deleted, we have no draft, remove node entirely')
-      deleteNode({node: current})
+      deleteNode(current)
       publishedNodes.delete(event.documentId)
     }
   } else {
