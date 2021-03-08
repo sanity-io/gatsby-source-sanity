@@ -318,30 +318,34 @@ Object {
 exports[`[id] gatsbyImageData jpeg with width/height (300x300) > original size, same aspect 1`] = `
 Object {
   "backgroundColor": undefined,
+  "height": 300,
   "images": Object {
     "fallback": Object {
-      "sizes": undefined,
+      "sizes": "(min-width: 70px) 70px, 100vw",
       "src": "https://cdn.sanity.io/images/projectId/dataset/bf1942-70x70.jpg?w=70&h=70&auto=format",
       "srcSet": "https://cdn.sanity.io/images/projectId/dataset/bf1942-70x70.jpg?w=70&h=70&auto=format 70w",
     },
     "sources": Array [],
   },
-  "layout": undefined,
+  "layout": "constrained",
+  "width": 300,
 }
 `;
 
 exports[`[id] gatsbyImageData jpeg with width/height (320x240) > original size, different aspect 1`] = `
 Object {
   "backgroundColor": undefined,
+  "height": 240,
   "images": Object {
     "fallback": Object {
-      "sizes": undefined,
+      "sizes": "(min-width: 70px) 70px, 100vw",
       "src": "https://cdn.sanity.io/images/projectId/dataset/bf1942-70x70.jpg?rect=0,8,70,53&w=70&h=53&auto=format",
       "srcSet": "https://cdn.sanity.io/images/projectId/dataset/bf1942-70x70.jpg?rect=0,8,70,53&w=70&h=53&auto=format 70w",
     },
     "sources": Array [],
   },
-  "layout": undefined,
+  "layout": "constrained",
+  "width": 320,
 }
 `;
 
