@@ -29,7 +29,7 @@
     "test": "jest",
     "build": "tsc && tsc -t ES5 --outDir lib-es5",
     "format": "prettier --write src/**/*.{ts,tsx}",
-    "watch": "tsc --watch",
+    "watch": "tsc --watch & tsc && tsc -t ES5 --outDir lib-es5 --watch",
     "prepublishOnly": "npm run build && npm test"
   },
   "dependencies": {
