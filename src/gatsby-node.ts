@@ -112,13 +112,10 @@ export const onPreBootstrap: GatsbyNode['onPreBootstrap'] = async (
     if (err.isWarning) {
       err.message.split('\n').forEach((line: string) => reporter.warn(line))
     } else {
-      reporter.panic(
-        {
-          id: prefixId(CODES.SchemaFetchError),
-          context: {sourceMessage: err.stack},
-        },
-        err.stack,
-      )
+      reporter.panic({
+        id: prefixId(CODES.SchemaFetchError),
+        context: {sourceMessage: err.message},
+      })
     }
   }
 }
@@ -271,23 +268,17 @@ export const setFieldsOnGraphQLNodeType: GatsbyNode['setFieldsOnGraphQLNodeType'
 
 function validateConfig(config: Partial<PluginConfig>, reporter: Reporter): config is PluginConfig {
   if (!config.projectId) {
-    reporter.panic(
-      {
-        id: prefixId(CODES.MissingProjectId),
-        context: {sourceMessage: '[sanity] `projectId` must be specified'},
-      },
-      new Error('[sanity] `projectId` must be specified'),
-    )
+    reporter.panic({
+      id: prefixId(CODES.MissingProjectId),
+      context: {sourceMessage: '[sanity] `projectId` must be specified'},
+    })
   }
 
   if (!config.dataset) {
-    reporter.panic(
-      {
-        id: prefixId(CODES.MissingDataset),
-        context: {sourceMessage: '[sanity] `dataset` must be specified'},
-      },
-      new Error('[sanity] `dataset` must be specified'),
-    )
+    reporter.panic({
+      id: prefixId(CODES.MissingDataset),
+      context: {sourceMessage: '[sanity] `dataset` must be specified'},
+    })
   }
 
   if (config.overlayDrafts && !config.token) {
