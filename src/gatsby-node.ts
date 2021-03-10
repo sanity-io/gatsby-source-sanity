@@ -78,13 +78,10 @@ export const onPreBootstrap: GatsbyNode['onPreBootstrap'] = async (
     You are using a version of Gatsby not supported by gatsby-source-sanity.
     Either upgrade gatsby to >= 2.2.0 or downgrade to gatsby-source-sanity@^1.0.0`
 
-    reporter.panic(
-      {
-        id: prefixId(CODES.UnsupportedGatsbyVersion),
-        context: {sourceMessage: unsupportedVersionMessage},
-      },
-      new Error(unsupportedVersionMessage),
-    )
+    reporter.panic({
+      id: prefixId(ERROR_CODES.UnsupportedGatsbyVersion),
+      context: {sourceMessage: unsupportedVersionMessage},
+    })
 
     return
   }
