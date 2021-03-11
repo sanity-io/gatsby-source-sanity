@@ -6,6 +6,7 @@
     "noUnusedLocals": true,
     "noImplicitReturns": true,
     "module": "commonjs",
+    "downlevelIteration": true,
     "removeComments": false,
     "preserveConstEnums": true,
     "skipLibCheck": true,
