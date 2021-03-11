@@ -71,7 +71,7 @@ export function handleListenerEvent(
   } else {
     // A document was updated / created
     if (touchedIsDraft && event.result) {
-      debug(current ? 'Replace the current draft with a new draft' : 'New draft discovered')
+      debug(currentIsDraft ? 'Replace the current draft with a new draft' : 'New draft discovered')
       processDocument(event.result, processingOptions)
 
       // If the currently used node is a published one, make sure we keep a copy
