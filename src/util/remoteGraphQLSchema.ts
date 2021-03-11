@@ -16,6 +16,7 @@ import {
 import {SanityClient} from '@sanity/client'
 import {PluginConfig} from '../gatsby-node'
 import {getTypeName} from './normalize'
+import {ErrorWithCode} from './errors'
 
 export type FieldDef = {
   type: NamedTypeNode | ListTypeNode | NonNullTypeNode
@@ -60,19 +61,20 @@ export async function getRemoteGraphQLSchema(client: SanityClient, config: Plugi
 
     return api
   } catch (err) {
-    const code = get(err, 'response.statusCode')
-    const message = get(
-      err,
-      'response.body.message',
-      get(err, 'response.statusMessage') || err.message,
-    )
+    const statusCode = get(err, 'response.statusCode')
+    const errorCode = get(err, 'response.body.errorCode')
+    const message =
+      get(err, 'response.body.message') || get(err, 'response.statusMessage') || err.message
 
-    const is404 = code === 404 || /schema not found/i.test(message)
-    throw new Error(
+    const is404 = statusCode === 404 || /schema not found/i.test(message)
+    const error = new ErrorWithCode(
       is404
         ? `GraphQL API not deployed - see https://github.com/sanity-io/gatsby-source-sanity#graphql-api for more info\n\n`
         : `${message}`,
+      errorCode || statusCode,
     )
+
+    throw error
   }
 }
 

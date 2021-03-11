@@ -31,12 +31,18 @@ import {
   defaultTypeMap,
   TypeMap,
 } from './util/remoteGraphQLSchema'
-import debug from './debug'
+import {
+  prefixId,
+  ERROR_MAP,
+  ERROR_CODES,
+  SANITY_ERROR_CODE_MAP,
+  SANITY_ERROR_CODE_MESSAGES,
+} from './util/errors'
 import {extendImageNode} from './images/extendImageNode'
 import {rewriteGraphQLSchema} from './util/rewriteGraphQLSchema'
 import {getGraphQLResolverMap} from './util/getGraphQLResolverMap'
 import {unprefixId} from './util/documentIds'
-import {ERROR_MAP, prefixId, CODES} from './util/errorMap'
+import debug from './debug'
 
 import path = require('path')
 import oneline = require('oneline')
@@ -108,12 +114,21 @@ export const onPreBootstrap: GatsbyNode['onPreBootstrap'] = async (
   } catch (err) {
     if (err.isWarning) {
       err.message.split('\n').forEach((line: string) => reporter.warn(line))
-    } else {
+      return
+    }
+
+    if (typeof err.code === 'string' && SANITY_ERROR_CODE_MAP[err.code]) {
       reporter.panic({
-        id: prefixId(CODES.SchemaFetchError),
-        context: {sourceMessage: err.message},
+        id: prefixId(SANITY_ERROR_CODE_MAP[err.code]),
+        context: {sourceMessage: `[sanity] ${SANITY_ERROR_CODE_MESSAGES[err.code]}`},
       })
     }
+
+    const prefix = typeof err.code === 'string' ? `[${err.code}] ` : ''
+    reporter.panic({
+      id: prefixId(ERROR_CODES.SchemaFetchError),
+      context: {sourceMessage: `${prefix}${err.message}`},
+    })
   }
 }
 
@@ -266,14 +281,14 @@ export const setFieldsOnGraphQLNodeType: GatsbyNode['setFieldsOnGraphQLNodeType'
 function validateConfig(config: Partial<PluginConfig>, reporter: Reporter): config is PluginConfig {
   if (!config.projectId) {
     reporter.panic({
-      id: prefixId(CODES.MissingProjectId),
+      id: prefixId(ERROR_CODES.MissingProjectId),
       context: {sourceMessage: '[sanity] `projectId` must be specified'},
     })
   }
 
   if (!config.dataset) {
     reporter.panic({
-      id: prefixId(CODES.MissingDataset),
+      id: prefixId(ERROR_CODES.MissingDataset),
       context: {sourceMessage: '[sanity] `dataset` must be specified'},
     })
   }
