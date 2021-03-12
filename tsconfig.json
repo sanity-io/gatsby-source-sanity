@@ -8,6 +8,7 @@
     "module": "commonjs",
     "removeComments": false,
     "preserveConstEnums": true,
+    "skipLibCheck": true,
     "esModuleInterop": true,
     "sourceMap": true,
     "outDir": "./lib",
