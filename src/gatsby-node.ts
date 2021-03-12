@@ -1,38 +1,29 @@
-import split from 'split2'
-import through from 'through2'
 import {copy} from 'fs-extra'
-import {filter} from 'rxjs/operators'
+import {bufferTime, filter, map, tap} from 'rxjs/operators'
 import {GraphQLFieldConfig} from 'gatsby/graphql'
 import SanityClient from '@sanity/client'
-import {SanityNode} from './types/gatsby'
 import {
-  GatsbyNode,
-  ParentSpanPluginArgs,
-  Reporter,
-  PluginOptions,
   CreateResolversArgs,
   CreateSchemaCustomizationArgs,
-  SourceNodesArgs,
+  GatsbyNode,
+  ParentSpanPluginArgs,
+  PluginOptions,
+  Reporter,
   SetFieldsOnGraphQLNodeTypeArgs,
+  SourceNodesArgs,
 } from 'gatsby'
 import {SanityDocument, SanityWebhookBody} from './types/sanity'
-import {pump} from './util/pump'
-import {rejectOnApiError} from './util/rejectOnApiError'
-import {processDocument, getTypeName} from './util/normalize'
-import {getDocumentStream} from './util/getDocumentStream'
-import {getCacheKey, CACHE_KEYS} from './util/cache'
-import {removeSystemDocuments} from './util/removeSystemDocuments'
-import {removeDrafts, extractDrafts} from './util/handleDrafts'
-import {handleListenerEvent} from './util/handleListenerEvent'
+import {getTypeName, toGatsbyNode} from './util/normalize'
+import {CACHE_KEYS, getCacheKey} from './util/cache'
 import {handleWebhookEvent} from './util/handleWebhookEvent'
 import {
-  getTypeMapFromGraphQLSchema,
-  getRemoteGraphQLSchema,
   defaultTypeMap,
+  getRemoteGraphQLSchema,
+  getTypeMapFromGraphQLSchema,
   TypeMap,
 } from './util/remoteGraphQLSchema'
 import {
-  prefixId,
+  prefixId as prefixErrorId,
   ERROR_MAP,
   ERROR_CODES,
   SANITY_ERROR_CODE_MAP,
@@ -41,11 +32,13 @@ import {
 import {extendImageNode} from './images/extendImageNode'
 import {rewriteGraphQLSchema} from './util/rewriteGraphQLSchema'
 import {getGraphQLResolverMap} from './util/getGraphQLResolverMap'
-import {unprefixId} from './util/documentIds'
+import {prefixId, unprefixId} from './util/documentIds'
+import {getAllDocuments} from './util/getAllDocuments'
+import path from 'path'
+import oneline from 'oneline'
+import {uniq} from 'lodash'
+import {SanityInputNode} from './types/gatsby'
 import debug from './debug'
-
-import path = require('path')
-import oneline = require('oneline')
 
 export interface PluginConfig extends PluginOptions {
   projectId: string
@@ -85,7 +78,7 @@ export const onPreBootstrap: GatsbyNode['onPreBootstrap'] = async (
     Either upgrade gatsby to >= 2.2.0 or downgrade to gatsby-source-sanity@^1.0.0`
 
     reporter.panic({
-      id: prefixId(ERROR_CODES.UnsupportedGatsbyVersion),
+      id: prefixErrorId(ERROR_CODES.UnsupportedGatsbyVersion),
       context: {sourceMessage: unsupportedVersionMessage},
     })
 
@@ -157,8 +150,8 @@ export const sourceNodes: GatsbyNode['sourceNodes'] = async (
 ) => {
   const config = {...defaultConfig, ...pluginConfig}
   const {dataset, overlayDrafts, watchMode} = config
-  const {actions, getNode, createNodeId, createContentDigest, reporter, webhookBody} = args
-  const {createNode, createParentChildLink} = actions
+  const {actions, createNodeId, createContentDigest, reporter, webhookBody} = args
+  const {createNode, deleteNode, createParentChildLink} = actions
 
   const typeMapKey = getCacheKey(pluginConfig, CACHE_KEYS.TYPE_MAP)
   const typeMap = (stateCache[typeMapKey] || defaultTypeMap) as TypeMap
@@ -188,57 +181,132 @@ export const sourceNodes: GatsbyNode['sourceNodes'] = async (
   }
 
   reporter.info('[sanity] Fetching export stream for dataset')
-  let numDocuments = 0
-  const inputStream = await getDocumentStream(url, config.token)
 
-  const draftDocs: SanityDocument[] = []
-  const publishedNodes = new Map<string, SanityNode>()
+  const documents = await downloadDocuments(url, config.token, {includeDrafts: overlayDrafts})
+  const gatsbyNodes = new Map<string, SanityInputNode>()
 
-  await pump([
-    inputStream,
-    split(JSON.parse),
-    rejectOnApiError(),
-    overlayDrafts ? extractDrafts(draftDocs) : removeDrafts(),
-    removeSystemDocuments(),
-    through.obj((doc: SanityDocument, enc: string, cb: through.TransformCallback) => {
-      numDocuments++
+  // sync a single document from the local cache of known documents with gatsby
+  function syncWithGatsby(id: string) {
+    const publishedId = unprefixId(id)
+    const draftId = prefixId(id)
 
+    const published = documents.get(publishedId)
+    const draft = documents.get(draftId)
+
+    const doc = draft || published
+    if (doc) {
       const type = getTypeName(doc._type)
       if (!typeMap.objects[type]) {
         reporter.warn(
           `[sanity] Document "${doc._id}" has type ${doc._type} (${type}), which is not declared in the GraphQL schema. Make sure you run "graphql deploy". Skipping document.`,
         )
+        return
+      }
+    }
 
-        cb()
+    if (id === draftId && !overlayDrafts) {
+      // do nothing, we're not overlaying drafts
+      debug('overlayDrafts is not enabled, so skipping createNode for draft')
+      return
+    }
+
+    if (id === publishedId) {
+      if (draft && overlayDrafts) {
+        // we have a draft, and overlayDrafts is enabled, so skip to the draft document instead
+        debug('skipping createNode of %s since there is a draft and overlayDrafts is enabled', publishedId)
         return
       }
 
-      const node = processDocument(doc, processingOptions)
-      debug('Got document with ID %s (mapped to %s)', doc._id, node.id)
-      cb()
-    }),
-  ])
-
-  if (draftDocs.length > 0) {
-    reporter.info(`[sanity] Overlaying ${draftDocs.length} drafts`)
-    draftDocs.forEach((draft) => {
-      processDocument(draft, processingOptions)
-      const published = getNode(draft.id) as SanityNode
-      if (published) {
-        publishedNodes.set(unprefixId(draft._id), published)
+      if (gatsbyNodes.has(publishedId)) {
+        // sync existing gatsby node with document from updated cache
+        if (published) {
+          debug('updating gatsby node for %s', publishedId)
+          const node = toGatsbyNode(published, processingOptions)
+          gatsbyNodes.set(publishedId, node)
+          createNode(node)
+        } else {
+          // the published document has been removed (note - we either have no draft or overlayDrafts is not enabled so merely removing is ok here)
+          debug(
+            'deleting gatsby node for %s since there is no draft and overlayDrafts is not enabled',
+            publishedId,
+          )
+          deleteNode(gatsbyNodes.get(publishedId)!)
+          gatsbyNodes.delete(publishedId)
+        }
+      } else if (published) {
+        // when we don't have a gatsby node for the published document
+        debug('creating gatsby node for %s', publishedId)
+        const node = toGatsbyNode(published, processingOptions)
+        gatsbyNodes.set(publishedId, node)
+        createNode(node)
       }
-    })
+    }
+    if (id === draftId && overlayDrafts) {
+      // we're syncing a draft version and overlayDrafts is enabled
+      if (gatsbyNodes.has(publishedId) && !draft && !published) {
+        // have stale gatsby node for a published document that has neither a draft or a published (e.g. it's been deleted)
+        debug(
+          'deleting gatsby node for %s since there is neither a draft nor a published version of it any more',
+          publishedId,
+        )
+        deleteNode(gatsbyNodes.get(publishedId)!)
+        gatsbyNodes.delete(publishedId)
+        return
+      }
+
+      debug(
+        'Replacing gatsby node for %s using the %s document',
+        publishedId,
+        draft ? 'draft' : 'published',
+      )
+      // pick the draft if we can, otherwise pick the published
+      const node = toGatsbyNode((draft || published)!, processingOptions)
+      gatsbyNodes.set(publishedId, node)
+      createNode(node)
+    }
   }
 
+  function syncAllWithGatsby() {
+    for (const id of documents.keys()) {
+      syncWithGatsby(id)
+    }
+  }
+
+  function syncIdsWithGatsby(ids: string[]) {
+    for (const id of ids) {
+      syncWithGatsby(id)
+    }
+  }
   if (watchMode) {
+    // Note: since we don't setup the listener before *after* all documents has been fetched here we will miss any events that
+    // happened in the time window between the documents was fetched and the listener connected. If this happens, the
+    // preview will show an outdated version of the document.
     reporter.info('[sanity] Watch mode enabled, starting a listener')
     client
       .listen('*[!(_id in path("_.**"))]')
-      .pipe(filter((event) => overlayDrafts || !event.documentId.startsWith('drafts.')))
-      .subscribe((event) => handleListenerEvent(event, publishedNodes, args, processingOptions))
+      .pipe(
+        filter((event) => overlayDrafts || !event.documentId.startsWith('drafts.')),
+        tap((event) => {
+          if (event.result) {
+            documents.set(event.documentId, event.result)
+          } else {
+            documents.delete(event.documentId)
+          }
+        }),
+        map((event) => event.documentId),
+        bufferTime(100),
+        map((ids) => uniq(ids)),
+        filter((ids) => ids.length > 0),
+        tap((updateIds) =>
+          debug('The following documents updated and will be synced with gatsby: ', updateIds),
+        ),
+        tap((updatedIds) => syncIdsWithGatsby(updatedIds)),
+      )
+      .subscribe()
   }
-
-  reporter.info(`[sanity] Done! Exported ${numDocuments} documents.`)
+  // do the initial sync from sanity documents to gatsby nodes
+  syncAllWithGatsby()
+  reporter.info(`[sanity] Done! Exported ${documents.size} documents.`)
 }
 
 export const onPreExtractQueries: GatsbyNode['onPreExtractQueries'] = async (
@@ -305,6 +373,28 @@ function validateConfig(config: Partial<PluginConfig>, reporter: Reporter): conf
   }
 
   return true
+}
+
+function downloadDocuments(
+  url: string,
+  token?: string,
+  options: {includeDrafts?: boolean} = {},
+): Promise<Map<string, SanityDocument>> {
+  return getAllDocuments(url, token, options).then(
+    (stream) =>
+      new Promise((resolve, reject) => {
+        const documents = new Map<string, SanityDocument>()
+        stream.on('data', (doc) => {
+          documents.set(doc._id, doc)
+        })
+        stream.on('end', () => {
+          resolve(documents)
+        })
+        stream.on('error', (error) => {
+          reject(error)
+        })
+      }),
+  )
 }
 
 function getClient(config: PluginConfig) {

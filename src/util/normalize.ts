@@ -3,8 +3,7 @@ import {extractWithPath} from '@sanity/mutator'
 import {specifiedScalarTypes} from 'gatsby/graphql'
 import {set, startCase, camelCase, cloneDeep, upperFirst} from 'lodash'
 import {SanityDocument} from '../types/sanity'
-import {safeId} from './documentIds'
-import {unprefixDraftId} from './unprefixDraftId'
+import {safeId, unprefixId} from './documentIds'
 import {TypeMap} from './remoteGraphQLSchema'
 import {SanityInputNode} from '../types/gatsby'
 
@@ -23,32 +22,25 @@ export interface ProcessingOptions {
   createContentDigest: NodePluginArgs['createContentDigest']
   createParentChildLink: Actions['createParentChildLink']
   overlayDrafts: boolean
-  skipCreate?: boolean
 }
 
 // Transform a Sanity document into a Gatsby node
-export function processDocument(doc: SanityDocument, options: ProcessingOptions): SanityInputNode {
-  const {createNode, createNodeId, createContentDigest, overlayDrafts, skipCreate} = options
+export function toGatsbyNode(doc: SanityDocument, options: ProcessingOptions): SanityInputNode {
+  const {createNodeId, createContentDigest, overlayDrafts} = options
 
   const rawAliases = getRawAliases(doc, options)
   const safe = prefixConflictingKeys(doc)
   const withRefs = rewriteNodeReferences(safe, options)
-  const node = {
+  return {
     ...withRefs,
     ...rawAliases,
-    id: safeId(overlayDrafts ? unprefixDraftId(doc._id) : doc._id, createNodeId),
+    id: safeId(overlayDrafts ? unprefixId(doc._id) : doc._id, createNodeId),
     children: [],
     internal: {
       type: getTypeName(doc._type),
       contentDigest: createContentDigest(JSON.stringify(withRefs)),
     },
   }
-
-  if (!skipCreate) {
-    createNode(node)
-  }
-
-  return node
 }
 
 // movie => SanityMovie

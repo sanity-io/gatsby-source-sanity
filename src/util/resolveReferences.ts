@@ -1,7 +1,6 @@
 import {NodePluginArgs} from 'gatsby'
 import debug from '../debug'
-import {safeId} from './documentIds'
-import {unprefixDraftId} from './unprefixDraftId'
+import {safeId, unprefixId} from './documentIds'
 
 const defaultResolveOptions: ResolveReferencesOptions = {
   maxDepth: 5,
@@ -40,7 +39,7 @@ export function resolveReferences(
       // not a Sanity document ID. Thus, it does not need to be rewritten
       obj._ref.startsWith('-')
         ? obj._ref
-        : safeId(overlayDrafts ? unprefixDraftId(obj._ref) : obj._ref, createNodeId)
+        : safeId(overlayDrafts ? unprefixId(obj._ref) : obj._ref, createNodeId)
 
     debug('Resolve %s (Sanity ID %s)', targetId, obj._ref)
 

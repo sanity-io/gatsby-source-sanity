@@ -6,18 +6,8 @@ function filter(doc: SanityDocument, enc: string, callback: through.TransformCal
   return isDraft(doc) ? callback() : callback(null, doc)
 }
 
-export function isDraft(doc: SanityDocument) {
+function isDraft(doc: SanityDocument) {
   return doc && doc._id && isDraftId(doc._id)
 }
 
 export const removeDrafts = () => through.obj(filter)
-
-export const extractDrafts = (target: SanityDocument[]) =>
-  through.obj((doc: SanityDocument, enc: string, callback: through.TransformCallback) => {
-    if (!isDraft(doc)) {
-      return callback(null, doc)
-    }
-
-    target.push(doc)
-    callback()
-  })

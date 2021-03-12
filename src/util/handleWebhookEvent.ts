@@ -3,7 +3,7 @@ import {SanityClient} from '@sanity/client'
 import debug from '../debug'
 import {SanityNode} from '../types/gatsby'
 import {SanityDocument, SanityWebhookBody} from '../types/sanity'
-import {processDocument, ProcessingOptions, getTypeName} from './normalize'
+import {ProcessingOptions, getTypeName, toGatsbyNode} from './normalize'
 import {unprefixId, safeId} from './documentIds'
 
 export async function handleWebhookEvent(
@@ -89,7 +89,7 @@ function handleChangedDocuments(
     }
 
     debug('%s document with ID %s', action === 'created' ? 'Created' : 'Updated', doc._id)
-    processDocument(doc, processingOptions)
+    processingOptions.createNode(toGatsbyNode(doc, processingOptions))
     return count + 1
   }, 0)
 }
