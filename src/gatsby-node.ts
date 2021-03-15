@@ -1,6 +1,7 @@
 import {copy} from 'fs-extra'
 import {bufferTime, filter, map, tap} from 'rxjs/operators'
 import {GraphQLFieldConfig} from 'gatsby/graphql'
+import gatsbyPkg from 'gatsby/package.json'
 import SanityClient from '@sanity/client'
 import {
   CreateResolversArgs,
@@ -70,12 +71,12 @@ export const onPreBootstrap: GatsbyNode['onPreBootstrap'] = async (
   pluginOptions?: PluginConfig,
 ) => {
   const config = {...defaultConfig, ...pluginOptions}
-  const {reporter, actions} = args
+  const {reporter} = args
 
-  if (!actions.createTypes) {
+  if (Number(gatsbyPkg.version.split('.')[0]) < 3) {
     const unsupportedVersionMessage = oneline`
     You are using a version of Gatsby not supported by gatsby-source-sanity.
-    Either upgrade gatsby to >= 2.2.0 or downgrade to gatsby-source-sanity@^1.0.0`
+    Upgrade gatsby to >= 3.0.0 to continue.`
 
     reporter.panic({
       id: prefixErrorId(ERROR_CODES.UnsupportedGatsbyVersion),
