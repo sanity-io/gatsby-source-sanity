@@ -318,9 +318,9 @@ This example is based off [Gatsby Docs' implementation](https://www.gatsbyjs.org
 
 ## How this source plugin works
 
-When starting Gatsby in development or building a website, the source plugin will first fetch the GraphQL Schema Definitions from Sanity deployed GraphQL API. The source plugin uses this to tell Gatsby which fields should be available to prevent it from breaking if the content for certain fields happens to disappear. Then it will hit the project’s export endpoint, which streams all the accessible documents to Gatsby’s in-memory datastore.
+When starting Gatsby in development or building a website, the source plugin will first fetch the GraphQL Schema Definitions from a Sanity deployed GraphQL API. The source plugin uses this to tell Gatsby which fields should be available to prevent it from breaking if the content for certain fields happens to disappear. Then it will hit the project’s export endpoint, which streams all the accessible documents to Gatsby’s in-memory datastore.
 
-In order words, the whole site is built with two requests. Running the development server, will also set up a listener that pushes whatever changes come from Sanity to Gatsby in real-time, without doing additional API queries. If you give the source plugin a token with permission to read drafts, you’ll see the changes instantly. This can also be experienced with [Gatsby Preview](https://www.gatsbyjs.com/preview/).
+In other words, the whole site is built with two requests. Running the development server, will also set up a listener that pushes whatever changes come from Sanity to Gatsby in real-time, without doing additional API queries. If you give the source plugin a token with permission to read drafts, you’ll see the changes instantly. This can also be experienced with [Gatsby Preview](https://www.gatsbyjs.com/preview/).
 
 ## Credits
 
