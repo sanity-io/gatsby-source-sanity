@@ -214,7 +214,10 @@ export const sourceNodes: GatsbyNode['sourceNodes'] = async (
     if (id === publishedId) {
       if (draft && overlayDrafts) {
         // we have a draft, and overlayDrafts is enabled, so skip to the draft document instead
-        debug('skipping createNode of %s since there is a draft and overlayDrafts is enabled', publishedId)
+        debug(
+          'skipping createNode of %s since there is a draft and overlayDrafts is enabled',
+          publishedId,
+        )
         return
       }
 
