@@ -1,3 +1,6 @@
+### ⚠️ Breaking changes in v7.x
+Starting at `v7.0.0`, this plugin requires Gatsby v3 and no longer supports Gatsby v2 or earlier. See the [migration guide](MIGRATION.md) for instructions on how to upgrade to v7 of this plugin. If you're not yet ready to upgrade to Gatsby v3 we recommend staying at v6.x of this plugin.
+
 # gatsby-source-sanity
 
 Source plugin for pulling data from [Sanity.io](https://www.sanity.io/) into [Gatsby](https://www.gatsbyjs.org/) websites. Develop with real-time preview of all content changes. Compatible with `gatsby-image`. Uses your project's GraphQL schema definitions to avoid accidental missing fields (no dummy-content needed).
