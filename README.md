@@ -110,22 +110,24 @@ Previous versions did not _require_ this, but often lead to very confusing and u
 
 ## Using images
 
-Image fields will have the image URL available under the `field.asset.url` key, but you can also use [gatsby-image](https://github.com/gatsbyjs/gatsby/tree/master/packages/gatsby-image) for a smooth experience. It's a React component that enables responsive images and advanced image loading techniques. It works great with this source plugin, without requiring any additional build steps.
-
-There are two types of responsive images supported; _fixed_ and _fluid_. To decide between the two, ask yourself: "do I know the exact size this image will be?" If yes, you'll want to use _fixed_. If no and its width and/or height need to vary depending on the size of the screen, then you'll want to use _fluid_.
-
-### Fluid
+Image fields will have the image URL available under the `field.asset.url` key, but you can also use [gatsby-plugin-image](https://github.com/gatsbyjs/gatsby/tree/master/packages/gatsby-plugin-image) for a smooth experience. It's a React component that enables responsive images and advanced image loading techniques. It works great with this source plugin, without requiring any additional build steps.
 
 ```js
 import React from 'react'
-import Img from 'gatsby-image'
+import {getGatsbyImageData} from 'gatsby-source-sanity'
+import {GatsbyImage} from 'gatsby-plugin-image'
 
-const Person = ({data}) => (
-  <article>
-    <h2>{data.sanityPerson.name}</h2>
-    <Img fluid={data.sanityPerson.profileImage.asset.fluid} />
-  </article>
-)
+const sanityConfig = {projectId: 'abc123', dataset: 'blog'}
+
+const Person = ({data}) => {
+  const imageData = getGatsbyImageData(data.sanityPerson.profileImage.asset, {maxWidth: 700}, sanityConfig)
+  return (
+    <article>
+      <h2>{data.sanityPerson.name}</h2>
+      <GatsbyImage image={imageData}/>
+    </article>
+  )
+}
 
 export default Person
 
@@ -134,71 +136,27 @@ export const query = graphql`
     sanityPerson {
       name
       profileImage {
-        asset {
-          fluid(maxWidth: 700) {
-            ...GatsbySanityImageFluid
-          }
-        }
+        asset
       }
     }
   }
 `
 ```
-
-### Fixed
-
-```js
-import React from 'react'
-import Img from 'gatsby-image'
-
-const Person = ({data}) => (
-  <article>
-    <h2>{data.sanityPerson.name}</h2>
-    <Img fixed={data.sanityPerson.profileImage.asset.fixed} />
-  </article>
-)
-
-export default Person
-
-export const query = graphql`
-  query PersonQuery {
-    sanityPerson {
-      name
-      profileImage {
-        asset {
-          fixed(width: 400) {
-            ...GatsbySanityImageFixed
-          }
-        }
-      }
-    }
-  }
-`
-```
-
-### Available fragments
-
-These are the fragments available on image assets, which allows easy lookup of the fields required by gatsby-image in various modes:
-
-- `GatsbySanityImageFixed`
-- `GatsbySanityImageFixed_noBase64`
-- `GatsbySanityImageFluid`
-- `GatsbySanityImageFluid_noBase64`
 
 ### Usage outside of GraphQL
 
-If you are using the raw fields, or simply have an image asset ID you would like to use gatsby-image for, you can import and call the utility functions `getFluidGatsbyImage` and `getFixedGatsbyImage`:
+If you are using the raw fields, or simply have an image asset ID you would like to use gatsby-plugin-image for, you can import and call the utility function `getGatsbyImageData`
 
-```js
-import Img from 'gatsby-image'
-import {getFluidGatsbyImage, getFixedGatsbyImage} from 'gatsby-source-sanity'
+```jsx
+import {GatsbyImage} from 'gatsby-plugin-image'
+import {getGatsbyImageData} from 'gatsby-source-sanity'
 
 const sanityConfig = {projectId: 'abc123', dataset: 'blog'}
 const imageAssetId = 'image-488e172a7283400a57e57ffa5762ac3bd837b2ee-4240x2832-jpg'
 
-const fluidProps = getFluidGatsbyImage(imageAssetId, {maxWidth: 1024}, sanityConfig)
+const imageData = getGatsbyImageData(imageAssetId, {maxWidth: 1024}, sanityConfig)
 
-<Img fluid={fluidProps} />
+<GatsbyImage image={imageData} />
 ```
 
 ## Generating pages
