@@ -1,6 +1,5 @@
 import {copy} from 'fs-extra'
 import {bufferTime, filter, map, tap} from 'rxjs/operators'
-import {GraphQLFieldConfig} from 'gatsby/graphql'
 import gatsbyPkg from 'gatsby/package.json'
 import SanityClient from '@sanity/client'
 import {
@@ -10,7 +9,6 @@ import {
   ParentSpanPluginArgs,
   PluginOptions,
   Reporter,
-  SetFieldsOnGraphQLNodeTypeArgs,
   SourceNodesArgs,
 } from 'gatsby'
 import {SanityDocument, SanityWebhookBody} from './types/sanity'
@@ -30,7 +28,6 @@ import {
   SANITY_ERROR_CODE_MAP,
   SANITY_ERROR_CODE_MESSAGES,
 } from './util/errors'
-import {extendImageNode} from './images/extendImageNode'
 import {rewriteGraphQLSchema} from './util/rewriteGraphQLSchema'
 import {getGraphQLResolverMap} from './util/getGraphQLResolverMap'
 import {prefixId, unprefixId} from './util/documentIds'
@@ -335,19 +332,6 @@ export const onPreExtractQueries: GatsbyNode['onPreExtractQueries'] = async (
       `${program.directory}/.cache/fragments/sanity-image-fragments.js`,
     )
   }
-}
-
-export const setFieldsOnGraphQLNodeType: GatsbyNode['setFieldsOnGraphQLNodeType'] = async (
-  context: SetFieldsOnGraphQLNodeTypeArgs,
-  pluginConfig: PluginConfig,
-) => {
-  const {type} = context
-  let fields: {[key: string]: GraphQLFieldConfig<any, any>} = {}
-  if (type.name === 'SanityImageAsset') {
-    fields = {...fields, ...extendImageNode(pluginConfig)}
-  }
-
-  return fields
 }
 
 function validateConfig(config: Partial<PluginConfig>, reporter: Reporter): config is PluginConfig {
