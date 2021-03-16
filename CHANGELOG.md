@@ -2,6 +2,22 @@
 
 All notable changes will be documented in this file.
 
+## 7.0.0
+
+### BREAKING
+- Drop support for Gatsby v2 or earlier.
+- Remove `getFluidGatsbyImage()` and `getFixedGatsbyImage()` in favor of `getGatsbyImageData()`.
+
+See [Migration guide](MIGRATION.md) for more details.
+
+### Changes
+- Add support for Gatsby v3.
+- Introduce `getGatsbyImageData()` that adds support for gatsby-plugin-image
+- Fix race condition that sometimes revert to the previously published version upon publish (#87)
+- Add Node v14 to test matrix
+- Improve error reporting
+
+
 ## 6.0.5
 
 ### Changes
