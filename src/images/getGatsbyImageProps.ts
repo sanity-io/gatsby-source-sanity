@@ -4,8 +4,7 @@ import {
   IGatsbyImageHelperArgs,
   Layout,
 } from 'gatsby-plugin-image'
-export const DEFAULT_FIXED_WIDTH = 400
-export const DEFAULT_FLUID_MAX_WIDTH = 800
+
 export type ImageNode = ImageAsset | ImageObject | ImageRef | string | null | undefined
 import imageUrlBuilder from '@sanity/image-url'
 import {ImageUrlBuilder} from '@sanity/image-url/lib/types/builder'
@@ -31,7 +30,6 @@ export enum ImageFormat {
   JPG = 'jpg',
   PNG = 'png',
 }
-
 
 type ImagePalette = {
   darkMuted?: ImagePaletteSwatch
@@ -81,16 +79,10 @@ type ImageObject = {
   asset: ImageRef | ImageAsset
 }
 
-export type FluidArgs = {
+export type ImageArgs = {
   maxWidth?: number
   maxHeight?: number
   sizes?: string
-  toFormat?: ImageFormat
-}
-
-export type FixedArgs = {
-  width?: number
-  height?: number
   toFormat?: ImageFormat
 }
 
