@@ -120,11 +120,10 @@ import {GatsbyImage} from 'gatsby-plugin-image'
 const sanityConfig = {projectId: 'abc123', dataset: 'blog'}
 
 const Person = ({data}) => {
-  const imageData = getGatsbyImageData(data.sanityPerson.profileImage.asset, {maxWidth: 700}, sanityConfig)
   return (
     <article>
       <h2>{data.sanityPerson.name}</h2>
-      <GatsbyImage image={imageData}/>
+      <GatsbyImage image={data.sanityPerson.profileImage.asset.gatsbyImageData}/>
     </article>
   )
 }
@@ -136,14 +135,16 @@ export const query = graphql`
     sanityPerson {
       name
       profileImage {
-        asset
+        asset {
+          gatsbyImageData(fit: FILLMAX, placeholder: BLURRED)
+        }
       }
     }
   }
 `
 ```
 
-### Usage outside of GraphQL
+### Using images outside of GraphQL
 
 If you are using the raw fields, or simply have an image asset ID you would like to use gatsby-plugin-image for, you can import and call the utility function `getGatsbyImageData`
 
