@@ -2,6 +2,10 @@
 
 All notable changes will be documented in this file.
 
+## 7.0.3
+- Bring back the gatsbyImageData on image nodes
+- Set more specific peer deps + engines update
+
 ## 7.0.2
 
 ### Fixes
