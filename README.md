@@ -114,7 +114,6 @@ Image fields will have the image URL available under the `field.asset.url` key, 
 
 ```js
 import React from 'react'
-import {getGatsbyImageData} from 'gatsby-source-sanity'
 import {GatsbyImage} from 'gatsby-plugin-image'
 
 const sanityConfig = {projectId: 'abc123', dataset: 'blog'}
