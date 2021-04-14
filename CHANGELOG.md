@@ -2,7 +2,16 @@
 
 All notable changes will be documented in this file.
 
+## 7.0.4
+
+### Fixes
+
+- Fix broken drafts overlaying and watch mode
+
 ## 7.0.3
+
+### Fixes
+
 - Bring back the gatsbyImageData on image nodes
 - Set more specific peer deps + engines update
 
