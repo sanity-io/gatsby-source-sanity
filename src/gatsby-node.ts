@@ -407,7 +407,7 @@ function getClient(config: PluginConfig) {
     projectId,
     dataset,
     token,
-    apiVersion: '2021-03-25',
+    apiVersion: '1',
     useCdn: false,
   })
 }
