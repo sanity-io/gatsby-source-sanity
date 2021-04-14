@@ -15,7 +15,7 @@ export async function getAllDocuments(
   return pumpify.obj(
     await getDocumentStream(url, token),
     split(JSON.parse),
-    options.includeDrafts ? removeDrafts() : through.obj(),
+    options.includeDrafts ? through.obj() : removeDrafts(),
     removeSystemDocuments(),
     rejectOnApiError(),
   )
