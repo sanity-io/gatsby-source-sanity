@@ -1,13 +1,15 @@
 ### ⚠️ Breaking changes in v7.x
+
 Starting at `v7.0.0`, this plugin requires Gatsby v3 and no longer supports Gatsby v2 or earlier. See the [migration guide](MIGRATION.md) for instructions on how to upgrade to v7 of this plugin. If you're not yet ready to upgrade to Gatsby v3 we recommend staying at v6.x of this plugin.
 
 # gatsby-source-sanity
 
 Source plugin for pulling data from [Sanity.io](https://www.sanity.io/) into [Gatsby](https://www.gatsbyjs.org/) websites. Develop with real-time preview of all content changes. Compatible with `gatsby-image`. Uses your project's GraphQL schema definitions to avoid accidental missing fields (no dummy-content needed).
 
-Get up and running in minutes with a fully configured starter project: 
-* [Blog with Gatsby](https://www.sanity.io/create?template=sanity-io/sanity-template-gatsby-blog)
-* [Portfolio with Gatsby](https://www.sanity.io/create?template=sanity-io/sanity-template-gatsby-portfolio).
+Get up and running in minutes with a fully configured starter project:
+
+- [Blog with Gatsby](https://www.sanity.io/create?template=sanity-io/sanity-template-gatsby-blog)
+- [Portfolio with Gatsby](https://www.sanity.io/create?template=sanity-io/sanity-template-gatsby-portfolio).
 
 [![Watch a video about the company website built with Gatsby using Sanity.io as a headless CMS](https://cdn.sanity.io/images/3do82whm/production/4f652e6d114e7010aa633b81cbcb97c335980fc8-1920x1080.png?w=500)](https://www.youtube.com/watch?v=STtpXBvJmDA)
 
@@ -20,17 +22,13 @@ Get up and running in minutes with a fully configured starter project:
 - [Real-time content preview with watch mode](#real-time-content-preview-with-watch-mode)
 - [GraphQL API](#graphql-api)
 - [Using images](#using-images)
-  - [Fluid](#fluid)
-  - [Fixed](#fixed)
-  - [Available fragments](#available-fragments)
-  - [Usage outside of GraphQL](#usage-outside-of-graphql)
+  - [Usage outside of GraphQL](#using-images-outside-of-graphql)
 - [Generating pages](#generating-pages)
 - ["Raw" fields](#raw-fields)
 - [Portable Text / Block Content](#portable-text--block-content)
 - [Using .env variables](#using-env-variables)
 - [How this plugin works](#how-this-source-plugin-works)
 - [Credits](#credits)
-
 
 [See the getting started video](https://www.youtube.com/watch?v=qU4lFYp3KiQ)
 
@@ -41,7 +39,6 @@ From the command line, use npm (node package manager) to install the plugin:
 ```console
 npm install gatsby-source-sanity
 ```
-
 
 In the `gatsby-config.js` file in the Gatsby project's root directory, add the plugin configuration inside of the `plugins` section:
 
@@ -63,8 +60,8 @@ module.exports = {
         graphqlTag: 'default',
       },
     },
-  // ...
-],
+    // ...
+  ],
   // ...
 }
 ```
@@ -75,9 +72,9 @@ You can access `projectId` and `dataset` by executing `sanity debug --secrets` i
 
 At this point you should [set up a GraphQL API](https://www.sanity.io/docs/graphql) for your Sanity dataset, if you have not done so already. This will help the plugin in knowing which types and fields exists, so you can query for them even without them being present in any current documents.
 
-**You should redeploy the GraphQL API everytime you make changes to the schema that you want to use in Gatsby by running ```sanity graphql deploy``` from within your Sanity project directory**
+**You should redeploy the GraphQL API everytime you make changes to the schema that you want to use in Gatsby by running `sanity graphql deploy` from within your Sanity project directory**
 
-Explore http://localhost:8000/___graphql after running `gatsby develop` to understand the created data and create a new query and checking available collections and fields by typing `CTRL + SPACE`.
+Explore http://localhost:8000/\_\_\_graphql after running `gatsby develop` to understand the created data and create a new query and checking available collections and fields by typing `CTRL + SPACE`.
 
 ## Options
 
@@ -122,7 +119,7 @@ const Person = ({data}) => {
   return (
     <article>
       <h2>{data.sanityPerson.name}</h2>
-      <GatsbyImage image={data.sanityPerson.profileImage.asset.gatsbyImageData}/>
+      <GatsbyImage image={data.sanityPerson.profileImage.asset.gatsbyImageData} />
     </article>
   )
 }
@@ -215,7 +212,7 @@ The above query will fetch all projects that have a `slug.current` field set, an
 
 Most [Gatsby starters](https://www.gatsbyjs.org/starters/?v=2) have some example of building pages, which you should be able to modify to your needs.
 
-Remember to use the GraphiQL interface to help write the queries you need - it's usually running at http://localhost:8000/___graphql while running `gatsby develop`.
+Remember to use the GraphiQL interface to help write the queries you need - it's usually running at http://localhost:8000/\_\_\_graphql while running `gatsby develop`.
 
 ## "Raw" fields
 
@@ -251,11 +248,11 @@ If you don't want to attach your Sanity project's ID to the repo, you can easily
 // In your .env file
 SANITY_PROJECT_ID = abc123
 SANITY_DATASET = production
-SANITY_TOKEN = my-super-secret-token
+SANITY_TOKEN = my_super_secret_token
 
 // In your gatsby-config.js file
 require('dotenv').config({
-  path: `.env.${process.env.NODE_ENV}`
+  path: `.env.${process.env.NODE_ENV}`,
 })
 
 module.exports = {
@@ -266,11 +263,11 @@ module.exports = {
       options: {
         projectId: process.env.SANITY_PROJECT_ID,
         dataset: process.env.SANITY_DATASET,
-        token: process.env.SANITY_TOKEN
+        token: process.env.SANITY_TOKEN,
         // ...
-      }
-    }
-  ]
+      },
+    },
+  ],
   // ...
 }
 ```

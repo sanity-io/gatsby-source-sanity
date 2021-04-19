@@ -40,7 +40,6 @@
     "@types/url-parse": "^1.4.3",
     "axios": "^0.21.0",
     "debug": "^4.2.0",
-    "fs-extra": "^9.0.1",
     "get-stream": "^5.1.0",
     "lodash": "^4.17.20",
     "oneline": "^1.0.2",
@@ -52,7 +51,6 @@
   },
   "devDependencies": {
     "@types/debug": "^4.1.5",
-    "@types/fs-extra": "^9.0.2",
     "@types/jest": "^26.0.15",
     "@types/lodash": "^4.14.162",
     "@types/node": "12.0.0",

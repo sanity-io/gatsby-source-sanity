@@ -1,4 +1,3 @@
-import {copy} from 'fs-extra'
 import {bufferTime, filter, map, tap} from 'rxjs/operators'
 import {GraphQLFieldConfig} from 'gatsby/graphql'
 import gatsbyPkg from 'gatsby/package.json'
@@ -35,7 +34,6 @@ import {rewriteGraphQLSchema} from './util/rewriteGraphQLSchema'
 import {getGraphQLResolverMap} from './util/getGraphQLResolverMap'
 import {prefixId, unprefixId} from './util/documentIds'
 import {getAllDocuments} from './util/getAllDocuments'
-import path from 'path'
 import oneline from 'oneline'
 import {uniq} from 'lodash'
 import {SanityInputNode} from './types/gatsby'
@@ -311,30 +309,6 @@ export const sourceNodes: GatsbyNode['sourceNodes'] = async (
   // do the initial sync from sanity documents to gatsby nodes
   syncAllWithGatsby()
   reporter.info(`[sanity] Done! Exported ${documents.size} documents.`)
-}
-
-export const onPreExtractQueries: GatsbyNode['onPreExtractQueries'] = async (
-  context: ParentSpanPluginArgs,
-  pluginConfig: PluginConfig,
-) => {
-  const {getNodes, store} = context
-  const typeMapKey = getCacheKey(pluginConfig, CACHE_KEYS.TYPE_MAP)
-  const typeMap = (stateCache[typeMapKey] || defaultTypeMap) as TypeMap
-  let shouldAddFragments = typeof typeMap.objects.SanityImageAsset !== 'undefined'
-
-  if (!shouldAddFragments) {
-    shouldAddFragments = getNodes().some((node) =>
-      Boolean(node.internal && node.internal.type === 'SanityImageAsset'),
-    )
-  }
-
-  if (shouldAddFragments) {
-    const program = store.getState().program
-    await copy(
-      path.join(__dirname, '..', 'fragments', 'imageFragments.js'),
-      `${program.directory}/.cache/fragments/sanity-image-fragments.js`,
-    )
-  }
 }
 
 export const setFieldsOnGraphQLNodeType: GatsbyNode['setFieldsOnGraphQLNodeType'] = async (
