@@ -32,7 +32,9 @@ export async function handleWebhookEvent(
   let touchedDocs: SanityDocument[] = []
   if (refetchIds.length > 0) {
     reporter.info(`[sanity] Refetching ${refetchIds.length} documents`)
-    const newDocuments = await client.getDocuments(refetchIds)
+    const newDocuments = await client.getDocuments(refetchIds, {
+      tag: 'sanity.gatsby.webhook-refetch',
+    })
     touchedDocs = newDocuments.filter(isDocument)
   }
 

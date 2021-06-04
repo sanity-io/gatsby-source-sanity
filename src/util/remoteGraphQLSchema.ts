@@ -55,7 +55,7 @@ export async function getRemoteGraphQLSchema(client: SanityClient, config: Plugi
   const {dataset} = client.config()
   try {
     const api = await client.request({
-      url: `/apis/graphql/${dataset}/${graphqlTag}`,
+      url: `/apis/graphql/${dataset}/${graphqlTag}?tag=sanity.gatsby.get-schema`,
       headers: {Accept: 'application/graphql'},
     })
 

@@ -152,7 +152,7 @@ export const sourceNodes: GatsbyNode['sourceNodes'] = async (
   const typeMap = (stateCache[typeMapKey] || defaultTypeMap) as TypeMap
 
   const client = getClient(config)
-  const url = client.getUrl(`/data/export/${dataset}`)
+  const url = client.getUrl(`/data/export/${dataset}?tag=sanity.gatsby.source-nodes`)
 
   // Stitches together required methods from within the context and actions objects
   const processingOptions = {
