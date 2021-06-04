@@ -3,7 +3,6 @@ import {GraphQLFieldConfig} from 'gatsby/graphql'
 import gatsbyPkg from 'gatsby/package.json'
 import SanityClient from '@sanity/client'
 import {
-  CreateResolversArgs,
   CreateSchemaCustomizationArgs,
   GatsbyNode,
   ParentSpanPluginArgs,
@@ -64,10 +63,7 @@ export const onPreInit: GatsbyNode['onPreInit'] = async ({reporter}: ParentSpanP
   }
 }
 
-export const onPreBootstrap: GatsbyNode['onPreBootstrap'] = async (
-  args: ParentSpanPluginArgs,
-  pluginOptions?: PluginConfig,
-) => {
+export const onPreBootstrap: GatsbyNode['onPreBootstrap'] = async (args, pluginOptions?) => {
   const config = {...defaultConfig, ...pluginOptions}
   const {reporter} = args
 
@@ -125,7 +121,7 @@ export const onPreBootstrap: GatsbyNode['onPreBootstrap'] = async (
 }
 
 export const createResolvers: GatsbyNode['createResolvers'] = (
-  args: CreateResolversArgs,
+  args,
   pluginOptions: PluginConfig,
 ): any => {
   const typeMapKey = getCacheKey(pluginOptions, CACHE_KEYS.TYPE_MAP)
