@@ -297,10 +297,10 @@ Object {
   "backgroundColor": undefined,
   "height": 2832,
   "images": Object {
-    "sources": Array [
-      Object {
-        "sizes": "(min-width: 4240px) 4240px, 100vw",
-        "srcSet": "https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?rect=3,0,4235,2832&w=320&h=214&auto=format 320w,
+    "fallback": Object {
+      "sizes": "(min-width: 4240px) 4240px, 100vw",
+      "src": "https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=4240&h=2832&auto=format",
+      "srcSet": "https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?rect=3,0,4235,2832&w=320&h=214&auto=format 320w,
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?rect=1,0,4238,2832&w=654&h=437&auto=format 654w,
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=768&h=513&auto=format 768w,
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=1024&h=684&auto=format 1024w,
@@ -313,9 +313,8 @@ https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?rect=0,0,42
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=3840&h=2565&auto=format 3840w,
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=4096&h=2736&auto=format 4096w,
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=4240&h=2832&auto=format 4240w",
-        "type": "image/webp",
-      },
-    ],
+    },
+    "sources": Array [],
   },
   "layout": "constrained",
   "width": 4240,
@@ -327,10 +326,10 @@ Object {
   "backgroundColor": undefined,
   "height": 0.6679245283018868,
   "images": Object {
-    "sources": Array [
-      Object {
-        "sizes": "100vw",
-        "srcSet": "https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?rect=3,0,4235,2832&w=320&h=214&auto=format 320w,
+    "fallback": Object {
+      "sizes": "100vw",
+      "src": "https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?rect=3,0,4235,2832&w=320&h=214&auto=format",
+      "srcSet": "https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?rect=3,0,4235,2832&w=320&h=214&auto=format 320w,
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?rect=1,0,4238,2832&w=654&h=437&auto=format 654w,
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=768&h=513&auto=format 768w,
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=1024&h=684&auto=format 1024w,
@@ -342,9 +341,8 @@ https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=2560&h=17
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?rect=0,0,4239,2832&w=3440&h=2298&auto=format 3440w,
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=3840&h=2565&auto=format 3840w,
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=4096&h=2736&auto=format 4096w",
-        "type": "image/webp",
-      },
-    ],
+    },
+    "sources": Array [],
   },
   "layout": "fullWidth",
   "width": 1,
@@ -356,10 +354,10 @@ Object {
   "backgroundColor": undefined,
   "height": 2832,
   "images": Object {
-    "sources": Array [
-      Object {
-        "sizes": "(min-width: 4240px) 4240px, 100vw",
-        "srcSet": "https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?rect=3,0,4235,2832&w=320&h=214&auto=format 320w,
+    "fallback": Object {
+      "sizes": "(min-width: 4240px) 4240px, 100vw",
+      "src": "https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=4240&h=2832&auto=format",
+      "srcSet": "https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?rect=3,0,4235,2832&w=320&h=214&auto=format 320w,
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?rect=1,0,4238,2832&w=654&h=437&auto=format 654w,
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=768&h=513&auto=format 768w,
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=1024&h=684&auto=format 1024w,
@@ -372,9 +370,8 @@ https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?rect=0,0,42
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=3840&h=2565&auto=format 3840w,
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=4096&h=2736&auto=format 4096w,
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=4240&h=2832&auto=format 4240w",
-        "type": "image/webp",
-      },
-    ],
+    },
+    "sources": Array [],
   },
   "layout": "constrained",
   "width": 4240,

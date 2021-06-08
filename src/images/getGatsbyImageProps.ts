@@ -172,7 +172,6 @@ export type GatsbyImageDataArgs = {
   sizes?: string
   placeholder?: 'blurred' | 'dominantColor' | 'none'
   fit?: ImageFit
-  toFormat?: ImageFormat
 }
 
 // gatsby-plugin-image
@@ -195,7 +194,7 @@ export function getGatsbyImageData(
     ...args,
     pluginName: `gatsby-source-sanity`,
     sourceMetadata: {
-      format: args.toFormat ?? imageStub.extension as ImageFormat,
+      format: 'auto',
       width,
       height,
     },
