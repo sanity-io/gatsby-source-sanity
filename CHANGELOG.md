@@ -2,11 +2,11 @@
 
 All notable changes will be documented in this file.
 
-## 7.0.6
+## 7.0.7
 
-### Changes
+### Fixes
 
-- Add `toFormat` argument for images
+- Use automatic format for source images. Fixes WebP source images not being displayed on Safari 13 and below.
 
 ## 7.0.5
 
