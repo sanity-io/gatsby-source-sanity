@@ -2,6 +2,22 @@
 
 All notable changes will be documented in this file.
 
+## 7.0.6
+
+### Changes
+
+- Add `toFormat` argument for images
+
+## 7.0.5
+
+### Changes
+
+- Add request tags to outgoing requests from plugin
+
+### Fixes
+
+- Remove outdated/unused image fragments
+
 ## 7.0.4
 
 ### Fixes
