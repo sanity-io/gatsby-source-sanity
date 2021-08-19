@@ -2,23 +2,25 @@ import {SourceNodesArgs} from 'gatsby'
 import {SanityClient} from '@sanity/client'
 import debug from '../debug'
 import {SanityNode} from '../types/gatsby'
-import {SanityDocument, SanityWebhookBody} from '../types/sanity'
+import {
+  SanityDocument,
+  SanityWebhookBody,
+  SanityWebhookV1Body,
+  SanityWebhookV2Body,
+} from '../types/sanity'
 import {ProcessingOptions, getTypeName, toGatsbyNode} from './normalize'
 import {unprefixId, safeId} from './documentIds'
 
-export async function handleWebhookEvent(
-  args: SourceNodesArgs & {webhookBody?: SanityWebhookBody},
+type v1WebhookArgs = SourceNodesArgs & {webhookBody: SanityWebhookV1Body}
+type v2WebhookArgs = SourceNodesArgs & {webhookBody: SanityWebhookV2Body}
+
+async function handleV1Webhook(
+  args: v1WebhookArgs,
   options: {client: SanityClient; processingOptions: ProcessingOptions},
-): Promise<boolean> {
-  const {webhookBody, reporter} = args
-  if (!validatePayload(webhookBody)) {
-    debug('Invalid/non-sanity webhook payload received')
-    return false
-  }
-
-  reporter.info('[sanity] Processing changed documents from webhook')
-
+) {
   const {client, processingOptions} = options
+  const {webhookBody, reporter} = args
+
   const {ids} = webhookBody
   const {created, deleted, updated} = ids
 
@@ -55,7 +57,85 @@ export async function handleWebhookEvent(
   }
 
   reporter.info(`Refreshed ${numRefreshed} documents`)
+
   return true
+}
+
+async function handleV2Webhook(
+  args: v2WebhookArgs,
+  options: {client: SanityClient; processingOptions: ProcessingOptions},
+) {
+  const {webhookBody, reporter} = args
+
+  const {
+    __meta: {operation = 'update', documentId, projectId, dataset},
+    after: document,
+  } = webhookBody
+
+  const config = options.client.config()
+  const {overlayDrafts} = options.processingOptions
+
+  if (config.projectId !== projectId || config.dataset !== dataset) {
+    return false
+  }
+
+  if (
+    operation === 'create' &&
+    document?._id &&
+    // Don't create node if a draft document w/ overlayDrafts === false
+    (!document._id.startsWith('drafts.') || overlayDrafts)
+  ) {
+    handleChangedDocuments(args, [document], options.processingOptions, 'created')
+
+    reporter.info(`Created 1 document`)
+    return true
+  }
+
+  if (
+    operation === 'update' &&
+    document?._id &&
+    (!document._id.startsWith('drafts.') || overlayDrafts)
+  ) {
+    handleChangedDocuments(args, [document], options.processingOptions, 'updated')
+
+    reporter.info(`Refreshed 1 document`)
+    return true
+  }
+
+  if (
+    operation === 'delete' &&
+    // Only delete nodes of published documents when overlayDrafts === false
+    (!documentId.startsWith('drafts.') || overlayDrafts)
+  ) {
+    handleDeletedDocuments(args, [documentId])
+
+    reporter.info(`Deleted 1 document`)
+    return true
+  }
+
+  return false
+}
+
+export async function handleWebhookEvent(
+  args: SourceNodesArgs & {webhookBody?: SanityWebhookBody},
+  options: {client: SanityClient; processingOptions: ProcessingOptions},
+): Promise<boolean> {
+  const {webhookBody, reporter} = args
+  const validated = validateWebhookPayload(webhookBody)
+  if (validated === false) {
+    debug('Invalid/non-sanity webhook payload received')
+    return false
+  }
+
+  reporter.info('[sanity] Processing changed documents from webhook')
+
+  if (validated === 'v1') {
+    return await handleV1Webhook(args as v1WebhookArgs, options)
+  } else if (validated === 'v2') {
+    return await handleV2Webhook(args as v2WebhookArgs, options)
+  }
+
+  return false
 }
 
 function handleDeletedDocuments(context: SourceNodesArgs, ids: string[]) {
@@ -100,15 +180,23 @@ function isDocument(doc: SanityDocument | null | undefined): doc is SanityDocume
   return Boolean(doc && doc._id)
 }
 
-function validatePayload(payload: SanityWebhookBody | undefined): payload is SanityWebhookBody {
-  if (!payload || typeof payload.ids !== 'object') {
+export function validateWebhookPayload(payload: SanityWebhookBody | undefined): 'v1' | 'v2' | false {
+  if (!payload) {
     return false
   }
 
-  const {created, deleted, updated} = payload.ids
-  if (!Array.isArray(created) || !Array.isArray(deleted) || !Array.isArray(updated)) {
-    return false
+  // Let's test V2 first as those documents could also include an `ids` object
+  if ('__meta' in payload && payload.__meta.webhooksVersion === 'v2') {
+    return 'v2'
   }
 
-  return true
+  if ('ids' in payload && typeof payload.ids === 'object') {
+    const {created, deleted, updated} = payload.ids
+
+    if (Array.isArray(created) && Array.isArray(deleted) && Array.isArray(updated)) {
+      return 'v1'
+    }
+  }
+
+  return false
 }

@@ -204,7 +204,7 @@ export const sourceNodes: GatsbyNode['sourceNodes'] = async (
 
   if (
     webhookBody &&
-    webhookBody.ids &&
+    Object.keys(webhookBody).length > 0 &&
     (await handleWebhookEvent(args, {client, processingOptions}))
   ) {
     // If the payload was handled by the webhook handler, fall back.
