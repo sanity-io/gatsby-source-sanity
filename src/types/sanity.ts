@@ -29,28 +29,24 @@ export interface SanityWebhookV1Body {
 /*
   GROQ projection for webhooks v2:
   {
-    "__meta": {
-      "webhooksVersion": "v2",
-      "operation": select(
-        !defined(before()._id) => "create",
-        !defined(after()._id) => "delete",
-        "update"
-      ),
-      "documentId": coalesce(before()._id, after()._id),
-      "projectId": sanity::projectId(),
-      "dataset": sanity::dataset(),
-    },
+    "__webhooksVersion": "v2",
+    "operation": select(
+      before() == null => "create",
+      after() == null => "delete",
+      "update"
+    ),
+    "documentId": coalesce(before()._id, after()._id),
+    "projectId": sanity::projectId(),
+    "dataset": sanity::dataset(),
     "after": after(),
   }
 */
 export interface SanityWebhookV2Body {
-  __meta: {
-    webhooksVersion: "v2"
-    operation: "create" | "update" | "delete"
-    projectId: string
-    dataset: string
-    documentId: string
-  }
+  __webhooksVersion: "v2"
+  operation: "create" | "update" | "delete"
+  documentId: string
+  projectId?: string
+  dataset?: string
   after?: SanityDocument
 }
 
