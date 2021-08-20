@@ -67,15 +67,14 @@ async function handleV2Webhook(
 ) {
   const {webhookBody, reporter} = args
 
-  const {
-    __meta: {operation = 'update', documentId, projectId, dataset},
-    after: document,
-  } = webhookBody
+  const {operation = 'update', documentId: rawId, dataset, projectId, after: document} = webhookBody
 
+  const publishedDocumentId = unprefixId(rawId)
   const config = options.client.config()
+
   const {overlayDrafts} = options.processingOptions
 
-  if (config.projectId !== projectId || config.dataset !== dataset) {
+  if (projectId && dataset && (config.projectId !== projectId || config.dataset !== dataset)) {
     return false
   }
 
@@ -102,12 +101,8 @@ async function handleV2Webhook(
     return true
   }
 
-  if (
-    operation === 'delete' &&
-    // Only delete nodes of published documents when overlayDrafts === false
-    (!documentId.startsWith('drafts.') || overlayDrafts)
-  ) {
-    handleDeletedDocuments(args, [documentId])
+  if (operation === 'delete') {
+    handleDeletedDocuments(args, [publishedDocumentId])
 
     reporter.info(`Deleted 1 document`)
     return true
@@ -180,13 +175,15 @@ function isDocument(doc: SanityDocument | null | undefined): doc is SanityDocume
   return Boolean(doc && doc._id)
 }
 
-export function validateWebhookPayload(payload: SanityWebhookBody | undefined): 'v1' | 'v2' | false {
+export function validateWebhookPayload(
+  payload: SanityWebhookBody | undefined,
+): 'v1' | 'v2' | false {
   if (!payload) {
     return false
   }
 
   // Let's test V2 first as those documents could also include an `ids` object
-  if ('__meta' in payload && payload.__meta.webhooksVersion === 'v2') {
+  if ('__webhooksVersion' in payload && payload.__webhooksVersion === 'v2') {
     return 'v2'
   }
 
