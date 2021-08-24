@@ -348,19 +348,6 @@ export const sourceNodes: GatsbyNode['sourceNodes'] = async (
   reporter.info(`[sanity] Done! Exported ${documents.size} documents.`)
 }
 
-// export const setFieldsOnGraphQLNodeType: GatsbyNode['setFieldsOnGraphQLNodeType'] = async (
-//   context: SetFieldsOnGraphQLNodeTypeArgs,
-//   pluginConfig: PluginConfig,
-// ) => {
-//   const {type} = context
-//   let fields: {[key: string]: GraphQLFieldConfig<any, any>} = {}
-//   if (type.name === 'SanityImageAsset') {
-//     fields = {...fields, ...extendImageNode(pluginConfig)}
-//   }
-
-//   return fields
-// }
-
 function validateConfig(config: Partial<PluginConfig>, reporter: Reporter): config is PluginConfig {
   if (!config.projectId) {
     reporter.panic({
