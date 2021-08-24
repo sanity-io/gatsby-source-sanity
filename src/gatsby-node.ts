@@ -127,7 +127,6 @@ export const createResolvers: GatsbyNode['createResolvers'] = (
 ): any => {
   const typeMapKey = getCacheKey(pluginOptions, CACHE_KEYS.TYPE_MAP)
   const typeMap = (stateCache[typeMapKey] || defaultTypeMap) as TypeMap
-  console.log(`TYPEMAP`, typeMap)
 
   if (typeMap.objects['SanityImageAsset']) {
     typeMap.objects['SanityImageAsset'] = {
@@ -146,23 +145,9 @@ export const createSchemaCustomization: GatsbyNode['createSchemaCustomization'] 
   const {createTypes} = actions
   const graphqlSdlKey = getCacheKey(pluginConfig, CACHE_KEYS.GRAPHQL_SDL)
   const graphqlSdl = stateCache[graphqlSdlKey]
-  console.log(`GRAPHQLSDL`, graphqlSdl)
 
   createTypes(graphqlSdl)
 }
-
-// export const setFieldsOnGraphQLNodeType: GatsbyNode['setFieldsOnGraphQLNodeType'] = async (
-//   context: SetFieldsOnGraphQLNodeTypeArgs,
-//   pluginConfig: PluginConfig,
-// ) => {
-//   const {type} = context
-//   let fields: {[key: string]: GraphQLFieldConfig<any, any>} = {}
-//   if (type.name === 'SanityImageAsset') {
-//     fields = {...fields, ...extendImageNode(pluginConfig)}
-//   }
-
-//   return fields
-// }
 
 export const sourceNodes: GatsbyNode['sourceNodes'] = async (
   args: SourceNodesArgs & {webhookBody?: SanityWebhookBody},
