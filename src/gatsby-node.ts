@@ -1,14 +1,11 @@
 import {bufferTime, filter, map, tap} from 'rxjs/operators'
-import {GraphQLFieldConfig} from 'gatsby/graphql'
 import gatsbyPkg from 'gatsby/package.json'
 import SanityClient from '@sanity/client'
 import {
   CreateSchemaCustomizationArgs,
   GatsbyNode,
-  ParentSpanPluginArgs,
   PluginOptions,
   Reporter,
-  SetFieldsOnGraphQLNodeTypeArgs,
   SourceNodesArgs,
 } from 'gatsby'
 import {SanityDocument, SanityWebhookBody} from './types/sanity'
@@ -56,16 +53,20 @@ const defaultConfig = {
 
 const stateCache: {[key: string]: any} = {}
 
-export const onPreInit: GatsbyNode['onPreInit'] = async ({reporter}: ParentSpanPluginArgs) => {
-  // Old versions of Gatsby does not have this method
+// export const onPreInit: GatsbyNode['onPreInit'] = async ({reporter}: ParentSpanPluginArgs) => {
+//   // Old versions of Gatsby does not have this method
+//   if (reporter.setErrorMap) {
+//     reporter.setErrorMap(ERROR_MAP)
+//   }
+// }
+
+export const unstable_onPluginInit: GatsbyNode['onPreBootstrap'] = async (args, pluginOptions?) => {
+  const config = {...defaultConfig, ...pluginOptions}
+  const {reporter} = args
+
   if (reporter.setErrorMap) {
     reporter.setErrorMap(ERROR_MAP)
   }
-}
-
-export const onPreBootstrap: GatsbyNode['onPreBootstrap'] = async (args, pluginOptions?) => {
-  const config = {...defaultConfig, ...pluginOptions}
-  const {reporter} = args
 
   if (Number(gatsbyPkg.version.split('.')[0]) < 3) {
     const unsupportedVersionMessage = oneline`
@@ -126,6 +127,15 @@ export const createResolvers: GatsbyNode['createResolvers'] = (
 ): any => {
   const typeMapKey = getCacheKey(pluginOptions, CACHE_KEYS.TYPE_MAP)
   const typeMap = (stateCache[typeMapKey] || defaultTypeMap) as TypeMap
+  console.log(`TYPEMAP`, typeMap)
+
+  if (typeMap.objects['SanityImageAsset']) {
+    typeMap.objects['SanityImageAsset'] = {
+      ...typeMap.objects['SanityImageAsset'],
+      ...extendImageNode(pluginOptions),
+    }
+  }
+
   args.createResolvers(getGraphQLResolverMap(typeMap, pluginOptions, args))
 }
 
@@ -136,8 +146,23 @@ export const createSchemaCustomization: GatsbyNode['createSchemaCustomization'] 
   const {createTypes} = actions
   const graphqlSdlKey = getCacheKey(pluginConfig, CACHE_KEYS.GRAPHQL_SDL)
   const graphqlSdl = stateCache[graphqlSdlKey]
+  console.log(`GRAPHQLSDL`, graphqlSdl)
+
   createTypes(graphqlSdl)
 }
+
+// export const setFieldsOnGraphQLNodeType: GatsbyNode['setFieldsOnGraphQLNodeType'] = async (
+//   context: SetFieldsOnGraphQLNodeTypeArgs,
+//   pluginConfig: PluginConfig,
+// ) => {
+//   const {type} = context
+//   let fields: {[key: string]: GraphQLFieldConfig<any, any>} = {}
+//   if (type.name === 'SanityImageAsset') {
+//     fields = {...fields, ...extendImageNode(pluginConfig)}
+//   }
+
+//   return fields
+// }
 
 export const sourceNodes: GatsbyNode['sourceNodes'] = async (
   args: SourceNodesArgs & {webhookBody?: SanityWebhookBody},
@@ -307,18 +332,18 @@ export const sourceNodes: GatsbyNode['sourceNodes'] = async (
   reporter.info(`[sanity] Done! Exported ${documents.size} documents.`)
 }
 
-export const setFieldsOnGraphQLNodeType: GatsbyNode['setFieldsOnGraphQLNodeType'] = async (
-  context: SetFieldsOnGraphQLNodeTypeArgs,
-  pluginConfig: PluginConfig,
-) => {
-  const {type} = context
-  let fields: {[key: string]: GraphQLFieldConfig<any, any>} = {}
-  if (type.name === 'SanityImageAsset') {
-    fields = {...fields, ...extendImageNode(pluginConfig)}
-  }
+// export const setFieldsOnGraphQLNodeType: GatsbyNode['setFieldsOnGraphQLNodeType'] = async (
+//   context: SetFieldsOnGraphQLNodeTypeArgs,
+//   pluginConfig: PluginConfig,
+// ) => {
+//   const {type} = context
+//   let fields: {[key: string]: GraphQLFieldConfig<any, any>} = {}
+//   if (type.name === 'SanityImageAsset') {
+//     fields = {...fields, ...extendImageNode(pluginConfig)}
+//   }
 
-  return fields
-}
+//   return fields
+// }
 
 function validateConfig(config: Partial<PluginConfig>, reporter: Reporter): config is PluginConfig {
   if (!config.projectId) {

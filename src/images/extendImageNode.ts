@@ -37,6 +37,7 @@ export function extendImageNode(config: PluginConfig): GraphQLFieldConfigMap<any
   }
 
   const extension = getExtension(config)
+
   extensions.set(key, extension)
   return extension
 }
