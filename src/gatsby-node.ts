@@ -1,4 +1,5 @@
 import {bufferTime, filter, map, tap} from 'rxjs/operators'
+import {GraphQLFieldConfig} from 'gatsby/graphql'
 import gatsbyPkg from 'gatsby/package.json'
 import SanityClient from '@sanity/client'
 import {
@@ -7,6 +8,7 @@ import {
   ParentSpanPluginArgs,
   PluginOptions,
   Reporter,
+  SetFieldsOnGraphQLNodeTypeArgs,
   SourceNodesArgs,
 } from 'gatsby'
 import {SanityDocument, SanityWebhookBody} from './types/sanity'
@@ -158,13 +160,6 @@ export const createResolvers: GatsbyNode['createResolvers'] = (
 ): any => {
   const typeMapKey = getCacheKey(pluginOptions, CACHE_KEYS.TYPE_MAP)
   const typeMap = (stateCache[typeMapKey] || defaultTypeMap) as TypeMap
-
-  if (typeMap.objects['SanityImageAsset']) {
-    typeMap.objects['SanityImageAsset'] = {
-      ...typeMap.objects['SanityImageAsset'],
-      ...extendImageNode(pluginOptions),
-    }
-  }
 
   args.createResolvers(getGraphQLResolverMap(typeMap, pluginOptions, args))
 }
@@ -346,6 +341,19 @@ export const sourceNodes: GatsbyNode['sourceNodes'] = async (
   // do the initial sync from sanity documents to gatsby nodes
   syncAllWithGatsby()
   reporter.info(`[sanity] Done! Exported ${documents.size} documents.`)
+}
+
+export const setFieldsOnGraphQLNodeType: GatsbyNode['setFieldsOnGraphQLNodeType'] = async (
+  context: SetFieldsOnGraphQLNodeTypeArgs,
+  pluginConfig: PluginConfig,
+) => {
+  const {type} = context
+  let fields: {[key: string]: GraphQLFieldConfig<any, any>} = {}
+  if (type.name === 'SanityImageAsset') {
+    fields = {...fields, ...extendImageNode(pluginConfig)}
+  }
+
+  return fields
 }
 
 function validateConfig(config: Partial<PluginConfig>, reporter: Reporter): config is PluginConfig {
