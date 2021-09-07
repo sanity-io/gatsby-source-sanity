@@ -38,12 +38,17 @@ import {uniq} from 'lodash'
 import {SanityInputNode} from './types/gatsby'
 import debug from './debug'
 
-let coreSupportsOnPluginInit: boolean
+let coreSupportsOnPluginInit: 'unstable' | 'stable' | undefined
+
 try {
   const {isGatsbyNodeLifecycleSupported} = require(`gatsby-plugin-utils`)
-  coreSupportsOnPluginInit = isGatsbyNodeLifecycleSupported(`unstable_onPluginInit`)
+  if (isGatsbyNodeLifecycleSupported(`onPluginInit`)) {
+    coreSupportsOnPluginInit = 'stable'
+  } else if (isGatsbyNodeLifecycleSupported(`unstable_onPluginInit`)) {
+    coreSupportsOnPluginInit = 'unstable'
+  }
 } catch (e) {
-  coreSupportsOnPluginInit = false
+  console.error(`Could not check if Gatsby supports onPluginInit lifecycle`)
 }
 
 export interface PluginConfig extends PluginOptions {
@@ -125,33 +130,30 @@ const initializePlugin = async (
 
 export const onPreInit: GatsbyNode['onPreInit'] = async ({reporter}: ParentSpanPluginArgs) => {
   // onPluginInit replaces onPreInit in Gatsby V4
-  if (coreSupportsOnPluginInit) {
-    return
-    // Old versions of Gatsby does not have this method
-  } else if (reporter.setErrorMap) {
+  // Old versions of Gatsby does not have the method setErrorMap
+  if (!coreSupportsOnPluginInit && reporter.setErrorMap) {
     reporter.setErrorMap(ERROR_MAP)
   }
 }
 
 export const onPreBootstrap: GatsbyNode['onPreBootstrap'] = async (args, pluginOptions?) => {
   // Because we are setting global state here, this code now needs to run in onPluginInit if using Gatsby V4
-  if (coreSupportsOnPluginInit) {
-    return
-  } else {
+  if (!coreSupportsOnPluginInit) {
     await initializePlugin(args, pluginOptions)
   }
 }
 
-if (coreSupportsOnPluginInit) {
+const onPluginInit = async (args: ParentSpanPluginArgs, pluginOptions?: PluginOptions) => {
+  args.reporter.setErrorMap(ERROR_MAP)
+  await initializePlugin(args, pluginOptions)
+}
+
+if (coreSupportsOnPluginInit === 'stable') {
   // to properly initialize plugin in worker (`onPreBootstrap` won't run in workers)
   // need to conditionally export otherwise it throw an error for older versions
-  exports.unstable_onPluginInit = async (
-    args: ParentSpanPluginArgs,
-    pluginOptions?: PluginOptions,
-  ) => {
-    args.reporter.setErrorMap(ERROR_MAP)
-    await initializePlugin(args, pluginOptions)
-  }
+  exports.onPluginInit = onPluginInit
+} else if (coreSupportsOnPluginInit === 'unstable') {
+  exports.unstable_onPluginInit = onPluginInit
 }
 
 export const createResolvers: GatsbyNode['createResolvers'] = (
