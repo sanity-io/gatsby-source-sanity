@@ -107,7 +107,7 @@ const initializePlugin = async (
     const typeMap = getTypeMapFromGraphQLSchema(api)
     const typeMapKey = getCacheKey(config, CACHE_KEYS.TYPE_MAP)
     stateCache[typeMapKey] = typeMap
-  } catch (err) {
+  } catch (err: any) {
     if (err.isWarning) {
       err.message.split('\n').forEach((line: string) => reporter.warn(line))
       return
