@@ -60,7 +60,7 @@ export async function getRemoteGraphQLSchema(client: SanityClient, config: Plugi
     })
 
     return api
-  } catch (err) {
+  } catch (err: any) {
     const statusCode = get(err, 'response.statusCode')
     const errorCode = get(err, 'response.body.errorCode')
     const message =
