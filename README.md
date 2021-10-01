@@ -58,6 +58,10 @@ module.exports = {
         // If the Sanity GraphQL API was deployed using `--tag <name>`,
         // use `graphqlTag` to specify the tag name. Defaults to `default`.
         graphqlTag: 'default',
+
+        // [optional] Specify the apiVersion as per https://www.sanity.io/help/js-client-api-version
+        // default '1'
+        apiVersion: '2021-10-01',
       },
     },
     // ...

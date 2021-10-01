@@ -59,12 +59,14 @@ export interface PluginConfig extends PluginOptions {
   graphqlTag: string
   overlayDrafts?: boolean
   watchMode?: boolean
+  apiVersion?: string
 }
 
 const defaultConfig = {
   version: '1',
   overlayDrafts: false,
   graphqlTag: 'default',
+  apiVersion: '1',
 }
 
 const stateCache: {[key: string]: any} = {}
@@ -384,6 +386,13 @@ function validateConfig(config: Partial<PluginConfig>, reporter: Reporter): conf
     )
   }
 
+  if (!config.apiVersion) {
+    reporter.warn('[sanity] `apiVersion` unset defaulting to v1 default')
+  } else if (!config.apiVersion.match(/((\d){4}\-(1[0-2]|0[1-9])\-(0[1-9]|[12][0-9]|3[01]))|1/)) {
+    // YYYY-MM-DD OR
+    reporter.panic('[sanity] `apiVersion` must be in ISO date format `YYYY-MM-YY` or version `1`')
+  }
+
   return true
 }
 
@@ -409,13 +418,12 @@ function downloadDocuments(
   )
 }
 
-function getClient(config: PluginConfig) {
-  const {projectId, dataset, token} = config
+function getClient({projectId, dataset, token, apiVersion}: PluginConfig) {
   return new SanityClient({
     projectId,
     dataset,
     token,
-    apiVersion: '1',
+    apiVersion,
     useCdn: false,
   })
 }
