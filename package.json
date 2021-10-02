@@ -35,7 +35,7 @@
   },
   "dependencies": {
     "@sanity/client": "^2.18.0",
-    "@sanity/image-url": "^0.140.19",
+    "@sanity/image-url": "^1.0.1",
     "@sanity/mutator": "^2.18.0",
     "@types/url-parse": "^1.4.4",
     "axios": "^0.21.4",
