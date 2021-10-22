@@ -44,7 +44,7 @@ export function extendImageNode(config: PluginConfig): GraphQLFieldConfigMap<any
 function getExtension(config: PluginConfig): GraphQLFieldConfigMap<any, any> {
   const location = {projectId: config.projectId, dataset: config.dataset}
   return {
-    gatsbyImageData: getGatsbyImageFieldConfig(
+    gatsbyImageData: getGatsbyImageFieldConfig<any, any, any>(
       (image: ImageNode, args: ImageArgs) => getGatsbyImageData(image, args, location),
       {
         placeholder: {
@@ -60,6 +60,6 @@ NONE: no placeholder.`,
           defaultValue: 'fill',
         },
       },
-    ),
+    ) as any,
   }
 }
