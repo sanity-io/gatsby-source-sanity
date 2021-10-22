@@ -15,13 +15,14 @@ Get up and running in minutes with a fully configured starter project:
 - [Basic usage](#basic-usage)
 - [Options](#options)
 - [Preview of unpublished content](#preview-of-unpublished-content)
-- [Real-time content preview with watch mode](#real-time-content-preview-with-watch-mode)
 - [GraphQL API](#graphql-api)
 - [Using images](#using-images)
   - [Usage outside of GraphQL](#using-images-outside-of-graphql)
 - [Generating pages](#generating-pages)
 - ["Raw" fields](#raw-fields)
 - [Portable Text / Block Content](#portable-text--block-content)
+- [Real-time content preview with watch mode](#real-time-content-preview-with-watch-mode)
+- [Updating preview servers](#updating-preview-servers)
 - [Using .env variables](#using-env-variables)
 - [How this plugin works](#how-this-source-plugin-works)
 - [Credits](#credits)
@@ -91,12 +92,6 @@ Explore http://localhost:8000/\_\_\_graphql after running `gatsby develop` to un
 Sometimes you might be working on some new content that is not yet published, which you want to make sure looks alright within your Gatsby site. By setting the `overlayDrafts` setting to `true`, the draft versions will as the option says "overlay" the regular document. In terms of Gatsby nodes, it will _replace_ the published document with the draft.
 
 Keep in mind that drafts do not have to conform to any validation rules, so your frontend will usually want to double-check all nested properties before attempting to use them.
-
-## Real-time content preview with watch mode
-
-While developing, it can often be beneficial to get updates without having to manually restart the build process. By setting `watchMode` to true, this plugin will set up a listener which watches for changes. When it detects a change, the document in question is updated in real-time and will be reflected immediately.
-
-If you add [a `token` with read rights](https://www.sanity.io/docs/http-auth#robot-tokens) and set `overlayDrafts` to true, each small change to the draft will immediately be applied.
 
 ## GraphQL API
 
@@ -240,6 +235,62 @@ Rich text in Sanity is usually represented as [Portable Text](https://www.portab
 These data structures can be deep and a chore to query (specifying all the possible fields). As [noted above](#raw-fields), there is a "raw" alternative available for these fields which is usually what you'll want to use.
 
 You can install [block-content-to-react](https://www.npmjs.com/package/@sanity/block-content-to-react) from npm and use it in your Gatsby project to serialize Portable Text. It lets you use your own React components to override defaults and render custom content types. [Learn more about Portable Text in our documentation](https://www.sanity.io/docs/content-studio/what-you-need-to-know-about-block-text).
+
+## Real-time content preview with watch mode
+
+While developing, it can often be beneficial to get updates without having to manually restart the build process. By setting `watchMode` to true, this plugin will set up a listener which watches for changes. When it detects a change, the document in question is updated in real-time and will be reflected immediately.
+
+If you add [a `token` with read rights](https://www.sanity.io/docs/http-auth#robot-tokens) and set `overlayDrafts` to true, each small change to the draft will immediately be applied. Keep in mind that this only works in development, see next section for how to enable previews for your entire team.
+
+## Updating preview servers
+
+You can use [Gatsby preview servers](https://www.gatsbyjs.com/docs/how-to/local-development/running-a-gatsby-preview-server) (often through Gatsby Cloud) to update your content on a live URL your team can use.
+
+In order to have previews working, you'll need to activate `overlayDrafts` in the plugin's configuration inside preview environments. To do so, we recommend following a pattern similar to this:
+
+```js
+// In gatsby-config.js
+
+const isProd = process.env.NODE_ENV === "production"
+const previewEnabled = (process.env.GATSBY_IS_PREVIEW || "false").toLowerCase() === "true"
+
+module.exports = {
+  // ...
+  plugins: [
+    resolve: "gatsby-source-sanity",
+    options: {
+      // ...
+      watchMode: !isProd, // watchMode only in dev mode
+      overlayDrafts: !isProd || previewEnabled, // drafts in dev & Gatsby Cloud Preview
+    },
+  ]
+}
+```
+
+Then, you'll need to set-up a [Sanity webhook](https://www.sanity.io/docs/webhooks) pointing to your Gatsby preview URL. It should include the following projection:
+
+```json
+{
+  "__webhooksVersion": "v2",
+  "operation": delta::operation(),
+  "documentId": coalesce(before()._id, after()._id),
+  "projectId": sanity::projectId(),
+  "dataset": sanity::dataset(),
+  "after": after(),
+}
+```
+
+The other fields should be configured as following:
+
+1. Keep the HTTP method set to POST, skip "HTTP Headers"
+2. Set the hook to trigger on Create, Update and Delete
+3. Skip the filter field
+4. Set the API version to `v2021-03-25`
+5. And set it to fire on drafts
+
+If using Gatsby Cloud, this should be auto-configured during your initial set-up.
+
+<!-- @TODO: once we have shareable webhook URLs, add one for this set-up -->
 
 ## Using .env variables
 

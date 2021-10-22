@@ -37,6 +37,8 @@ import oneline from 'oneline'
 import {uniq} from 'lodash'
 import {SanityInputNode} from './types/gatsby'
 import debug from './debug'
+import handleDeltaChanges from './util/handleDeltaChanges'
+import { getLastBuildTime, registerBuildTime } from './util/getPluginStatus'
 
 let coreSupportsOnPluginInit: 'unstable' | 'stable' | undefined
 
@@ -223,6 +225,24 @@ export const sourceNodes: GatsbyNode['sourceNodes'] = async (
     return
   }
 
+  // If the webhookBody is empty, we could still be in a preview context
+  // @TODO: Figure out a way to only handleDeltaChanges *after* initial data fetching
+  const isPreview = true
+  // Instead of re-fetching all documents, let's fetch only those which changed since the last build
+  const lastBuildTime = getLastBuildTime(args)
+  if (lastBuildTime && isPreview) {
+    try {
+      const deltaHandled = await handleDeltaChanges({args, lastBuildTime, client, processingOptions})
+      if (deltaHandled) {
+        return
+      } else {
+        reporter.warn("[sanity] Couldn't retrieve latest changes. Will fetch all documents instead.")
+      }
+    } catch (error) {
+      // lastBuildTime isn't a date, ignore it
+    }
+  }
+
   reporter.info('[sanity] Fetching export stream for dataset')
 
   const documents = await downloadDocuments(url, config.token, {includeDrafts: overlayDrafts})
@@ -352,6 +372,8 @@ export const sourceNodes: GatsbyNode['sourceNodes'] = async (
   }
   // do the initial sync from sanity documents to gatsby nodes
   syncAllWithGatsby()
+  // register the current build time for accessing it in handleDeltaChanges for future builds
+  registerBuildTime(args)
   reporter.info(`[sanity] Done! Exported ${documents.size} documents.`)
 }
 
