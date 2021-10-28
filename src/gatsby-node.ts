@@ -226,12 +226,9 @@ export const sourceNodes: GatsbyNode['sourceNodes'] = async (
     return
   }
 
-  // If the webhookBody is empty, we could still be in a preview context
-  // @TODO: Figure out a way to only handleDeltaChanges *after* initial data fetching
-  const isPreview = true
-  // Instead of re-fetching all documents, let's fetch only those which changed since the last build
+  // If we have a warm build, let's fetch only those which changed since the last build
   const lastBuildTime = getLastBuildTime(args)
-  if (lastBuildTime && isPreview) {
+  if (lastBuildTime) {
     try {
       const deltaHandled = await handleDeltaChanges({
         args,
