@@ -38,7 +38,7 @@ import {uniq} from 'lodash'
 import {SanityInputNode} from './types/gatsby'
 import debug from './debug'
 import handleDeltaChanges from './util/handleDeltaChanges'
-import { getLastBuildTime, registerBuildTime } from './util/getPluginStatus'
+import {getLastBuildTime, registerBuildTime} from './util/getPluginStatus'
 
 let coreSupportsOnPluginInit: 'unstable' | 'stable' | undefined
 
@@ -225,18 +225,44 @@ export const sourceNodes: GatsbyNode['sourceNodes'] = async (
     return
   }
 
-  // If the webhookBody is empty, we could still be in a preview context
-  // @TODO: Figure out a way to only handleDeltaChanges *after* initial data fetching
-  const isPreview = true
-  // Instead of re-fetching all documents, let's fetch only those which changed since the last build
+  // If we have a warm build, let's fetch only those which changed since the last build
   const lastBuildTime = getLastBuildTime(args)
-  if (lastBuildTime && isPreview) {
+  if (lastBuildTime) {
     try {
-      const deltaHandled = await handleDeltaChanges({args, lastBuildTime, client, processingOptions})
+      // Let's make sure we keep documents nodes already in the cache (3 steps)
+      // =========
+      // 1/3. Get all valid document IDs from Sanity
+      const documentIds = (await client.fetch<string[]>(`*[!(_type match "system.**")]._id`)).map(
+        unprefixId,
+      )
+
+      // @TODO find a more memory-effective way to touch nodes
+      args
+        .getNodes()
+        // 2/3. get all nodes from store that are created from this plugin.
+        // If a document isn't included in documentIds, that means it was deleted since lastBuildTime. Don't touch it.
+        .filter(
+          (node) =>
+            node.internal.owner === 'gatsby-source-sanity' &&
+            typeof node._id === 'string' &&
+            documentIds.includes(unprefixId(node._id)),
+        )
+        // 3/3. touch valid documents to prevent Gatsby from deleting them
+        .forEach((node) => actions.touchNode(node))
+
+      // With existing documents cached, let's handle those that changed since last build
+      const deltaHandled = await handleDeltaChanges({
+        args,
+        lastBuildTime,
+        client,
+        processingOptions,
+      })
       if (deltaHandled) {
         return
       } else {
-        reporter.warn("[sanity] Couldn't retrieve latest changes. Will fetch all documents instead.")
+        reporter.warn(
+          "[sanity] Couldn't retrieve latest changes. Will fetch all documents instead.",
+        )
       }
     } catch (error) {
       // lastBuildTime isn't a date, ignore it
