@@ -59,12 +59,14 @@ export interface PluginConfig extends PluginOptions {
   graphqlTag: string
   overlayDrafts?: boolean
   watchMode?: boolean
+  watchModeBuffer?: number
 }
 
 const defaultConfig = {
   version: '1',
   overlayDrafts: false,
   graphqlTag: 'default',
+  watchModeBuffer: 150
 }
 
 const stateCache: {[key: string]: any} = {}
@@ -338,7 +340,7 @@ export const sourceNodes: GatsbyNode['sourceNodes'] = async (
           }
         }),
         map((event) => event.documentId),
-        bufferTime(100),
+        bufferTime(config.watchModeBuffer),
         map((ids) => uniq(ids)),
         filter((ids) => ids.length > 0),
         tap((updateIds) =>
