@@ -84,6 +84,7 @@ Explore http://localhost:8000/\_\_\_graphql after running `gatsby develop` to un
 | graphqlTag    | string  | `default` | If the Sanity GraphQL API was deployed using `--tag <name>`, use this to specify the tag name.                                                                     |
 | overlayDrafts | boolean | `false`   | Set to `true` in order for drafts to replace their published version. By default, drafts will be skipped.                                                          |
 | watchMode     | boolean | `false`   | Set to `true` to keep a listener open and update with the latest changes in realtime. If you add a `token` you will get all content updates down to each keypress. |
+| watchModeBuffer     | number | `150`   | How many milliseconds to wait on watchMode changes before applying them to Gatsby's GraphQL layer. Introduced in 7.2.0. |
 
 ## Preview of unpublished content
 
