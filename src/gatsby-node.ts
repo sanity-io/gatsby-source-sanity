@@ -192,7 +192,6 @@ export const sourceNodes: GatsbyNode['sourceNodes'] = async (
   const {dataset, overlayDrafts, watchMode} = config
   const {actions, createNodeId, createContentDigest, reporter, webhookBody} = args
   const {createNode, deleteNode, createParentChildLink} = actions
-
   const typeMapKey = getCacheKey(pluginConfig, CACHE_KEYS.TYPE_MAP)
   const typeMap = (stateCache[typeMapKey] || defaultTypeMap) as TypeMap
 
