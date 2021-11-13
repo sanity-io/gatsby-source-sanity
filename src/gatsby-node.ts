@@ -37,7 +37,7 @@ import {prefixId, unprefixId} from './util/documentIds'
 import {getAllDocuments} from './util/getAllDocuments'
 import oneline from 'oneline'
 import {uniq} from 'lodash'
-import {SanityInputNode } from './types/gatsby'
+import {SanityInputNode} from './types/gatsby'
 import debug from './debug'
 
 let coreSupportsOnPluginInit: 'unstable' | 'stable' | undefined
@@ -186,7 +186,7 @@ export const sourceNodes: GatsbyNode['sourceNodes'] = async (
   const config = {...defaultConfig, ...pluginConfig}
   const {dataset, overlayDrafts, watchMode} = config
   const {actions, createNodeId, createContentDigest, reporter, webhookBody} = args
-  const {createNode, deleteNode, createParentChildLink } = actions
+  const {createNode, deleteNode, createParentChildLink} = actions
   
   const typeMapKey = getCacheKey(pluginConfig, CACHE_KEYS.TYPE_MAP)
   const typeMap = (stateCache[typeMapKey] || defaultTypeMap) as TypeMap
@@ -227,7 +227,7 @@ export const sourceNodes: GatsbyNode['sourceNodes'] = async (
 
   const documents = await downloadDocuments(url, config.token, {includeDrafts: overlayDrafts})
   const gatsbyNodes = new Map<string, SanityInputNode>()
-  
+
   // sync a single document from the local cache of known documents with gatsby
   function syncWithGatsby(id: string) {
     const publishedId = unprefixId(id)
@@ -268,7 +268,7 @@ export const sourceNodes: GatsbyNode['sourceNodes'] = async (
         if (published) {
           debug('updating gatsby node for %s', publishedId)
           const node = toGatsbyNode(published, processingOptions)
-          
+
           gatsbyNodes.set(publishedId, node)
           createNode(node)
 
@@ -312,7 +312,7 @@ export const sourceNodes: GatsbyNode['sourceNodes'] = async (
       )
       // pick the draft if we can, otherwise pick the published
       const node = toGatsbyNode((draft || published)!, processingOptions)
-      
+
       gatsbyNodes.set(publishedId, node)
       createNode(node)
       sanityCreateNodeManifest(actions, args, node, publishedId)
@@ -403,7 +403,6 @@ function sanityCreateNodeManifest(
     console.info(`Cannot create node manifest`, result);
   }
 }
-
 
 export const setFieldsOnGraphQLNodeType: GatsbyNode['setFieldsOnGraphQLNodeType'] = async (
   context: SetFieldsOnGraphQLNodeTypeArgs,
