@@ -23,10 +23,10 @@ export interface ApiError {
  * All others are handled by handleDeltaWebhook.
  */
 export interface SanityWebhookDeleteBody {
-  operation: "delete"
+  operation: 'delete'
   documentId: string
   projectId?: string
   dataset?: string
 }
 
-export type SanityWebhookBody = SanityWebhookDeleteBody
+export type SanityWebhookBody = SanityWebhookDeleteBody | {}
