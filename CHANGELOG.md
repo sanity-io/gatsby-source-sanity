@@ -2,6 +2,18 @@
 
 All notable changes will be documented in this file.
 
+## 7.2.0
+
+### Changes
+
+- Allow configuration of the `watchModeBuffer` option
+
+## 7.1.0
+
+### Changes
+
+- Support for Gatsby v4
+
 ## 7.0.7
 
 ### Fixes
