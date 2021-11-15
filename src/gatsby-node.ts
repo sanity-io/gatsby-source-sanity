@@ -294,10 +294,8 @@ export const sourceNodes: GatsbyNode['sourceNodes'] = async (
         if (published) {
           debug('updating gatsby node for %s', publishedId)
           const node = toGatsbyNode(published, processingOptions)
-
           gatsbyNodes.set(publishedId, node)
           createNode(node)
-
           sanityCreateNodeManifest(actions, args, node, publishedId)
         } else {
           // the published document has been removed (note - we either have no draft or overlayDrafts is not enabled so merely removing is ok here)
@@ -314,7 +312,6 @@ export const sourceNodes: GatsbyNode['sourceNodes'] = async (
         const node = toGatsbyNode(published, processingOptions)
         gatsbyNodes.set(publishedId, node)
         createNode(node)
-
         sanityCreateNodeManifest(actions, args, node, publishedId)
       }
     }
@@ -338,7 +335,6 @@ export const sourceNodes: GatsbyNode['sourceNodes'] = async (
       )
       // pick the draft if we can, otherwise pick the published
       const node = toGatsbyNode((draft || published)!, processingOptions)
-
       gatsbyNodes.set(publishedId, node)
       createNode(node)
       sanityCreateNodeManifest(actions, args, node, publishedId)
@@ -406,48 +402,6 @@ export const sourceNodes: GatsbyNode['sourceNodes'] = async (
   reporter.info(`[sanity] Done! Exported ${documents.size} documents.`)
 }
 
-const ONE_WEEK = 1000 * 60 * 60 * 24 * 7 // ms * sec * min * hr * day
-let nodeManifestWarningWasLogged: boolean
-
-function sanityCreateNodeManifest(
-  actions: Actions,
-  args: SourceNodesArgs,
-  node: SanityInputNode,
-  publishedId: string,
-) {
-  try {
-    const {unstable_createNodeManifest} = actions
-    const {getNode} = args
-
-    const createNodeManifestIsSupported = typeof unstable_createNodeManifest === `function`
-    const nodeTypeNeedsManifest = node.internal.type === 'SanityPost'
-    const shouldCreateNodeManifest = createNodeManifestIsSupported && nodeTypeNeedsManifest
-
-    if (shouldCreateNodeManifest) {
-      const updatedAt = node._updatedAt as string
-      const nodeWasRecentlyUpdated =
-        Date.now() - new Date(updatedAt).getTime() <=
-        // Default to only create manifests for items updated in last week
-        (process.env.CONTENT_SYNC_SANITY_HOURS_SINCE_ENTRY_UPDATE || ONE_WEEK)
-      if (!nodeWasRecentlyUpdated) return
-
-      const nodeForManifest = getNode(node.id) as Node
-      const manifestId = `${publishedId}-${updatedAt}`
-      console.info(`Sanity: Creating node manifest with id ${manifestId}`)
-
-      actions.unstable_createNodeManifest({manifestId, node: nodeForManifest})
-    } else if (!createNodeManifestIsSupported && !nodeManifestWarningWasLogged) {
-      console.warn(
-        `Sanity: Your version of Gatsby core doesn't support Content Sync (via the unstable_createNodeManifest action). Please upgrade to the latest version to use Content Sync in your site.`,
-      )
-      nodeManifestWarningWasLogged = true
-    }
-  } catch (e) {
-    let result = (e as Error).message
-    console.info(`Cannot create node manifest`, result)
-  }
-}
-
 export const setFieldsOnGraphQLNodeType: GatsbyNode['setFieldsOnGraphQLNodeType'] = async (
   context: SetFieldsOnGraphQLNodeTypeArgs,
   pluginConfig: PluginConfig,
@@ -510,6 +464,48 @@ function downloadDocuments(
         })
       }),
   )
+}
+
+const ONE_WEEK = 1000 * 60 * 60 * 24 * 7 // ms * sec * min * hr * day
+let nodeManifestWarningWasLogged: boolean
+
+function sanityCreateNodeManifest(
+  actions: Actions,
+  args: SourceNodesArgs,
+  node: SanityInputNode,
+  publishedId: string,
+) {
+  try {
+    const {unstable_createNodeManifest} = actions
+    const {getNode} = args
+
+    const createNodeManifestIsSupported = typeof unstable_createNodeManifest === `function`
+    const nodeTypeNeedsManifest = node.internal.type === 'SanityPost'
+    const shouldCreateNodeManifest = createNodeManifestIsSupported && nodeTypeNeedsManifest
+
+    if (shouldCreateNodeManifest) {
+      const updatedAt = node._updatedAt as string
+      const nodeWasRecentlyUpdated =
+        Date.now() - new Date(updatedAt).getTime() <=
+        // Default to only create manifests for items updated in last week
+        (process.env.CONTENT_SYNC_SANITY_HOURS_SINCE_ENTRY_UPDATE || ONE_WEEK)
+      if (!nodeWasRecentlyUpdated) return
+
+      const nodeForManifest = getNode(node.id) as Node
+      const manifestId = `${publishedId}-${updatedAt}`
+      console.info(`Sanity: Creating node manifest with id ${manifestId}`)
+
+      actions.unstable_createNodeManifest({manifestId, node: nodeForManifest})
+    } else if (!createNodeManifestIsSupported && !nodeManifestWarningWasLogged) {
+      console.warn(
+        `Sanity: Your version of Gatsby core doesn't support Content Sync (via the unstable_createNodeManifest action). Please upgrade to the latest version to use Content Sync in your site.`,
+      )
+      nodeManifestWarningWasLogged = true
+    }
+  } catch (e) {
+    let result = (e as Error).message
+    console.info(`Cannot create node manifest`, result)
+  }
 }
 
 function getClient(config: PluginConfig) {
