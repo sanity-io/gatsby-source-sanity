@@ -18,36 +18,15 @@ export interface ApiError {
   message: string
 }
 
-export interface SanityWebhookV1Body {
-  ids: {
-    created: string[]
-    deleted: string[]
-    updated: string[]
-  }
-}
-
-/*
-  GROQ projection for webhooks v2:
-  {
-    "__webhooksVersion": "v2",
-    "operation": select(
-      before() == null => "create",
-      after() == null => "delete",
-      "update"
-    ),
-    "documentId": coalesce(before()._id, after()._id),
-    "projectId": sanity::projectId(),
-    "dataset": sanity::dataset(),
-    "after": after(),
-  }
-*/
-export interface SanityWebhookV2Body {
-  __webhooksVersion: "v2"
-  operation: "create" | "update" | "delete"
+/**
+ * Body received only in delete operations.
+ * All others are handled by handleDeltaWebhook.
+ */
+export interface SanityWebhookDeleteBody {
+  operation: 'delete'
   documentId: string
   projectId?: string
   dataset?: string
-  after?: SanityDocument
 }
 
-export type SanityWebhookBody = SanityWebhookV1Body | SanityWebhookV2Body
+export type SanityWebhookBody = SanityWebhookDeleteBody | {}
