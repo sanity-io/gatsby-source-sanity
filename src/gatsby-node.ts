@@ -231,24 +231,43 @@ export const sourceNodes: GatsbyNode['sourceNodes'] = async (
     try {
       // Let's make sure we keep documents nodes already in the cache (3 steps)
       // =========
-      // 1/3. Get all valid document IDs from Sanity
+      // 1/4. Get all valid document IDs from Sanity
       const documentIds = (await client.fetch<string[]>(`*[!(_type match "system.**")]._id`)).map(
         unprefixId,
       )
 
-      // @TODO find a more memory-effective way to touch nodes
-      args
-        .getNodes()
-        // 2/3. get all nodes from store that are created from this plugin.
-        // If a document isn't included in documentIds, that means it was deleted since lastBuildTime. Don't touch it.
-        .filter(
-          (node) =>
-            node.internal.owner === 'gatsby-source-sanity' &&
-            typeof node._id === 'string' &&
-            documentIds.includes(unprefixId(node._id)),
-        )
-        // 3/3. touch valid documents to prevent Gatsby from deleting them
-        .forEach((node) => actions.touchNode(node))
+      // 2/4. Get all document types implemented in the GraphQL layer
+      // @initializePlugin() will populate `stateCache` with 1+ TypeMaps
+      const typeMapStateKeys = Object.keys(stateCache).filter((key) => key.endsWith('typeMap'))
+      // Let's take all document types from these TypeMaps
+      const sanityDocTypes = Array.from(
+        // De-duplicate types with a Set
+        new Set(
+          typeMapStateKeys.reduce((types, curKey) => {
+            const map = stateCache[curKey] as TypeMap
+            const documentTypes = Object.keys(map.objects).filter(
+              (key) => map.objects[key].isDocument,
+            )
+            return [...types, ...documentTypes]
+          }, [] as string[]),
+        ),
+      )
+
+      // 3/4. From these types, get all nodes from store that are created from this plugin.
+      // (we didn't use args.getNodes() as that'd be too expensive - hence why we limit it to Sanity-only types)
+      for (const docType of sanityDocTypes) {
+        args
+          .getNodesByType(docType)
+          // If a document isn't included in documentIds, that means it was deleted since lastBuildTime. Don't touch it.
+          .filter(
+            (node) =>
+              node.internal.owner === 'gatsby-source-sanity' &&
+              typeof node._id === 'string' &&
+              documentIds.includes(unprefixId(node._id)),
+          )
+          // 4/4. touch valid documents to prevent Gatsby from deleting them
+          .forEach((node) => actions.touchNode(node))
+      }
 
       // With existing documents cached, let's handle those that changed since last build
       const deltaHandled = await handleDeltaChanges({
