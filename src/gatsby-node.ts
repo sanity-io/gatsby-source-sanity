@@ -493,7 +493,6 @@ function sanityCreateNodeManifest(
 
       const nodeForManifest = getNode(node.id) as Node
       const manifestId = `${publishedId}-${updatedAt}`
-      console.info(`Sanity: Creating node manifest with id ${manifestId}`)
 
       actions.unstable_createNodeManifest({manifestId, node: nodeForManifest})
     } else if (!createNodeManifestIsSupported && !nodeManifestWarningWasLogged) {
