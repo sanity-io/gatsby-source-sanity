@@ -3,7 +3,7 @@ import {SourceNodesArgs} from 'gatsby'
 import {getTypeName, ProcessingOptions, toGatsbyNode} from './normalize'
 import debug from '../debug'
 import {SanityDocument} from '../types/sanity'
-import { registerBuildTime } from './getPluginStatus'
+import {registerBuildTime} from './getPluginStatus'
 
 export const sleep = (ms: number) => {
   return new Promise((resolve) => setTimeout(resolve, ms))
@@ -35,7 +35,6 @@ export default async function handleDeltaChanges({
         timestamp: lastBuildTime.toISOString(),
       },
     )
-    console.log({changedDocs})
     handleChangedDocuments(args, changedDocs, processingOptions)
     registerBuildTime(args)
     args.reporter.info(`[sanity] ${changedDocs.length} documents updated.`)
@@ -67,4 +66,3 @@ function handleChangedDocuments(
     return count + 1
   }, 0)
 }
-
