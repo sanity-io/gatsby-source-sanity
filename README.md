@@ -77,15 +77,15 @@ Explore http://localhost:8000/\_\_\_graphql after running `gatsby develop` to un
 
 ## Options
 
-| Options       | Type    | Default   | Description                                                                                                                                                        |
-| ------------- | ------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| projectId     | string  |           | **[required]** Your Sanity project's ID                                                                                                                            |
-| dataset       | string  |           | **[required]** The dataset to fetch from                                                                                                                           |
-| token         | string  |           | Authentication token for fetching data from private datasets, or when using `overlayDrafts` [Learn more](https://www.sanity.io/docs/http-auth)                     |
-| graphqlTag    | string  | `default` | If the Sanity GraphQL API was deployed using `--tag <name>`, use this to specify the tag name.                                                                     |
-| overlayDrafts | boolean | `false`   | Set to `true` in order for drafts to replace their published version. By default, drafts will be skipped.                                                          |
-| watchMode     | boolean | `false`   | Set to `true` to keep a listener open and update with the latest changes in realtime. If you add a `token` you will get all content updates down to each keypress. |
-| watchModeBuffer     | number | `150`   | How many milliseconds to wait on watchMode changes before applying them to Gatsby's GraphQL layer. Introduced in 7.2.0. |
+| Options         | Type    | Default   | Description                                                                                                                                                        |
+| --------------- | ------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| projectId       | string  |           | **[required]** Your Sanity project's ID                                                                                                                            |
+| dataset         | string  |           | **[required]** The dataset to fetch from                                                                                                                           |
+| token           | string  |           | Authentication token for fetching data from private datasets, or when using `overlayDrafts` [Learn more](https://www.sanity.io/docs/http-auth)                     |
+| graphqlTag      | string  | `default` | If the Sanity GraphQL API was deployed using `--tag <name>`, use this to specify the tag name.                                                                     |
+| overlayDrafts   | boolean | `false`   | Set to `true` in order for drafts to replace their published version. By default, drafts will be skipped.                                                          |
+| watchMode       | boolean | `false`   | Set to `true` to keep a listener open and update with the latest changes in realtime. If you add a `token` you will get all content updates down to each keypress. |
+| watchModeBuffer | number  | `150`     | How many milliseconds to wait on watchMode changes before applying them to Gatsby's GraphQL layer. Introduced in 7.2.0.                                            |
 
 ## Preview of unpublished content
 
@@ -244,7 +244,7 @@ If you add [a `token` with read rights](https://www.sanity.io/docs/http-auth#rob
 
 ## Updating preview servers
 
-You can use [Gatsby preview servers](https://www.gatsbyjs.com/docs/how-to/local-development/running-a-gatsby-preview-server) (often through Gatsby Cloud) to update your content on a live URL your team can use.
+You can use [Gatsby preview servers](https://www.gatsbyjs.com/docs/how-to/local-development/running-a-gatsby-preview-server) (often through [Gatsby Cloud](https://www.gatsbyjs.com/products/cloud/)) to update your content on a live URL your team can use.
 
 In order to have previews working, you'll need to activate `overlayDrafts` in the plugin's configuration inside preview environments. To do so, we recommend following a pattern similar to this:
 
@@ -267,30 +267,36 @@ module.exports = {
 }
 ```
 
-Then, you'll need to set-up a [Sanity webhook](https://www.sanity.io/docs/webhooks) pointing to your Gatsby preview URL. It should include the following projection:
-
-```json
-{
-  "__webhooksVersion": "v2",
-  "operation": delta::operation(),
-  "documentId": coalesce(before()._id, after()._id),
-  "projectId": sanity::projectId(),
-  "dataset": sanity::dataset(),
-  "after": after(),
-}
-```
-
-The other fields should be configured as following:
-
-1. Keep the HTTP method set to POST, skip "HTTP Headers"
-2. Set the hook to trigger on Create, Update and Delete
-3. Skip the filter field
-4. Set the API version to `v2021-03-25`
-5. And set it to fire on drafts
+Then, you'll need to set-up a Sanity webhook pointing to your Gatsby preview URL. Create your webhook from [this template](https://www.sanity.io/manage/webhooks/share?name=Gatsby+Cloud+Preview&description=Find+more+information+here%3A+https%3A%2F%2Fwww.notion.so%2Fsanityio%2FGatsby-Cloud-previews-with-Sanity-s-Webhooks-v2-c3c1abad37f743febc17cd4e0b81431c&url=GATSBY_PREVIEW_WEBHOOK_URL&on=create&on=update&on=delete&filter=&projection=select%28delta%3A%3Aoperation%28%29+%3D%3D+%22delete%22+%3D%3E+%7B%0A++%22operation%22%3A+delta%3A%3Aoperation%28%29%2C%0A++%22documentId%22%3A+coalesce%28before%28%29._id%2C+after%28%29._id%29%2C%0A++%22projectId%22%3A+sanity%3A%3AprojectId%28%29%2C%0A++%22dataset%22%3A+sanity%3A%3Adataset%28%29%2C%0A%7D%2C+%7B%7D%29&httpMethod=POST&apiVersion=v2021-03-25&includeDrafts=true), making sure you update the URL.
 
 If using Gatsby Cloud, this should be auto-configured during your initial set-up.
 
-<!-- @TODO: once we have shareable webhook URLs, add one for this set-up -->
+---
+
+You can also follow the manual steps below:
+
+1. Get the webhook endpoint needed for triggering Gatsby Cloud previews in [their dashboard](https://www.gatsbyjs.com/dashboard/).
+2. Go to [sanity.io/manage](http://sanity.io/manage) and navigate to your project
+3. Under the "API" tab, scroll to Webhooks or "GROQ-powered webhooks"
+4. Add a new webhook and name it as you see fit
+5. Choose the appropriate dataset and add the Gatsby Cloud webhook endpoint to the URL field
+6. Keep the HTTP method set to POST, skip "HTTP Headers"
+7. Set the hook to trigger on Create, Update and Delete
+8. Skip the filter field
+9. Specify the following projection:
+
+   ```jsx
+   select(delta::operation() == "delete" => {
+     "operation": delta::operation(),
+     "documentId": coalesce(before()._id, after()._id),
+     "projectId": sanity::projectId(),
+     "dataset": sanity::dataset(),
+   }, {})
+   ```
+
+10. Set the API version to `v2021-03-25`
+11. And set it to fire on drafts
+12. Save the webhook
 
 ## Using .env variables
 
