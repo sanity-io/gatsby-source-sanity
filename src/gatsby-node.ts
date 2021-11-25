@@ -1,6 +1,3 @@
-import {bufferTime, filter, map, tap} from 'rxjs/operators'
-import {GraphQLFieldConfig} from 'gatsby/graphql'
-import gatsbyPkg from 'gatsby/package.json'
 import SanityClient from '@sanity/client'
 import {
   CreateSchemaCustomizationArgs,
@@ -11,32 +8,36 @@ import {
   SetFieldsOnGraphQLNodeTypeArgs,
   SourceNodesArgs,
 } from 'gatsby'
+import {GraphQLFieldConfig} from 'gatsby/graphql'
+import gatsbyPkg from 'gatsby/package.json'
+import {uniq} from 'lodash'
+import oneline from 'oneline'
+import {fromEvent, merge, of} from 'rxjs'
+import {bufferWhen, debounceTime, filter, map, tap} from 'rxjs/operators'
+import debug from './debug'
+import {extendImageNode} from './images/extendImageNode'
+import {SanityInputNode} from './types/gatsby'
 import {SanityDocument, SanityWebhookBody} from './types/sanity'
-import {getTypeName, toGatsbyNode} from './util/normalize'
 import {CACHE_KEYS, getCacheKey} from './util/cache'
+import {prefixId, unprefixId} from './util/documentIds'
+import {
+  ERROR_CODES,
+  ERROR_MAP,
+  prefixId as prefixErrorId,
+  SANITY_ERROR_CODE_MAP,
+  SANITY_ERROR_CODE_MESSAGES,
+} from './util/errors'
+import {getAllDocuments} from './util/getAllDocuments'
+import {getGraphQLResolverMap} from './util/getGraphQLResolverMap'
 import {handleWebhookEvent} from './util/handleWebhookEvent'
+import {getTypeName, toGatsbyNode} from './util/normalize'
 import {
   defaultTypeMap,
   getRemoteGraphQLSchema,
   getTypeMapFromGraphQLSchema,
   TypeMap,
 } from './util/remoteGraphQLSchema'
-import {
-  prefixId as prefixErrorId,
-  ERROR_MAP,
-  ERROR_CODES,
-  SANITY_ERROR_CODE_MAP,
-  SANITY_ERROR_CODE_MESSAGES,
-} from './util/errors'
-import {extendImageNode} from './images/extendImageNode'
 import {rewriteGraphQLSchema} from './util/rewriteGraphQLSchema'
-import {getGraphQLResolverMap} from './util/getGraphQLResolverMap'
-import {prefixId, unprefixId} from './util/documentIds'
-import {getAllDocuments} from './util/getAllDocuments'
-import oneline from 'oneline'
-import {uniq} from 'lodash'
-import {SanityInputNode} from './types/gatsby'
-import debug from './debug'
 
 let coreSupportsOnPluginInit: 'unstable' | 'stable' | undefined
 
@@ -66,7 +67,6 @@ const defaultConfig = {
   version: '1',
   overlayDrafts: false,
   graphqlTag: 'default',
-  watchModeBuffer: 150
 }
 
 const stateCache: {[key: string]: any} = {}
@@ -328,6 +328,15 @@ export const sourceNodes: GatsbyNode['sourceNodes'] = async (
     // happened in the time window between the documents was fetched and the listener connected. If this happens, the
     // preview will show an outdated version of the document.
     reporter.info('[sanity] Watch mode enabled, starting a listener')
+
+    if (pluginConfig.watchModeBuffer) {
+      reporter.warn(
+        "[sanity] watchModeBuffer isn't a supported option. The plugin will automatically apply changes when Gatsby can handle them.",
+      )
+    }
+
+    const gatsbyEvents = fromEvent(args.emitter, '*')
+
     client
       .listen('*[!(_id in path("_.**"))]')
       .pipe(
@@ -340,9 +349,16 @@ export const sourceNodes: GatsbyNode['sourceNodes'] = async (
           }
         }),
         map((event) => event.documentId),
-        bufferTime(config.watchModeBuffer),
-        map((ids) => uniq(ids)),
+        // Wait 50ms since the last internal change from Gatsby to let it rest before we add the nodes to GraphQL
+        bufferWhen(() =>
+          merge(
+            gatsbyEvents,
+            // If no Gatsby event, emit a dummy event just to unlock bufferWhen
+            of(0),
+          ).pipe(debounceTime(50)),
+        ),
         filter((ids) => ids.length > 0),
+        map((ids) => uniq(ids)),
         tap((updateIds) =>
           debug('The following documents updated and will be synced with gatsby: ', updateIds),
         ),
