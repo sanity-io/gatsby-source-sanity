@@ -1,9 +1,9 @@
 import {GraphQLEnumType, GraphQLFieldConfigMap} from 'gatsby/graphql'
-import {PluginConfig} from '../gatsby-node'
 import {getCacheKey, CACHE_KEYS} from '../util/cache'
 import {ImageNode, ImageArgs, getGatsbyImageData} from './getGatsbyImageProps'
 
 import {getGatsbyImageFieldConfig} from 'gatsby-plugin-image/graphql-utils'
+import {PluginConfig} from '../util/validateConfig'
 
 const ImageFitType = new GraphQLEnumType({
   name: 'SanityImageFit',

@@ -2,11 +2,11 @@ import {camelCase} from 'lodash'
 import {CreateResolversArgs} from 'gatsby'
 import {GraphQLFieldResolver} from 'gatsby/graphql'
 import {SanityRef} from '../types/sanity'
-import {PluginConfig} from '../gatsby-node'
 import {GatsbyResolverMap, GatsbyNodeModel, GatsbyGraphQLContext} from '../types/gatsby'
 import {TypeMap, FieldDef} from './remoteGraphQLSchema'
 import {getTypeName, getConflictFreeFieldName} from './normalize'
 import {resolveReferences} from './resolveReferences'
+import {PluginConfig} from './validateConfig'
 
 export function getGraphQLResolverMap(
   typeMap: TypeMap,

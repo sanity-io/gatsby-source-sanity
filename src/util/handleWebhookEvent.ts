@@ -38,10 +38,10 @@ function handleDeleteWebhook(
   return true
 }
 
-export async function handleWebhookEvent(
+export function handleWebhookEvent(
   args: SourceNodesArgs & {webhookBody?: SanityWebhookBody},
   options: {client: SanityClient; processingOptions: ProcessingOptions},
-): Promise<boolean> {
+): boolean {
   const {webhookBody, reporter} = args
   const validated = validateWebhookPayload(webhookBody)
   if (validated === false) {
