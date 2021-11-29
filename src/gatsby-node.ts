@@ -1,46 +1,46 @@
-import {bufferTime, filter, map, tap} from 'rxjs/operators'
-import {GraphQLFieldConfig} from 'gatsby/graphql'
-import gatsbyPkg from 'gatsby/package.json'
 import SanityClient from '@sanity/client'
 import {
-  Node,
-  Actions,
   CreateSchemaCustomizationArgs,
   GatsbyNode,
+  Node,
   ParentSpanPluginArgs,
   PluginOptions,
-  Reporter,
   SetFieldsOnGraphQLNodeTypeArgs,
   SourceNodesArgs,
 } from 'gatsby'
+import {GraphQLFieldConfig} from 'gatsby/graphql'
+import gatsbyPkg from 'gatsby/package.json'
+import {uniq} from 'lodash'
+import oneline from 'oneline'
+import {bufferTime, filter, map, tap} from 'rxjs/operators'
+import debug from './debug'
+import {extendImageNode} from './images/extendImageNode'
+import {SanityInputNode} from './types/gatsby'
 import {SanityDocument, SanityWebhookBody} from './types/sanity'
-import {getTypeName, toGatsbyNode} from './util/normalize'
 import {CACHE_KEYS, getCacheKey} from './util/cache'
+import createNodeManifest from './util/createNodeManifest'
+import {prefixId, unprefixId} from './util/documentIds'
+import downloadDocuments from './util/downloadDocuments'
+import {
+  ERROR_CODES,
+  ERROR_MAP,
+  prefixId as prefixErrorId,
+  SANITY_ERROR_CODE_MAP,
+  SANITY_ERROR_CODE_MESSAGES,
+} from './util/errors'
+import {getGraphQLResolverMap} from './util/getGraphQLResolverMap'
+import {getLastBuildTime, registerBuildTime} from './util/getPluginStatus'
+import handleDeltaChanges from './util/handleDeltaChanges'
 import {handleWebhookEvent} from './util/handleWebhookEvent'
+import {getTypeName, toGatsbyNode} from './util/normalize'
 import {
   defaultTypeMap,
   getRemoteGraphQLSchema,
   getTypeMapFromGraphQLSchema,
   TypeMap,
 } from './util/remoteGraphQLSchema'
-import {
-  prefixId as prefixErrorId,
-  ERROR_MAP,
-  ERROR_CODES,
-  SANITY_ERROR_CODE_MAP,
-  SANITY_ERROR_CODE_MESSAGES,
-} from './util/errors'
-import {extendImageNode} from './images/extendImageNode'
 import {rewriteGraphQLSchema} from './util/rewriteGraphQLSchema'
-import {getGraphQLResolverMap} from './util/getGraphQLResolverMap'
-import {prefixId, unprefixId} from './util/documentIds'
-import {getAllDocuments} from './util/getAllDocuments'
-import oneline from 'oneline'
-import {uniq} from 'lodash'
-import {SanityInputNode} from './types/gatsby'
-import debug from './debug'
-import handleDeltaChanges from './util/handleDeltaChanges'
-import {getLastBuildTime, registerBuildTime} from './util/getPluginStatus'
+import validateConfig, {PluginConfig} from './util/validateConfig'
 
 let coreSupportsOnPluginInit: 'unstable' | 'stable' | undefined
 
@@ -53,17 +53,6 @@ try {
   }
 } catch (e) {
   console.error(`Could not check if Gatsby supports onPluginInit lifecycle`)
-}
-
-export interface PluginConfig extends PluginOptions {
-  projectId: string
-  dataset: string
-  token?: string
-  version?: string
-  graphqlTag: string
-  overlayDrafts?: boolean
-  watchMode?: boolean
-  watchModeBuffer?: number
 }
 
 const defaultConfig = {
@@ -213,7 +202,7 @@ export const sourceNodes: GatsbyNode['sourceNodes'] = async (
   // `webhookBody` is always present, even when sourceNodes is called in Gatsby's initialization.
   // As such, we need to check if it has any key to work with it.
   if (webhookBody && Object.keys(webhookBody).length > 0) {
-    const webhookHandled = await handleWebhookEvent(args, {client, processingOptions})
+    const webhookHandled = handleWebhookEvent(args, {client, processingOptions})
 
     // Even if the webhook body is invalid, let's avoid re-fetching all documents.
     // Otherwise, we'd be overloading Gatsby's preview servers on large datasets.
@@ -344,7 +333,7 @@ export const sourceNodes: GatsbyNode['sourceNodes'] = async (
           const node = toGatsbyNode(published, processingOptions)
           gatsbyNodes.set(publishedId, node)
           createNode(node)
-          sanityCreateNodeManifest(actions, args, node, publishedId)
+          createNodeManifest(actions, args, node, publishedId)
         } else {
           // the published document has been removed (note - we either have no draft or overlayDrafts is not enabled so merely removing is ok here)
           debug(
@@ -360,7 +349,7 @@ export const sourceNodes: GatsbyNode['sourceNodes'] = async (
         const node = toGatsbyNode(published, processingOptions)
         gatsbyNodes.set(publishedId, node)
         createNode(node)
-        sanityCreateNodeManifest(actions, args, node, publishedId)
+        createNodeManifest(actions, args, node, publishedId)
       }
     }
     if (id === draftId && overlayDrafts) {
@@ -385,7 +374,7 @@ export const sourceNodes: GatsbyNode['sourceNodes'] = async (
       const node = toGatsbyNode((draft || published)!, processingOptions)
       gatsbyNodes.set(publishedId, node)
       createNode(node)
-      sanityCreateNodeManifest(actions, args, node, publishedId)
+      createNodeManifest(actions, args, node, publishedId)
     }
   }
 
@@ -445,102 +434,6 @@ export const setFieldsOnGraphQLNodeType: GatsbyNode['setFieldsOnGraphQLNodeType'
   }
 
   return fields
-}
-
-function validateConfig(config: Partial<PluginConfig>, reporter: Reporter): config is PluginConfig {
-  if (!config.projectId) {
-    reporter.panic({
-      id: prefixId(ERROR_CODES.MissingProjectId),
-      context: {sourceMessage: '[sanity] `projectId` must be specified'},
-    })
-  }
-
-  if (!config.dataset) {
-    reporter.panic({
-      id: prefixId(ERROR_CODES.MissingDataset),
-      context: {sourceMessage: '[sanity] `dataset` must be specified'},
-    })
-  }
-
-  if (config.overlayDrafts && !config.token) {
-    reporter.warn('[sanity] `overlayDrafts` is set to `true`, but no token is given')
-  }
-
-  const inDevelopMode = process.env.gatsby_executing_command === 'develop'
-  if (config.watchMode && !inDevelopMode) {
-    reporter.warn(
-      '[sanity] Using `watchMode` when not in develop mode might prevent your build from completing',
-    )
-  }
-
-  return true
-}
-
-function downloadDocuments(
-  url: string,
-  token?: string,
-  options: {includeDrafts?: boolean} = {},
-): Promise<Map<string, SanityDocument>> {
-  return getAllDocuments(url, token, options).then(
-    (stream) =>
-      new Promise((resolve, reject) => {
-        const documents = new Map<string, SanityDocument>()
-        stream.on('data', (doc) => {
-          documents.set(doc._id, doc)
-        })
-        stream.on('end', () => {
-          resolve(documents)
-        })
-        stream.on('error', (error) => {
-          reject(error)
-        })
-      }),
-  )
-}
-
-const ONE_WEEK = 1000 * 60 * 60 * 24 * 7 // ms * sec * min * hr * day
-let nodeManifestWarningWasLogged: boolean
-
-function sanityCreateNodeManifest(
-  actions: Actions,
-  args: SourceNodesArgs,
-  node: SanityInputNode,
-  publishedId: string,
-) {
-  try {
-    const {unstable_createNodeManifest} = actions as Actions & {
-      unstable_createNodeManifest: (props: {manifestId: string; node: Node}) => void
-    }
-    const {getNode} = args
-    const type = node.internal.type
-    const autogeneratedTypes = ['SanityFileAsset', 'SanityImageAsset']
-
-    const createNodeManifestIsSupported = typeof unstable_createNodeManifest === 'function'
-    const nodeTypeNeedsManifest = autogeneratedTypes.includes(type) === false
-    const shouldCreateNodeManifest = createNodeManifestIsSupported && nodeTypeNeedsManifest
-
-    if (shouldCreateNodeManifest) {
-      const updatedAt = new Date((node._updatedAt as string) || Date.now())
-      const nodeWasRecentlyUpdated =
-        Date.now() - updatedAt.getTime() <=
-        // Default to only create manifests for items updated in last week
-        (process.env.CONTENT_SYNC_SANITY_HOURS_SINCE_ENTRY_UPDATE || ONE_WEEK)
-      if (!nodeWasRecentlyUpdated) return
-
-      const nodeForManifest = getNode(node.id) as Node
-      const manifestId = `${publishedId}-${updatedAt.toISOString()}`
-
-      unstable_createNodeManifest({manifestId, node: nodeForManifest})
-    } else if (!createNodeManifestIsSupported && !nodeManifestWarningWasLogged) {
-      console.warn(
-        `Sanity: Your version of Gatsby core doesn't support Content Sync (via the unstable_createNodeManifest action). Please upgrade to the latest version to use Content Sync in your site.`,
-      )
-      nodeManifestWarningWasLogged = true
-    }
-  } catch (e) {
-    let result = (e as Error).message
-    console.info(`Cannot create node manifest`, result)
-  }
 }
 
 function getClient(config: PluginConfig) {
