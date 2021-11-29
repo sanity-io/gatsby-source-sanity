@@ -2,10 +2,7 @@ import {SourceNodesArgs} from 'gatsby'
 import {SanityClient} from '@sanity/client'
 import debug from '../debug'
 import {SanityNode} from '../types/gatsby'
-import {
-  SanityWebhookBody,
-  SanityWebhookDeleteBody,
-} from '../types/sanity'
+import {SanityWebhookBody, SanityWebhookDeleteBody} from '../types/sanity'
 import {ProcessingOptions} from './normalize'
 import {unprefixId, safeId} from './documentIds'
 
@@ -14,7 +11,7 @@ type deleteWebhookArgs = SourceNodesArgs & {webhookBody: SanityWebhookDeleteBody
 /**
  * Gets a document id received from the webhook & delete it in the store.
  */
-async function handleDeleteWebhook(
+function handleDeleteWebhook(
   args: deleteWebhookArgs,
   options: {client: SanityClient; processingOptions: ProcessingOptions},
 ) {
@@ -27,6 +24,12 @@ async function handleDeleteWebhook(
 
   if (projectId && dataset && (config.projectId !== projectId || config.dataset !== dataset)) {
     return false
+  }
+
+  // If a draft is deleted, avoid deleting its published counterpart
+  if (rawId.startsWith('drafts.') && options.processingOptions.overlayDrafts) {
+    // Sub-optimal: this will skip deleting draft-only documents which should be deleted.
+    return true
   }
 
   handleDeletedDocuments(args, [publishedDocumentId])
@@ -49,7 +52,7 @@ export async function handleWebhookEvent(
   reporter.info('[sanity] Processing changed documents from webhook')
 
   if (validated === 'delete-operation') {
-    return await handleDeleteWebhook(args as deleteWebhookArgs, options)
+    return handleDeleteWebhook(args as deleteWebhookArgs, options)
   }
 
   return false
