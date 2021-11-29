@@ -21,8 +21,8 @@ import {
   specifiedScalarTypes,
 } from 'gatsby/graphql'
 import {camelCase} from 'lodash'
-import {PluginConfig} from '../gatsby-node'
 import {RESTRICTED_NODE_FIELDS, getConflictFreeFieldName} from './normalize'
+import {PluginConfig} from './validateConfig'
 
 interface AstRewriterContext {
   reporter: Reporter

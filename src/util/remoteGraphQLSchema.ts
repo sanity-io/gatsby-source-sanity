@@ -14,9 +14,9 @@ import {
   valueFromAST,
 } from 'gatsby/graphql'
 import {SanityClient} from '@sanity/client'
-import {PluginConfig} from '../gatsby-node'
 import {getTypeName} from './normalize'
 import {ErrorWithCode} from './errors'
+import {PluginConfig} from './validateConfig'
 
 export type FieldDef = {
   type: NamedTypeNode | ListTypeNode | NonNullTypeNode
