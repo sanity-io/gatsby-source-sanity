@@ -40,6 +40,7 @@ export default async function handleDeltaChanges({
     args.reporter.info(`[sanity] ${changedDocs.length} documents updated.`)
     return true
   } catch (error) {
+    debug(`[sanity] failed to handleDeltaChanges`, error)
     return false
   }
 }
@@ -49,7 +50,7 @@ function handleChangedDocuments(
   changedDocs: SanityDocument[],
   processingOptions: ProcessingOptions,
 ) {
-  const {reporter} = args
+  const {reporter, actions} = args
   const {typeMap} = processingOptions
 
   return changedDocs.reduce((count, doc) => {
@@ -62,7 +63,7 @@ function handleChangedDocuments(
     }
 
     debug('%s document with ID %s', 'Changed', doc._id)
-    processingOptions.createNode(toGatsbyNode(doc, processingOptions))
+    actions.createNode(toGatsbyNode(doc, processingOptions))
     return count + 1
   }, 0)
 }

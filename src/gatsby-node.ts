@@ -285,12 +285,6 @@ export const sourceNodes: GatsbyNode['sourceNodes'] = async (
     }
   }
 
-  reporter.info('[sanity] Fetching export stream for dataset')
-
-  if (!deltaHandled) {
-    documents = await downloadDocuments(url, config.token, {includeDrafts: overlayDrafts})
-  }
-
   // sync a single document from the local cache of known documents with gatsby
   function syncWithGatsby(id: string) {
     const publishedId = unprefixId(id)
@@ -432,11 +426,17 @@ export const sourceNodes: GatsbyNode['sourceNodes'] = async (
       )
       .subscribe()
   }
-  // do the initial sync from sanity documents to gatsby nodes
-  syncAllWithGatsby()
+
+  if (!deltaHandled) {
+    reporter.info('[sanity] Fetching export stream for dataset')
+    documents = await downloadDocuments(url, config.token, {includeDrafts: overlayDrafts})
+    reporter.info(`[sanity] Done! Exported ${documents.size} documents.`)
+    // do the initial sync from sanity documents to gatsby nodes
+    syncAllWithGatsby()
+  }
+
   // register the current build time for accessing it in handleDeltaChanges for future builds
   registerBuildTime(args)
-  reporter.info(`[sanity] Done! Exported ${documents.size} documents.`)
 }
 
 export const setFieldsOnGraphQLNodeType: GatsbyNode['setFieldsOnGraphQLNodeType'] = async (
