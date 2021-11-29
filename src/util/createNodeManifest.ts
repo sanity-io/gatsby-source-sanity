@@ -11,8 +11,6 @@ export default function createNodeManifest(
   node: SanityInputNode,
   publishedId: string,
 ) {
-  // @TODO: debug createNodeManifest
-  return
   try {
     const {unstable_createNodeManifest} = actions as Actions & {
       unstable_createNodeManifest: (props: {manifestId: string; node: Node}) => void
