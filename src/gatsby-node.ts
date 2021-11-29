@@ -67,6 +67,7 @@ const defaultConfig = {
   version: '1',
   overlayDrafts: false,
   graphqlTag: 'default',
+  watchModeBuffer: 150,
 }
 
 const stateCache: {[key: string]: any} = {}
@@ -349,13 +350,13 @@ export const sourceNodes: GatsbyNode['sourceNodes'] = async (
           }
         }),
         map((event) => event.documentId),
-        // Wait 50ms since the last internal change from Gatsby to let it rest before we add the nodes to GraphQL
+        // Wait `x`ms since the last internal change from Gatsby to let it rest before we add the nodes to GraphQL
         bufferWhen(() =>
           merge(
             gatsbyEvents,
             // If no Gatsby event, emit a dummy event just to unlock bufferWhen
             of(0),
-          ).pipe(debounceTime(50)),
+          ).pipe(debounceTime(config.watchModeBuffer)),
         ),
         filter((ids) => ids.length > 0),
         map((ids) => uniq(ids)),
