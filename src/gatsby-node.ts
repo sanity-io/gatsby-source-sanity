@@ -227,19 +227,66 @@ export const sourceNodes: GatsbyNode['sourceNodes'] = async (
     return
   }
 
+  const gatsbyNodes = new Map<string, SanityInputNode | Node>()
+  let documents = new Map<string, SanityDocument>()
+
   // If we have a warm build, let's fetch only those which changed since the last build
   const lastBuildTime = getLastBuildTime(args)
+  let deltaHandled = false
   if (lastBuildTime) {
     try {
-      const deltaHandled = await handleDeltaChanges({
+      // Let's make sure we keep documents nodes already in the cache (3 steps)
+      // =========
+      // 1/4. Get all valid document IDs from Sanity
+      const documentIds = (await client.fetch<string[]>(`*[!(_type match "system.**")]._id`)).map(
+        unprefixId,
+      )
+
+      // 2/4. Get all document types implemented in the GraphQL layer
+      // @initializePlugin() will populate `stateCache` with 1+ TypeMaps
+      const typeMapStateKeys = Object.keys(stateCache).filter((key) => key.endsWith('typeMap'))
+      // Let's take all document types from these TypeMaps
+      const sanityDocTypes = Array.from(
+        // De-duplicate types with a Set
+        new Set(
+          typeMapStateKeys.reduce((types, curKey) => {
+            const map = stateCache[curKey] as TypeMap
+            const documentTypes = Object.keys(map.objects).filter(
+              (key) => map.objects[key].isDocument,
+            )
+            return [...types, ...documentTypes]
+          }, [] as string[]),
+        ),
+      )
+
+      // 3/4. From these types, get all nodes from store that are created from this plugin.
+      // (we didn't use args.getNodes() as that'd be too expensive - hence why we limit it to Sanity-only types)
+      for (const docType of sanityDocTypes) {
+        args
+          .getNodesByType(docType)
+          // 4/4. touch valid documents to prevent Gatsby from deleting them
+          .forEach((node) => {
+            // If a document isn't included in documentIds, that means it was deleted since lastBuildTime. Don't touch it.
+            if (
+              node.internal.owner === 'gatsby-source-sanity' &&
+              typeof node._id === 'string' &&
+              documentIds.includes(unprefixId(node._id))
+            ) {
+              actions.touchNode(node)
+              gatsbyNodes.set(unprefixId(node._id), node)
+              documents.set(node._id, node as unknown as SanityDocument)
+            }
+          })
+      }
+
+      // With existing documents cached, let's handle those that changed since last build
+      deltaHandled = await handleDeltaChanges({
         args,
         lastBuildTime,
         client,
         processingOptions,
       })
-      if (deltaHandled) {
-        return
-      } else {
+      if (!deltaHandled) {
         reporter.warn(
           "[sanity] Couldn't retrieve latest changes. Will fetch all documents instead.",
         )
@@ -251,8 +298,9 @@ export const sourceNodes: GatsbyNode['sourceNodes'] = async (
 
   reporter.info('[sanity] Fetching export stream for dataset')
 
-  const documents = await downloadDocuments(url, config.token, {includeDrafts: overlayDrafts})
-  const gatsbyNodes = new Map<string, SanityInputNode>()
+  if (!deltaHandled) {
+    documents = await downloadDocuments(url, config.token, {includeDrafts: overlayDrafts})
+  }
 
   // sync a single document from the local cache of known documents with gatsby
   function syncWithGatsby(id: string) {
