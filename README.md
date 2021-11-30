@@ -22,7 +22,7 @@ Get up and running in minutes with a fully configured starter project:
 - ["Raw" fields](#raw-fields)
 - [Portable Text / Block Content](#portable-text--block-content)
 - [Real-time content preview with watch mode](#real-time-content-preview-with-watch-mode)
-- [Updating preview servers](#updating-preview-servers)
+- [Updating content for editors with preview servers](#updating-content-for-editors-with-preview-servers)
 - [Using .env variables](#using-env-variables)
 - [How this plugin works](#how-this-source-plugin-works)
 - [Credits](#credits)
@@ -240,9 +240,9 @@ You can install [block-content-to-react](https://www.npmjs.com/package/@sanity/b
 
 While developing, it can often be beneficial to get updates without having to manually restart the build process. By setting `watchMode` to true, this plugin will set up a listener which watches for changes. When it detects a change, the document in question is updated in real-time and will be reflected immediately.
 
-If you add [a `token` with read rights](https://www.sanity.io/docs/http-auth#robot-tokens) and set `overlayDrafts` to true, each small change to the draft will immediately be applied. Keep in mind that this only works in development, see next section for how to enable previews for your entire team.
+If you add [a `token` with read rights](https://www.sanity.io/docs/http-auth#robot-tokens) and set `overlayDrafts` to true, each small change to the draft will immediately be applied. Keep in mind that this is mainly intended for development, see next section for how to enable previews for your entire team.
 
-## Updating preview servers
+## Updating content for editors with preview servers
 
 You can use [Gatsby preview servers](https://www.gatsbyjs.com/docs/how-to/local-development/running-a-gatsby-preview-server) (often through [Gatsby Cloud](https://www.gatsbyjs.com/products/cloud/)) to update your content on a live URL your team can use.
 
@@ -267,9 +267,11 @@ module.exports = {
 }
 ```
 
-Then, you'll need to set-up a Sanity webhook pointing to your Gatsby preview URL. Create your webhook from [this template](https://www.sanity.io/manage/webhooks/share?name=Gatsby+Cloud+Preview&description=Find+more+information+here%3A+https%3A%2F%2Fwww.notion.so%2Fsanityio%2FGatsby-Cloud-previews-with-Sanity-s-Webhooks-v2-c3c1abad37f743febc17cd4e0b81431c&url=GATSBY_PREVIEW_WEBHOOK_URL&on=create&on=update&on=delete&filter=&projection=select%28delta%3A%3Aoperation%28%29+%3D%3D+%22delete%22+%3D%3E+%7B%0A++%22operation%22%3A+delta%3A%3Aoperation%28%29%2C%0A++%22documentId%22%3A+coalesce%28before%28%29._id%2C+after%28%29._id%29%2C%0A++%22projectId%22%3A+sanity%3A%3AprojectId%28%29%2C%0A++%22dataset%22%3A+sanity%3A%3Adataset%28%29%2C%0A%7D%2C+%7B%7D%29&httpMethod=POST&apiVersion=v2021-03-25&includeDrafts=true), making sure you update the URL.
+Then, you'll need to set-up a Sanity webhook pointing to your Gatsby preview URL. Create your webhook from **[this template](https://www.sanity.io/manage/webhooks/share?name=Gatsby+Cloud+Preview&description=Find+more+information+here%3A+https%3A%2F%2Fwww.notion.so%2Fsanityio%2FGatsby-Cloud-previews-with-Sanity-s-Webhooks-v2-c3c1abad37f743febc17cd4e0b81431c&url=GATSBY_PREVIEW_WEBHOOK_URL&on=create&on=update&on=delete&filter=&projection=select%28delta%3A%3Aoperation%28%29+%3D%3D+%22delete%22+%3D%3E+%7B%0A++%22operation%22%3A+delta%3A%3Aoperation%28%29%2C%0A++%22documentId%22%3A+coalesce%28before%28%29._id%2C+after%28%29._id%29%2C%0A++%22projectId%22%3A+sanity%3A%3AprojectId%28%29%2C%0A++%22dataset%22%3A+sanity%3A%3Adataset%28%29%2C%0A%7D%2C+%7B%7D%29&httpMethod=POST&apiVersion=v2021-03-25&includeDrafts=true)**, making sure you update the URL.
 
 If using Gatsby Cloud, this should be auto-configured during your initial set-up.
+
+⚠️ **Warning:** if you have Gatsby Cloud previews v1 enabled on your site, you'll need to reach out to their support for enabling an upgrade. The method described here only works with the newer "Incremental CMS Preview", webhook-based system.
 
 ---
 
