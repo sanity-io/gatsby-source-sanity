@@ -2,6 +2,12 @@
 
 All notable changes will be documented in this file.
 
+## 7.2.1
+
+### Fixes
+
+- Watch Mode: Instead of relying on a fixed `bufferTime` to batch updates, we're now waiting until Gatsby's internals are quiet to run updates.
+
 ## 7.2.0
 
 ### Changes
