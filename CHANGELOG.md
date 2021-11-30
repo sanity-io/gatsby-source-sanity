@@ -2,6 +2,12 @@
 
 All notable changes will be documented in this file.
 
+## 7.3.0
+
+### Changes
+
+- Support for webhook-based previews through Gatsby's preview servers
+
 ## 7.2.1
 
 ### Fixes
