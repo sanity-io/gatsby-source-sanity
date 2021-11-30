@@ -12,14 +12,13 @@ import {GraphQLFieldConfig} from 'gatsby/graphql'
 import gatsbyPkg from 'gatsby/package.json'
 import {uniq} from 'lodash'
 import oneline from 'oneline'
-import {merge, fromEvent, of} from 'rxjs'
+import {fromEvent, merge, of} from 'rxjs'
 import {bufferWhen, debounceTime, filter, map, tap} from 'rxjs/operators'
 import debug from './debug'
 import {extendImageNode} from './images/extendImageNode'
 import {SanityInputNode} from './types/gatsby'
 import {SanityDocument, SanityWebhookBody} from './types/sanity'
 import {CACHE_KEYS, getCacheKey} from './util/cache'
-import createNodeManifest from './util/createNodeManifest'
 import {prefixId, unprefixId} from './util/documentIds'
 import downloadDocuments from './util/downloadDocuments'
 import {
@@ -31,9 +30,9 @@ import {
 } from './util/errors'
 import {getGraphQLResolverMap} from './util/getGraphQLResolverMap'
 import {getLastBuildTime, registerBuildTime} from './util/getPluginStatus'
+import getSyncWithGatsby from './util/getSyncWithGatsby'
 import handleDeltaChanges from './util/handleDeltaChanges'
 import {handleWebhookEvent} from './util/handleWebhookEvent'
-import {getTypeName, toGatsbyNode} from './util/normalize'
 import {
   defaultTypeMap,
   getRemoteGraphQLSchema,
@@ -180,7 +179,7 @@ export const sourceNodes: GatsbyNode['sourceNodes'] = async (
   const config = {...defaultConfig, ...pluginConfig}
   const {dataset, overlayDrafts, watchMode} = config
   const {actions, createNodeId, createContentDigest, reporter, webhookBody} = args
-  const {createNode, deleteNode, createParentChildLink} = actions
+  const {createNode, createParentChildLink} = actions
   const typeMapKey = getCacheKey(pluginConfig, CACHE_KEYS.TYPE_MAP)
   const typeMap = (stateCache[typeMapKey] || defaultTypeMap) as TypeMap
 
@@ -218,6 +217,13 @@ export const sourceNodes: GatsbyNode['sourceNodes'] = async (
 
   const gatsbyNodes = new Map<string, SanityInputNode | Node>()
   let documents = new Map<string, SanityDocument>()
+  let syncWithGatsby = getSyncWithGatsby({
+    documents,
+    gatsbyNodes,
+    args,
+    processingOptions,
+    typeMap,
+  })
 
   // If we have a warm build, let's fetch only those which changed since the last build
   const lastBuildTime = getLastBuildTime(args)
@@ -273,7 +279,7 @@ export const sourceNodes: GatsbyNode['sourceNodes'] = async (
         args,
         lastBuildTime,
         client,
-        processingOptions,
+        syncWithGatsby,
       })
       if (!deltaHandled) {
         reporter.warn(
@@ -282,93 +288,6 @@ export const sourceNodes: GatsbyNode['sourceNodes'] = async (
       }
     } catch (error) {
       // lastBuildTime isn't a date, ignore it
-    }
-  }
-
-  // sync a single document from the local cache of known documents with gatsby
-  function syncWithGatsby(id: string) {
-    const publishedId = unprefixId(id)
-    const draftId = prefixId(id)
-
-    const published = documents.get(publishedId)
-    const draft = documents.get(draftId)
-
-    const doc = draft || published
-    if (doc) {
-      const type = getTypeName(doc._type)
-      if (!typeMap.objects[type]) {
-        reporter.warn(
-          `[sanity] Document "${doc._id}" has type ${doc._type} (${type}), which is not declared in the GraphQL schema. Make sure you run "graphql deploy". Skipping document.`,
-        )
-        return
-      }
-    }
-
-    if (id === draftId && !overlayDrafts) {
-      // do nothing, we're not overlaying drafts
-      debug('overlayDrafts is not enabled, so skipping createNode for draft')
-      return
-    }
-
-    if (id === publishedId) {
-      if (draft && overlayDrafts) {
-        // we have a draft, and overlayDrafts is enabled, so skip to the draft document instead
-        debug(
-          'skipping createNode of %s since there is a draft and overlayDrafts is enabled',
-          publishedId,
-        )
-        return
-      }
-
-      if (gatsbyNodes.has(publishedId)) {
-        // sync existing gatsby node with document from updated cache
-        if (published) {
-          debug('updating gatsby node for %s', publishedId)
-          const node = toGatsbyNode(published, processingOptions)
-          gatsbyNodes.set(publishedId, node)
-          createNode(node)
-          createNodeManifest(actions, args, node, publishedId)
-        } else {
-          // the published document has been removed (note - we either have no draft or overlayDrafts is not enabled so merely removing is ok here)
-          debug(
-            'deleting gatsby node for %s since there is no draft and overlayDrafts is not enabled',
-            publishedId,
-          )
-          deleteNode(gatsbyNodes.get(publishedId)!)
-          gatsbyNodes.delete(publishedId)
-        }
-      } else if (published) {
-        // when we don't have a gatsby node for the published document
-        debug('creating gatsby node for %s', publishedId)
-        const node = toGatsbyNode(published, processingOptions)
-        gatsbyNodes.set(publishedId, node)
-        createNode(node)
-        createNodeManifest(actions, args, node, publishedId)
-      }
-    }
-    if (id === draftId && overlayDrafts) {
-      // we're syncing a draft version and overlayDrafts is enabled
-      if (gatsbyNodes.has(publishedId) && !draft && !published) {
-        // have stale gatsby node for a published document that has neither a draft or a published (e.g. it's been deleted)
-        debug(
-          'deleting gatsby node for %s since there is neither a draft nor a published version of it any more',
-          publishedId,
-        )
-        deleteNode(gatsbyNodes.get(publishedId)!)
-        gatsbyNodes.delete(publishedId)
-        return
-      }
-
-      debug(
-        'Replacing gatsby node for %s using the %s document',
-        publishedId,
-        draft ? 'draft' : 'published',
-      )
-      // pick the draft if we can, otherwise pick the published
-      const node = toGatsbyNode((draft || published)!, processingOptions)
-      gatsbyNodes.set(publishedId, node)
-      createNode(node)
-      createNodeManifest(actions, args, node, publishedId)
     }
   }
 
@@ -431,6 +350,14 @@ export const sourceNodes: GatsbyNode['sourceNodes'] = async (
     reporter.info('[sanity] Fetching export stream for dataset')
     documents = await downloadDocuments(url, config.token, {includeDrafts: overlayDrafts})
     reporter.info(`[sanity] Done! Exported ${documents.size} documents.`)
+    // Renew syncWithGatsby w/ latest documents Map
+    syncWithGatsby = getSyncWithGatsby({
+      documents,
+      gatsbyNodes,
+      args,
+      processingOptions,
+      typeMap,
+    })
     // do the initial sync from sanity documents to gatsby nodes
     syncAllWithGatsby()
   }
