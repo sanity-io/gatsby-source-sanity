@@ -46,6 +46,7 @@
     "oneline": "^1.0.3",
     "pumpify": "^2.0.1",
     "rxjs": "^6.6.3",
+    "semver": "^7.3.5",
     "split2": "^4.1.0",
     "through2": "^4.0.2",
     "url-parse": "^1.5.3"
@@ -56,6 +57,7 @@
     "@types/lodash": "^4.14.176",
     "@types/node": "^16.11.7",
     "@types/react-dom": "^17.0.10",
+    "@types/semver": "^7.3.9",
     "@types/split2": "^3.2.1",
     "@types/through2": "^2.0.36",
     "eslint": "^8.1.0",
