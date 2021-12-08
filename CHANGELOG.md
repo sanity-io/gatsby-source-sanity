@@ -2,6 +2,12 @@
 
 All notable changes will be documented in this file.
 
+## 7.3.1
+
+### Changes
+
+- Use Gatsby's node manifest API v2 ([#140](https://github.com/sanity-io/gatsby-source-sanity/pull/140))
+
 ## 7.3.0
 
 ### Changes
