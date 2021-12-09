@@ -9,9 +9,20 @@ let warnOnceToUpgradeGatsby: boolean
 
 const GATSBY_VERSION_MANIFEST_V2 = `4.3.0`
 const gatsbyVersion = version
-const gatsbyVersionIsPrerelease = prerelease(gatsbyVersion)
-const shouldUpgradeGatsbyVersion =
-  lt(gatsbyVersion, GATSBY_VERSION_MANIFEST_V2) && !gatsbyVersionIsPrerelease
+const gatsbyVersionIsPrerelease = (() => {
+  try {
+    return prerelease(gatsbyVersion)
+  } catch (error) {
+    return null
+  }
+})()
+const shouldUpgradeGatsbyVersion = (() => {
+  try {
+    return lt(gatsbyVersion, GATSBY_VERSION_MANIFEST_V2) && !gatsbyVersionIsPrerelease
+  } catch (error) {
+    return true
+  }
+})()
 
 export default function createNodeManifest(
   actions: Actions,
