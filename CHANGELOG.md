@@ -2,6 +2,12 @@
 
 All notable changes will be documented in this file.
 
+## 7.3.2
+
+### Fixes
+
+- Ensure `semver` doesn't break Gatsby v3 builds when creating node manifests
+
 ## 7.3.1
 
 ### Changes
