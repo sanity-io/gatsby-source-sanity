@@ -1,5 +1,5 @@
 import {Actions, Node, SourceNodesArgs} from 'gatsby'
-import {getGatsbyVersion} from 'gatsby-core-utils'
+import {version} from 'gatsby/package.json'
 import {lt, prerelease} from 'semver'
 import debug from '../debug'
 import {SanityInputNode} from '../types/gatsby'
@@ -8,7 +8,7 @@ let warnOnceForNoSupport: boolean
 let warnOnceToUpgradeGatsby: boolean
 
 const GATSBY_VERSION_MANIFEST_V2 = `4.3.0`
-const gatsbyVersion = getGatsbyVersion()
+const gatsbyVersion = version
 const gatsbyVersionIsPrerelease = prerelease(gatsbyVersion)
 const shouldUpgradeGatsbyVersion =
   lt(gatsbyVersion, GATSBY_VERSION_MANIFEST_V2) && !gatsbyVersionIsPrerelease
