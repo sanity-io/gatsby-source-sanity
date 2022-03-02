@@ -2,6 +2,12 @@
 
 All notable changes will be documented in this file.
 
+## 7.3.3
+
+### Fixes
+
+- Prevent the `resolveReferences` gatsby function's `remapRawFields` call from attaching `Internal` object to the resolved gatsby node, fixing Gatsby Cloud incremental build issues.
+
 ## 7.3.2
 
 ### Fixes
