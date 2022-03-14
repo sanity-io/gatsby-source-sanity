@@ -31,13 +31,26 @@ export function toGatsbyNode(doc: SanityDocument, options: ProcessingOptions): S
   const rawAliases = getRawAliases(doc, options)
   const safe = prefixConflictingKeys(doc)
   const withRefs = rewriteNodeReferences(safe, options)
+  const type = getTypeName(doc._type)
+
+  const gatsbyImageCdnFields =
+    type === `SanityImageAsset`
+      ? {
+          filename: withRefs.originalFilename,
+          width: withRefs.metadata.dimensions.width,
+          height: withRefs.metadata.dimensions.height,
+        }
+      : {}
+
   return {
     ...withRefs,
     ...rawAliases,
+    ...gatsbyImageCdnFields,
+
     id: safeId(overlayDrafts ? unprefixId(doc._id) : doc._id, createNodeId),
     children: [],
     internal: {
-      type: getTypeName(doc._type),
+      type,
       contentDigest: createContentDigest(JSON.stringify(withRefs)),
     },
   }

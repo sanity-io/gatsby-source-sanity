@@ -10,6 +10,7 @@ import {
 } from 'gatsby'
 import {GraphQLFieldConfig} from 'gatsby/graphql'
 import gatsbyPkg from 'gatsby/package.json'
+import {addRemoteFilePolyfillInterface} from 'gatsby-plugin-utils/polyfill-remote-file'
 import {uniq} from 'lodash'
 import oneline from 'oneline'
 import {fromEvent, merge, of} from 'rxjs'
@@ -162,14 +163,27 @@ export const createResolvers: GatsbyNode['createResolvers'] = (
 }
 
 export const createSchemaCustomization: GatsbyNode['createSchemaCustomization'] = (
-  {actions}: CreateSchemaCustomizationArgs,
+  {actions, schema}: CreateSchemaCustomizationArgs,
   pluginConfig: PluginConfig,
 ): any => {
   const {createTypes} = actions
   const graphqlSdlKey = getCacheKey(pluginConfig, CACHE_KEYS.GRAPHQL_SDL)
   const graphqlSdl = stateCache[graphqlSdlKey]
 
-  createTypes(graphqlSdl)
+  createTypes([
+    graphqlSdl,
+    addRemoteFilePolyfillInterface(
+      schema.buildObjectType({
+        name: `SanityImageAsset`,
+        fields: {},
+        interfaces: [`Node`, `RemoteFile`],
+      }),
+      {
+        schema,
+        actions,
+      },
+    ),
+  ])
 }
 
 export const sourceNodes: GatsbyNode['sourceNodes'] = async (
