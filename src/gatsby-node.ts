@@ -9,6 +9,7 @@ import {
   SourceNodesArgs,
 } from 'gatsby'
 import {GraphQLFieldConfig} from 'gatsby/graphql'
+import {polyfillImageServiceDevRoutes} from 'gatsby-plugin-utils/polyfill-remote-file'
 import gatsbyPkg from 'gatsby/package.json'
 import {addRemoteFilePolyfillInterface} from 'gatsby-plugin-utils/polyfill-remote-file'
 import {uniq} from 'lodash'
@@ -402,4 +403,8 @@ function getClient(config: PluginConfig) {
     apiVersion: '1',
     useCdn: false,
   })
+}
+
+export const onCreateDevServer = async ({app}: {app: any}) => {
+  polyfillImageServiceDevRoutes(app)
 }
