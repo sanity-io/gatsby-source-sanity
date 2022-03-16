@@ -173,6 +173,9 @@ export const createSchemaCustomization: GatsbyNode['createSchemaCustomization'] 
 
   createTypes([
     graphqlSdl,
+    /**
+     * The following type is for the Gatsby Image CDN resolver `gatsbyImage`. SanityImageAsset already exists in `graphqlSdl` above and then this type will be merged into it, extending it with image CDN support.
+     */
     addRemoteFilePolyfillInterface(
       schema.buildObjectType({
         name: `SanityImageAsset`,
