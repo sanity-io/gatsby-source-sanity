@@ -209,6 +209,7 @@ export const sourceNodes: GatsbyNode['sourceNodes'] = async (
     createContentDigest,
     createParentChildLink,
     overlayDrafts,
+    client,
   }
 
   // PREVIEW UPDATES THROUGH WEBHOOKS
