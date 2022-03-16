@@ -33,14 +33,15 @@ export function toGatsbyNode(doc: SanityDocument, options: ProcessingOptions): S
   const withRefs = rewriteNodeReferences(safe, options)
   const type = getTypeName(doc._type)
 
-  const gatsbyImageCdnFields =
-    type === `SanityImageAsset`
-      ? {
-          filename: withRefs.originalFilename,
-          width: withRefs.metadata.dimensions.width,
-          height: withRefs.metadata.dimensions.height,
-        }
-      : {}
+  const gatsbyImageCdnFields = [`SanityImageAsset`, `SanityFileAsset`].includes(type)
+    ? {
+        filename: withRefs.originalFilename,
+        width: withRefs?.metadata?.dimensions?.width,
+        height: withRefs?.metadata?.dimensions?.height,
+      }
+    : {}
+
+  console.log({gatsbyImageCdnFields})
 
   return {
     ...withRefs,
