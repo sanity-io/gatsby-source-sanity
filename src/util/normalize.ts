@@ -41,8 +41,6 @@ export function toGatsbyNode(doc: SanityDocument, options: ProcessingOptions): S
       }
     : {}
 
-  console.log({gatsbyImageCdnFields})
-
   return {
     ...withRefs,
     ...rawAliases,
