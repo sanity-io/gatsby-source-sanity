@@ -45,7 +45,17 @@ export function toGatsbyNode(doc: SanityDocument, options: ProcessingOptions): S
         height: withRefs?.metadata?.dimensions?.height,
         url: withRefs?.url,
         placeholderUrl:
-          type === `SanityImageAsset` ? urlBuilder.image(withRefs.url).width(20).url() : null,
+          type === `SanityImageAsset`
+            ? urlBuilder
+                .image(withRefs.url)
+                .width(20)
+                .height(30)
+                .quality(80)
+                .url()
+                // this makes placeholder urls dynamic in the gatsbyImage resolver
+                ?.replace(`w=20`, `w=%width%`)
+                ?.replace(`h=30`, `h=%height%`)
+            : null,
       }
     : {}
 
