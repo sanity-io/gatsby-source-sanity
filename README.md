@@ -136,6 +136,10 @@ export const query = graphql`
 
 **Note**: we currently [don't support the `format` option of `gatsbyImageData`](https://github.com/sanity-io/gatsby-source-sanity/issues/134#issuecomment-951876221). Our image CDN automatically serves the best format for the user depending on their device, so you don't need to define formats manually.
 
+### Using Gatsby's Image CDN (beta)
+
+This plugin supports [Gatsby's new Image CDN feature](https://gatsby.dev/img). To use it, follow the instructions in the section above, but substitute the `gatsbyImageData` field for `gatsbyImage`.
+
 ### Using images outside of GraphQL
 
 If you are using the raw fields, or simply have an image asset ID you would like to use gatsby-plugin-image for, you can import and call the utility function `getGatsbyImageData`
