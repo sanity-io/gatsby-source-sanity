@@ -2,6 +2,12 @@
 
 All notable changes will be documented in this file.
 
+## 7.4.0
+
+### Changes
+
+- Add Gatsby Image CDN support ([#148](https://github.com/sanity-io/gatsby-source-sanity/pull/148))
+
 ## 7.3.2
 
 ### Fixes
