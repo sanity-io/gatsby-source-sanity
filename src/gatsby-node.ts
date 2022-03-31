@@ -206,10 +206,10 @@ const getDocumentIds = async (client: SanityClient): Promise<string[]> => {
         batchSize,
       },
     )
-    if (batch.length === 0) {
+    ids.push(...batch)
+    if (batch.length < batchSize) {
       break
     }
-    ids = ids.concat(batch)
     prevId = batch[batch.length - 1]
   }
 
