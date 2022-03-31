@@ -1,4 +1,4 @@
-import SanityClient from '@sanity/client'
+import sanityClient, {SanityClient} from '@sanity/client'
 import {
   CreateSchemaCustomizationArgs,
   GatsbyNode,
@@ -190,6 +190,32 @@ export const createSchemaCustomization: GatsbyNode['createSchemaCustomization'] 
   ])
 }
 
+const getDocumentIds = async (client: SanityClient): Promise<string[]> => {
+  const batchSize = 1000
+
+  let prevId: string | undefined
+  let ids = [] as string[]
+
+  while (true) {
+    const batch = await client.fetch<string[]>(
+      prevId !== undefined
+        ? `*[!(_type match "system.**") && _id > $prevId][0...$batchSize]._id`
+        : `*[!(_type match "system.**")][0...$batchSize]._id`,
+      {
+        prevId: prevId || null,
+        batchSize,
+      },
+    )
+    if (batch.length === 0) {
+      break
+    }
+    ids = ids.concat(batch)
+    prevId = batch[batch.length - 1]
+  }
+
+  return ids
+}
+
 export const sourceNodes: GatsbyNode['sourceNodes'] = async (
   args: SourceNodesArgs & {webhookBody?: SanityWebhookBody},
   pluginConfig: PluginConfig,
@@ -252,9 +278,7 @@ export const sourceNodes: GatsbyNode['sourceNodes'] = async (
       // Let's make sure we keep documents nodes already in the cache (3 steps)
       // =========
       // 1/4. Get all valid document IDs from Sanity
-      const documentIds = (await client.fetch<string[]>(`*[!(_type match "system.**")]._id`)).map(
-        unprefixId,
-      )
+      const documentIds = new Set((await getDocumentIds(client)).map(unprefixId))
 
       // 2/4. Get all document types implemented in the GraphQL layer
       // @initializePlugin() will populate `stateCache` with 1+ TypeMaps
@@ -284,7 +308,7 @@ export const sourceNodes: GatsbyNode['sourceNodes'] = async (
             if (
               node.internal.owner === 'gatsby-source-sanity' &&
               typeof node._id === 'string' &&
-              documentIds.includes(unprefixId(node._id))
+              documentIds.has(unprefixId(node._id))
             ) {
               actions.touchNode(node)
               gatsbyNodes.set(unprefixId(node._id), node)
@@ -400,7 +424,7 @@ export const setFieldsOnGraphQLNodeType: GatsbyNode['setFieldsOnGraphQLNodeType'
 
 function getClient(config: PluginConfig) {
   const {projectId, dataset, token} = config
-  return new SanityClient({
+  return sanityClient({
     projectId,
     dataset,
     token,
