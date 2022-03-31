@@ -278,7 +278,7 @@ export const sourceNodes: GatsbyNode['sourceNodes'] = async (
       // Let's make sure we keep documents nodes already in the cache (3 steps)
       // =========
       // 1/4. Get all valid document IDs from Sanity
-      const documentIds = new Set((await getDocumentIds(client)).map(unprefixId))
+      const documentIds = new Set(await getDocumentIds(client))
 
       // 2/4. Get all document types implemented in the GraphQL layer
       // @initializePlugin() will populate `stateCache` with 1+ TypeMaps
@@ -308,7 +308,7 @@ export const sourceNodes: GatsbyNode['sourceNodes'] = async (
             if (
               node.internal.owner === 'gatsby-source-sanity' &&
               typeof node._id === 'string' &&
-              documentIds.has(unprefixId(node._id))
+              (documentIds.has(node._id) || documentIds.has(unprefixId(node._id)))
             ) {
               actions.touchNode(node)
               gatsbyNodes.set(unprefixId(node._id), node)
