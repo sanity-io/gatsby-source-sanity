@@ -2,11 +2,17 @@
 
 All notable changes will be documented in this file.
 
-## 7.3.3
+## 7.4.1
 
 ### Fixes
 
 - Prevent the `resolveReferences` gatsby function's `remapRawFields` call from attaching `Internal` object to the resolved gatsby node, fixing Gatsby Cloud incremental build issues.
+
+## 7.4.0
+
+### Changes
+
+- Add Gatsby Image CDN support ([#148](https://github.com/sanity-io/gatsby-source-sanity/pull/148))
 
 ## 7.3.2
 

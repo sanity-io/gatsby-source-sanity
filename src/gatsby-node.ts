@@ -9,6 +9,8 @@ import {
   SourceNodesArgs,
 } from 'gatsby'
 import {GraphQLFieldConfig} from 'gatsby/graphql'
+import {polyfillImageServiceDevRoutes} from 'gatsby-plugin-utils/polyfill-remote-file'
+import {addRemoteFilePolyfillInterface} from 'gatsby-plugin-utils/polyfill-remote-file'
 import gatsbyPkg from 'gatsby/package.json'
 import {uniq} from 'lodash'
 import oneline from 'oneline'
@@ -162,14 +164,30 @@ export const createResolvers: GatsbyNode['createResolvers'] = (
 }
 
 export const createSchemaCustomization: GatsbyNode['createSchemaCustomization'] = (
-  {actions}: CreateSchemaCustomizationArgs,
+  {actions, schema}: CreateSchemaCustomizationArgs,
   pluginConfig: PluginConfig,
 ): any => {
   const {createTypes} = actions
   const graphqlSdlKey = getCacheKey(pluginConfig, CACHE_KEYS.GRAPHQL_SDL)
   const graphqlSdl = stateCache[graphqlSdlKey]
 
-  createTypes(graphqlSdl)
+  createTypes([
+    graphqlSdl,
+    /**
+     * The following type is for the Gatsby Image CDN resolver `gatsbyImage`. SanityImageAsset already exists in `graphqlSdl` above and then this type will be merged into it, extending it with image CDN support.
+     */
+    addRemoteFilePolyfillInterface(
+      schema.buildObjectType({
+        name: `SanityImageAsset`,
+        fields: {},
+        interfaces: [`Node`, `RemoteFile`],
+      }),
+      {
+        schema,
+        actions,
+      },
+    ),
+  ])
 }
 
 export const sourceNodes: GatsbyNode['sourceNodes'] = async (
@@ -194,6 +212,7 @@ export const sourceNodes: GatsbyNode['sourceNodes'] = async (
     createContentDigest,
     createParentChildLink,
     overlayDrafts,
+    client,
   }
 
   // PREVIEW UPDATES THROUGH WEBHOOKS
@@ -388,4 +407,8 @@ function getClient(config: PluginConfig) {
     apiVersion: '1',
     useCdn: false,
   })
+}
+
+export const onCreateDevServer = async ({app}: {app: any}) => {
+  polyfillImageServiceDevRoutes(app)
 }
