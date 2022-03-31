@@ -191,7 +191,8 @@ export const createSchemaCustomization: GatsbyNode['createSchemaCustomization'] 
 }
 
 const getDocumentIds = async (client: SanityClient): Promise<string[]> => {
-  const batchSize = 1000
+  // Largish batch size to reduce network round trips without putting too much stress on API
+  const batchSize = 30000
 
   let prevId: string | undefined
   let ids = [] as string[]
