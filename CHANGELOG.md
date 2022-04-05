@@ -2,6 +2,12 @@
 
 All notable changes will be documented in this file.
 
+## 7.4.2
+
+### Fixes
+
+- Improve incremental builds of large datasets by paginating fetching of document IDs, and optimizing their lookups using a set ([#149](https://github.com/sanity-io/gatsby-source-sanity/issues/149)).
+
 ## 7.4.1
 
 ### Fixes
