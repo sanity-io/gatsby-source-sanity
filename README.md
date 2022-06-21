@@ -34,10 +34,10 @@ Get up and running in minutes with a fully configured starter project:
 From the command line, use npm (node package manager) to install the plugin:
 
 ```console
-npm install gatsby-source-sanity
+npm install gatsby-source-sanity gatsby-plugin-image
 ```
 
-⚠️ Warning: if using Gatsby v4, make sure you've installed version 7.1.0 or higher.
+⚠️ Warning: if using Gatsby v4, make sure you've installed version 7.1.0 or higher. `gatsby-plugin-image` has it's own dependancies. Check the [Gatsby documentation](https://www.gatsbyjs.com/plugins/gatsby-plugin-image/#installation) for installation instructions. 
 
 In the `gatsby-config.js` file in the Gatsby project's root directory, add the plugin configuration inside of the `plugins` section:
 
@@ -45,6 +45,7 @@ In the `gatsby-config.js` file in the Gatsby project's root directory, add the p
 module.exports = {
   // ...
   plugins: [
+    `gatsby-plugin-image`,
     {
       resolve: `gatsby-source-sanity`,
       options: {
