@@ -34,8 +34,8 @@
     "prepublishOnly": "npm run build && npm test"
   },
   "dependencies": {
-    "@sanity/client": "^2.21.3",
-    "@sanity/image-url": "^0.140.19",
+    "@sanity/client": "^3.3.5",
+    "@sanity/image-url": "^1.0.1",
     "@sanity/mutator": "^2.21.0",
     "@types/url-parse": "^1.4.4",
     "axios": "^0.24.0",
