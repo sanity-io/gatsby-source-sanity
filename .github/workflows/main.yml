@@ -13,8 +13,8 @@ jobs:
           - 14
           - 12
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
+      - uses: actions/checkout@7884fcad6b5d53d10323aee724dc68d8b9096a2e # tag=v2
+      - uses: actions/setup-node@f1f314fca9dfce2769ece7d933488f076716723e # tag=v1
         with:
           node-version: ${{ matrix.node-version }}
       - run: npm install
