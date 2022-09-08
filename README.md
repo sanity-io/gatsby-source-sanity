@@ -1,6 +1,6 @@
 # gatsby-source-sanity
 
-Source plugin for pulling data from [Sanity.io](https://www.sanity.io/) into [Gatsby](https://www.gatsbyjs.org/) websites. Develop with real-time preview of all content changes. Compatible with `gatsby-image`. Uses your project's GraphQL schema definitions to avoid accidental missing fields (no dummy-content needed).
+Gatsby source plugin for pulling data from [Sanity.io](https://www.sanity.io/) into [Gatsby](https://www.gatsbyjs.com) websites. Develop with real-time preview of all content changes. Compatible with `gatsby-plugin-image`. Uses your project's GraphQL schema definitions to avoid accidental missing fields (no dummy-content needed).
 
 Get up and running in minutes with a fully configured starter project:
 
@@ -34,10 +34,10 @@ Get up and running in minutes with a fully configured starter project:
 From the command line, use npm (node package manager) to install the plugin:
 
 ```console
-npm install gatsby-source-sanity
+npm install gatsby-source-sanity gatsby-plugin-image
 ```
 
-⚠️ Warning: if using Gatsby v4, make sure you've installed version 7.1.0 or higher.
+⚠️ Warning: If using Gatsby v4, make sure you've installed version 7.1.0 or higher. The plugin has a dependency on `gatsby-plugin-image` which itself has dependencies. Check [`gatsb-plugin-image` README](https://www.gatsbyjs.com/plugins/gatsby-plugin-image/#installation) for instructions.
 
 In the `gatsby-config.js` file in the Gatsby project's root directory, add the plugin configuration inside of the `plugins` section:
 
@@ -59,6 +59,7 @@ module.exports = {
         graphqlTag: 'default',
       },
     },
+    `gatsby-plugin-image`,
     // ...
   ],
   // ...
@@ -73,7 +74,7 @@ At this point you should [set up a GraphQL API](https://www.sanity.io/docs/graph
 
 **You should redeploy the GraphQL API everytime you make changes to the schema that you want to use in Gatsby by running `sanity graphql deploy` from within your Sanity project directory**
 
-Explore http://localhost:8000/\_\_\_graphql after running `gatsby develop` to understand the created data and create a new query and checking available collections and fields by typing `CTRL + SPACE`.
+Explore `http://localhost:8000/___graphql` after running `gatsby develop` to understand the created data and create a new query and checking available collections and fields by typing <kbd>Ctrl + Space</kbd>.
 
 ## Options
 
@@ -142,7 +143,7 @@ This plugin supports [Gatsby's new Image CDN feature](https://gatsby.dev/img). T
 
 ### Using images outside of GraphQL
 
-If you are using the raw fields, or simply have an image asset ID you would like to use gatsby-plugin-image for, you can import and call the utility function `getGatsbyImageData`
+If you are using the raw fields, or simply have an image asset ID you would like to use `gatsby-plugin-image` for, you can import and call the utility function `getGatsbyImageData`
 
 ```jsx
 import {GatsbyImage} from 'gatsby-plugin-image'
@@ -210,9 +211,9 @@ exports.createPages = async ({graphql, actions}) => {
 
 The above query will fetch all projects that have a `slug.current` field set, and generate pages for them, available as `/project/<project-slug>`. It will use the template defined in `src/templates/project.js` as the basis for these pages.
 
-Most [Gatsby starters](https://www.gatsbyjs.org/starters/?v=2) have some example of building pages, which you should be able to modify to your needs.
+Checkout [Creating Pages from Data Programmatically](https://www.gatsbyjs.com/docs/programmatically-create-pages-from-data/) to learn more.
 
-Remember to use the GraphiQL interface to help write the queries you need - it's usually running at http://localhost:8000/\_\_\_graphql while running `gatsby develop`.
+Remember to use the GraphiQL interface to help write the queries you need - it's usually running at `http://localhost:8000/___graphql` while running `gatsby develop`.
 
 ## "Raw" fields
 
@@ -342,7 +343,7 @@ This example is based off [Gatsby Docs' implementation](https://www.gatsbyjs.org
 
 When starting Gatsby in development or building a website, the source plugin will first fetch the GraphQL Schema Definitions from a Sanity deployed GraphQL API. The source plugin uses this to tell Gatsby which fields should be available to prevent it from breaking if the content for certain fields happens to disappear. Then it will hit the project’s export endpoint, which streams all the accessible documents to Gatsby’s in-memory datastore.
 
-In other words, the whole site is built with two requests. Running the development server, will also set up a listener that pushes whatever changes come from Sanity to Gatsby in real-time, without doing additional API queries. If you give the source plugin a token with permission to read drafts, you’ll see the changes instantly. This can also be experienced with [Gatsby Preview](https://www.gatsbyjs.com/preview/).
+In other words, the whole site is built with two requests. Running the development server, will also set up a listener that pushes whatever changes come from Sanity to Gatsby in real-time, without doing additional API queries. If you give the source plugin a token with permission to read drafts, you’ll see the changes instantly.
 
 ## Credits
 
