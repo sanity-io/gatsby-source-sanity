@@ -25,13 +25,20 @@
   ],
   "main": "index.js",
   "types": "lib-es5/index.d.ts",
+  "files": [
+    "lib",
+    "lib-es5",
+    "src",
+    "gatsby-node.js",
+    "gatsby-ssr.js"
+  ],
   "scripts": {
     "test": "jest",
     "build": "tsc && tsc -t ES5 --outDir lib-es5",
     "format": "prettier --write src/**/*.{ts,tsx}",
     "watch": "tsc --watch & tsc && tsc -t ES5 --outDir lib-es5 --watch",
     "publish-local": "npm run prepublishOnly && npm version prerelease --no-git-tag-version && npm pack && mkdirp .tarballs && mv gatsby-source-sanity-*.tgz .tarballs/ && echo 'published to .tarballs/'",
-    "prepublishOnly": "npm run build && npm test"
+    "prepublishOnly": "npm run build"
   },
   "dependencies": {
     "@sanity/client": "^2.21.3",
@@ -53,6 +60,7 @@
     "url-parse": "^1.5.3"
   },
   "devDependencies": {
+    "@sanity/semantic-release-preset": "^2.0.1",
     "@types/debug": "^4.1.7",
     "@types/jest": "^27.0.2",
     "@types/lodash": "^4.14.176",

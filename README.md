@@ -17,15 +17,15 @@ Get up and running in minutes with a fully configured starter project:
 - [Preview of unpublished content](#preview-of-unpublished-content)
 - [GraphQL API](#graphql-api)
 - [Using images](#using-images)
-  - [Usage outside of GraphQL](#using-images-outside-of-graphql)
 - [Generating pages](#generating-pages)
 - ["Raw" fields](#raw-fields)
 - [Portable Text / Block Content](#portable-text--block-content)
 - [Real-time content preview with watch mode](#real-time-content-preview-with-watch-mode)
 - [Updating content for editors with preview servers](#updating-content-for-editors-with-preview-servers)
 - [Using .env variables](#using-env-variables)
-- [How this plugin works](#how-this-source-plugin-works)
+- [How this source plugin works](#how-this-source-plugin-works)
 - [Credits](#credits)
+- [Develop](#develop)
 
 [See the getting started video](https://www.youtube.com/watch?v=qU4lFYp3KiQ)
 
@@ -350,3 +350,12 @@ In other words, the whole site is built with two requests. Running the developme
 Huge thanks to [Henrique Doro](https://github.com/hdoro) for doing the initial implementation of this plugin, and for donating it to the Sanity team. Mad props!
 
 Big thanks to the good people backing Gatsby for bringing such a joy to our developer days!
+
+## Develop
+
+### Release new version
+
+Run ["CI & Release" workflow](https://github.com/sanity-io/gatsby-source-sanity/actions/workflows/main.yml).
+Make sure to select the main branch and check "Release new version".
+
+Semantic release will only release on configured branches, so it is safe to run release on any branch.

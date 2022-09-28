@@ -1,21 +1,68 @@
-name: CI
+name: CI & Release
 on:
-  - push
-  - pull_request
+  # Build on pushes to release branches
+  push:
+    branches: [main]
+  # Build on pull requests targeting release branches
+  pull_request:
+    branches: [main]
+  # https://docs.github.com/en/actions/managing-workflow-runs/manually-running-a-workflow
+  # https://github.com/sanity-io/semantic-release-preset/actions/workflows/ci.yml
+  workflow_dispatch:
+    inputs:
+      release:
+        description: 'Release new version'
+        required: true
+        default: false
+        type: boolean
+
 jobs:
   test:
-    name: Node.js ${{ matrix.node-version }}
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.platform }}
+    name: Node.js ${{ matrix.node-version }} / ${{ matrix.platform }}
     strategy:
       fail-fast: false
       matrix:
-        node-version:
-          - 14
-          - 12
+        platform: [ubuntu-latest]
+        # Test the oldest Node.js version we support, the latest LTS release and the current version in development
+        node-version: [12, lts/*, current]
+        include:
+          # mac and windows only need to test the LTS version of node
+          - platform: macos-latest
+            node-version: lts/*
+          - platform: windows-latest
+            node-version: lts/*
     steps:
-      - uses: actions/checkout@7884fcad6b5d53d10323aee724dc68d8b9096a2e # tag=v2
-      - uses: actions/setup-node@f1f314fca9dfce2769ece7d933488f076716723e # tag=v1
+      - name: Set git to use LF
+        run: |
+          git config --global core.autocrlf false
+          git config --global core.eol lf
+      - uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # tag=v3
+      - uses: actions/setup-node@2fddd8803e2f5c9604345a0b591c3020ee971a93 # tag=v3
         with:
           node-version: ${{ matrix.node-version }}
       - run: npm install
+      - run: npm run build
       - run: npm test
+
+  release:
+    name: 'Semantic release'
+    needs: test
+    runs-on: ubuntu-latest
+    if: inputs.release == true
+    steps:
+      - uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # tag=v3
+        with:
+          # Need to fetch entire commit history to
+          # analyze every commit since last release
+          fetch-depth: 0
+      - uses: actions/setup-node@2fddd8803e2f5c9604345a0b591c3020ee971a93 # tag=v3
+        with:
+          node-version: lts/*
+          cache: npm
+      - run: npm ci
+      # Branches that will release new versions are defined in .releaserc.json
+      - run: npx semantic-release --dry-run
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
