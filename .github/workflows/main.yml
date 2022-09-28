@@ -47,7 +47,8 @@ jobs:
 
   release:
     name: 'Semantic release'
-    needs: test
+    # @TODO uncomment after dry-run is confirmed to be ok
+    # needs: test
     runs-on: ubuntu-latest
     if: inputs.release == true
     steps:
@@ -62,6 +63,7 @@ jobs:
           cache: npm
       - run: npm ci
       # Branches that will release new versions are defined in .releaserc.json
+      # @TODO remove --dry-run when confirmed to be ok
       - run: npx semantic-release --dry-run
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

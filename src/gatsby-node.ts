@@ -182,6 +182,7 @@ export const createSchemaCustomization: GatsbyNode['createSchemaCustomization'] 
         fields: {},
         interfaces: [`Node`, `RemoteFile`],
       }),
+      // @ts-expect-error  TS2345: Argument of type '{ schema: NodePluginSchema; actions: Actions; }' is not assignable to parameter of type '{ schema: NodePluginSchema; actions: Actions; store: Store; }'.
       {
         schema,
         actions,
