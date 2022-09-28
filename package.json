@@ -71,7 +71,7 @@
     "@types/through2": "^2.0.36",
     "eslint": "^8.1.0",
     "eslint-config-prettier": "^8.3.0",
-    "eslint-config-sanity": "^5.1.0",
+    "eslint-config-sanity": "^6.0.0",
     "gatsby": "^4.23.1",
     "gatsby-plugin-image": "^2.23.1",
     "jest": "^27.3.1",
