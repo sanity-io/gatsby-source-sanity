@@ -6,7 +6,7 @@ function reverse(id: string) {
 }
 
 // Gatsby's `getNode()` is typed to _always_ return a node, which... aint true.
-const noNode: Node = (undefined as unknown) as Node
+const noNode: Node = undefined as unknown as Node
 const createNodeId = (id: string) => id
 
 test('resolves Sanity references', () => {
@@ -39,11 +39,6 @@ test('resolves Sanity references', () => {
       id: _id,
       bar: 'baz',
       parent: `someParent`,
-      internal: {
-        owner: `asdf`,
-        type: `asdf`,
-        contentDigest: `asdf`,
-      },
       children: [],
     },
   })
@@ -79,11 +74,6 @@ test('uses non-draft if overlayDrafts is set to true', () => {
       id: _id,
       bar: 'baz',
       parent: `someParent`,
-      internal: {
-        owner: `asdf`,
-        type: `asdf`,
-        contentDigest: `asdf`,
-      },
       children: [],
     },
   })
@@ -149,11 +139,6 @@ test('resolves references in arrays', () => {
         id: _id,
         bar: 'baz',
         parent: `someParent`,
-        internal: {
-          owner: `asdf`,
-          type: `asdf`,
-          contentDigest: `asdf`,
-        },
         children: [],
       },
     ],
@@ -198,29 +183,14 @@ test('resolves to max depth specified', () => {
           },
           id: 'abc123',
           parent: `someParent`,
-          internal: {
-            owner: `asdf`,
-            type: `asdf`,
-            contentDigest: `asdf`,
-          },
           children: [],
         },
         id: 'abc123',
         parent: `someParent`,
-        internal: {
-          owner: `asdf`,
-          type: `asdf`,
-          contentDigest: `asdf`,
-        },
         children: [],
       },
       id: 'abc123',
       parent: `someParent`,
-      internal: {
-        owner: `asdf`,
-        type: `asdf`,
-        contentDigest: `asdf`,
-      },
       children: [],
     },
   })
@@ -282,20 +252,10 @@ test('remaps raw fields from returned nodes', () => {
             id: '-fed',
             its: 'def',
             parent: `someParent`,
-            internal: {
-              owner: `asdf`,
-              type: `asdf`,
-              contentDigest: `asdf`,
-            },
             children: [],
           },
         ],
         parent: `someParent`,
-        internal: {
-          owner: `asdf`,
-          type: `asdf`,
-          contentDigest: `asdf`,
-        },
         children: [],
       },
     ],

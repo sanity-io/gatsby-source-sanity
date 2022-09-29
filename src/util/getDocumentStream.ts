@@ -4,9 +4,10 @@ import {Readable} from 'stream'
 import {pkgName} from '../index'
 
 export function getDocumentStream(url: string, token?: string): Promise<Readable> {
-  const auth = token ? {Authorization: `Bearer ${token}`} : {}
-  const userAgent = {'User-Agent': `${pkgName}`}
-  const headers = {...userAgent, ...auth}
+  const headers = {
+    'User-Agent': `${pkgName}`,
+    ...(token ? {Authorization: `Bearer ${token}`} : {}),
+  }
 
   return axios({
     method: 'get',
@@ -30,5 +31,5 @@ export function getDocumentStream(url: string, token?: string): Promise<Readable
       }
 
       throw error
-    })
+    }) as Promise<Readable>
 }

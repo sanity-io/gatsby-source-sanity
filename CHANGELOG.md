@@ -1,6 +1,71 @@
-# Change Log
+<!-- markdownlint-disable --><!-- textlint-disable -->
 
-All notable changes will be documented in this file.
+# 📓 Changelog
+
+All notable changes to this project will be documented in this file. See
+[Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+
+## [7.5.0](https://github.com/sanity-io/gatsby-source-sanity/compare/v7.4.1...v7.5.0) (2022-09-29)
+
+### Bug Fixes
+
+- helps incremental builds of large datasets by paginating the ([2a7ff63](https://github.com/sanity-io/gatsby-source-sanity/commit/2a7ff638af621647544137ee9030371f401bff5f)), closes [#149](https://github.com/sanity-io/gatsby-source-sanity/issues/149)
+- use latest image cdn packages ([#176](https://github.com/sanity-io/gatsby-source-sanity/issues/176)) ([fb7026b](https://github.com/sanity-io/gatsby-source-sanity/commit/fb7026bd019f98066107e00eca3d8cdfe6819fbf))
+
+## [7.4.2](https://github.com/sanity-io/gatsby-source-sanity/compare/v7.4.1...v7.4.2) (2022-09-28)
+
+### Bug Fixes
+
+- helps incremental builds of large datasets by paginating the ([2a7ff63](https://github.com/sanity-io/gatsby-source-sanity/commit/2a7ff638af621647544137ee9030371f401bff5f)), closes [#149](https://github.com/sanity-io/gatsby-source-sanity/issues/149)
+- use latest image cdn packages ([#176](https://github.com/sanity-io/gatsby-source-sanity/issues/176)) ([fb7026b](https://github.com/sanity-io/gatsby-source-sanity/commit/fb7026bd019f98066107e00eca3d8cdfe6819fbf))
+
+## 7.4.1
+
+### Fixes
+
+- Prevent the `resolveReferences` gatsby function's `remapRawFields` call from attaching `Internal` object to the resolved gatsby node, fixing Gatsby Cloud incremental build issues.
+
+## 7.4.0
+
+### Changes
+
+- Add Gatsby Image CDN support ([#148](https://github.com/sanity-io/gatsby-source-sanity/pull/148))
+
+## 7.3.2
+
+### Fixes
+
+- Ensure `semver` doesn't break Gatsby v3 builds when creating node manifests
+
+## 7.3.1
+
+### Changes
+
+- Use Gatsby's node manifest API v2 ([#140](https://github.com/sanity-io/gatsby-source-sanity/pull/140))
+
+## 7.3.0
+
+### Changes
+
+- Support for webhook-based previews through Gatsby's preview servers
+
+## 7.2.1
+
+### Fixes
+
+- Watch Mode: Instead of relying on a fixed `bufferTime` to batch updates, we're now waiting until Gatsby's internals are quiet to run updates.
+
+## 7.2.0
+
+### Changes
+
+- Allow configuration of the `watchModeBuffer` option
+
+## 7.1.0
+
+### Changes
+
+- Support for Gatsby v4
 
 ## 7.0.7
 

@@ -10,18 +10,7 @@ import imageUrlBuilder from '@sanity/image-url'
 import {ImageUrlBuilder} from '@sanity/image-url/lib/types/builder'
 
 export const EVERY_BREAKPOINT = [
-  320,
-  654,
-  768,
-  1024,
-  1366,
-  1600,
-  1920,
-  2048,
-  2560,
-  3440,
-  3840,
-  4096,
+  320, 654, 768, 1024, 1366, 1600, 1920, 2048, 2560, 3440, 3840, 4096,
 ]
 
 export enum ImageFormat {

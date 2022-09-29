@@ -1,4 +1,4 @@
-import {PluginConfig} from '../gatsby-node'
+import {PluginConfig} from './validateConfig'
 
 export type StateCache = {
   [key: string]: any

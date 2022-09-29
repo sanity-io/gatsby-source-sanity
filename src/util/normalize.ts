@@ -7,6 +7,9 @@ import {safeId, unprefixId} from './documentIds'
 import {TypeMap} from './remoteGraphQLSchema'
 import {SanityInputNode} from '../types/gatsby'
 
+import imageUrlBuilder from '@sanity/image-url'
+import {SanityClient} from '@sanity/client'
+
 const scalarTypeNames = specifiedScalarTypes.map((def) => def.name).concat(['JSON', 'Date'])
 
 // Movie => SanityMovie
@@ -22,6 +25,7 @@ export interface ProcessingOptions {
   createContentDigest: NodePluginArgs['createContentDigest']
   createParentChildLink: Actions['createParentChildLink']
   overlayDrafts: boolean
+  client: SanityClient
 }
 
 // Transform a Sanity document into a Gatsby node
@@ -31,13 +35,39 @@ export function toGatsbyNode(doc: SanityDocument, options: ProcessingOptions): S
   const rawAliases = getRawAliases(doc, options)
   const safe = prefixConflictingKeys(doc)
   const withRefs = rewriteNodeReferences(safe, options)
+  const type = getTypeName(doc._type)
+  const urlBuilder = imageUrlBuilder(options.client)
+
+  const gatsbyImageCdnFields = [`SanityImageAsset`, `SanityFileAsset`].includes(type)
+    ? {
+        filename: withRefs.originalFilename,
+        width: withRefs?.metadata?.dimensions?.width,
+        height: withRefs?.metadata?.dimensions?.height,
+        url: withRefs?.url,
+        placeholderUrl:
+          type === `SanityImageAsset`
+            ? urlBuilder
+                .image(withRefs.url)
+                .width(20)
+                .height(30)
+                .quality(80)
+                .url()
+                // this makes placeholder urls dynamic in the gatsbyImage resolver
+                ?.replace(`w=20`, `w=%width%`)
+                ?.replace(`h=30`, `h=%height%`)
+            : null,
+      }
+    : {}
+
   return {
     ...withRefs,
     ...rawAliases,
+    ...gatsbyImageCdnFields,
+
     id: safeId(overlayDrafts ? unprefixId(doc._id) : doc._id, createNodeId),
     children: [],
     internal: {
-      type: getTypeName(doc._type),
+      type,
       contentDigest: createContentDigest(JSON.stringify(withRefs)),
     },
   }
