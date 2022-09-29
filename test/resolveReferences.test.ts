@@ -6,7 +6,7 @@ function reverse(id: string) {
 }
 
 // Gatsby's `getNode()` is typed to _always_ return a node, which... aint true.
-const noNode: Node = (undefined as unknown) as Node
+const noNode: Node = undefined as unknown as Node
 const createNodeId = (id: string) => id
 
 test('resolves Sanity references', () => {

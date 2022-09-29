@@ -4,7 +4,7 @@ export default function getPluginStatus(args: SourceNodesArgs) {
   return args.store.getState().status.plugins?.[`gatsby-source-sanity`]
 }
 
-const LAST_BUILD_KEY = "lastBuildTime"
+const LAST_BUILD_KEY = 'lastBuildTime'
 
 export function getLastBuildTime(args: SourceNodesArgs): Date | undefined {
   try {

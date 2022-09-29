@@ -77,7 +77,9 @@ export function resolveReferences(
 function remapRawFields(obj: {[key: string]: any}) {
   const initial: {[key: string]: any} = {}
   return Object.keys(obj).reduce((acc, key) => {
-    if (key === "internal") { return acc }
+    if (key === 'internal') {
+      return acc
+    }
     if (key.startsWith('_rawData')) {
       let targetKey = key.slice(8)
 

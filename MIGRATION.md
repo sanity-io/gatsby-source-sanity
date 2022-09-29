@@ -11,6 +11,7 @@ Note: `gatsby-source-sanity` v7 requires Gatsby v3 or newer. See Gatsby's offici
 💡 If you get stuck, you can always join our helpful [Slack community](http://slack.sanity.io/) and ask for assistance in the `#gatsby` channel.
 
 ### Steps required:
+
 - In the `dependencies` section of your project's `package.json`, upgrade `gatsby` to `^3.0.0` and `gatsby-source-sanity` to `^7.0.0`
 - Add `"gatsby-plugin-image": "^1.0.0"` as a dependency to your `package.json`.
   Note: If your package json already has a dependency to `gatsby-image`, you should remove it and replace its usage with `gatsby-plugin-image` from source files. See [Gatsby's own migration guide for gatsby-plugin-image](https://www.gatsbyjs.com/docs/reference/release-notes/image-migration-guide/) for more details.
@@ -23,22 +24,21 @@ Note: `gatsby-source-sanity` v7 requires Gatsby v3 or newer. See Gatsby's offici
 The helper methods `getFluidGatsbyImage` and `getFixedGatsbyImage` have been removed in favor of `getGatsbyImageData()`, which is based on [`gatsby-plugin-image`](https://www.gatsbyjs.com/plugins/gatsby-plugin-image) and supports a number of cool new features and performance optimizations.
 
 #### Before
+
 ```jsx
-import React from "react"
-import Img from "gatsby-image"
-import {getFluidGatsbyImage} from "gatsby-source-sanity"
-import clientConfig from "../../client-config"
+import React from 'react'
+import Img from 'gatsby-image'
+import {getFluidGatsbyImage} from 'gatsby-source-sanity'
+import clientConfig from '../../client-config'
 
 export function MyImage({node}) {
-  const fluidProps = getFluidGatsbyImage(
-    node,
-    {maxWidth: 675},
-    clientConfig.sanity
-  );
+  const fluidProps = getFluidGatsbyImage(node, {maxWidth: 675}, clientConfig.sanity)
   return <Img fluid={fluidProps} />
 }
 ```
+
 #### After
+
 ```jsx
 import React from 'react'
 import {GatsbyImage} from 'gatsby-plugin-image'
@@ -46,11 +46,7 @@ import {getGatsbyImageData} from 'gatsby-source-sanity'
 import clientConfig from '../../client-config'
 
 export const MyImage = ({node}) => {
-  const gatsbyImageData = getGatsbyImageData(
-    node,
-    {maxWidth: 675},
-    clientConfig.sanity
-  )
+  const gatsbyImageData = getGatsbyImageData(node, {maxWidth: 675}, clientConfig.sanity)
   return <GatsbyImage image={gatsbyImageData} />
 }
 ```

@@ -1,27 +1,24 @@
 {
   "name": "gatsby-source-sanity",
-  "description": "Gatsby source plugin for building websites using Sanity.io as a backend.",
   "version": "7.4.2",
+  "description": "Gatsby source plugin for building websites using Sanity.io as a backend.",
+  "keywords": [
+    "gatsby",
+    "gatsby-plugin",
+    "gatsby-source-plugin"
+  ],
+  "homepage": "https://github.com/sanity-io/gatsby-source-sanity#readme",
+  "bugs": {
+    "url": "https://github.com/sanity-io/gatsby-source-sanity/issues"
+  },
+  "repository": "https://github.com/sanity-io/gatsby-source-sanity",
+  "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
   "contributors": [
     {
       "name": "Henrique Doro",
       "email": "opensource@hdoro.dev"
     }
-  ],
-  "engines": {
-    "node": ">=12.13.0"
-  },
-  "repository": "https://github.com/sanity-io/gatsby-source-sanity",
-  "homepage": "https://github.com/sanity-io/gatsby-source-sanity#readme",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/sanity-io/gatsby-source-sanity/issues"
-  },
-  "keywords": [
-    "gatsby",
-    "gatsby-plugin",
-    "gatsby-source-plugin"
   ],
   "main": "index.js",
   "types": "lib-es5/index.d.ts",
@@ -33,12 +30,12 @@
     "gatsby-ssr.js"
   ],
   "scripts": {
-    "test": "jest",
     "build": "tsc && tsc -t ES5 --outDir lib-es5",
     "format": "prettier --write src/**/*.{ts,tsx}",
-    "watch": "tsc --watch & tsc && tsc -t ES5 --outDir lib-es5 --watch",
+    "prepublishOnly": "npm run build",
     "publish-local": "npm run prepublishOnly && npm version prerelease --no-git-tag-version && npm pack && mkdirp .tarballs && mv gatsby-source-sanity-*.tgz .tarballs/ && echo 'published to .tarballs/'",
-    "prepublishOnly": "npm run build"
+    "test": "jest",
+    "watch": "tsc --watch & tsc && tsc -t ES5 --outDir lib-es5 --watch"
   },
   "dependencies": {
     "@sanity/client": "^2.21.3",
@@ -77,6 +74,7 @@
     "jest": "^27.3.1",
     "mkdirp": "^1.0.4",
     "prettier": "^2.4.1",
+    "prettier-plugin-packagejson": "^2.2.18",
     "react": "^18.2.0",
     "ts-jest": "^27.0.7",
     "typescript": "^4.2.3"
@@ -84,5 +82,8 @@
   "peerDependencies": {
     "gatsby": "^3.0.0 || ^4.0.0",
     "gatsby-plugin-image": "^1.0.0 || ^2.0.0"
+  },
+  "engines": {
+    "node": ">=12.13.0"
   }
 }
