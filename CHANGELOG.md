@@ -5,6 +5,13 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.5.1](https://github.com/sanity-io/gatsby-source-sanity/compare/v7.5.0...v7.5.1) (2022-09-29)
+
+### Bug Fixes
+
+- bump @sanity/image-url to fix rounding errors in crop rects ([#132](https://github.com/sanity-io/gatsby-source-sanity/issues/132)) ([b894dca](https://github.com/sanity-io/gatsby-source-sanity/commit/b894dca5f0fd8422754e9e4fcf88fbdd967c2f0d))
+- **deps:** update dependencies (non-major) ([#165](https://github.com/sanity-io/gatsby-source-sanity/issues/165)) ([bb6536b](https://github.com/sanity-io/gatsby-source-sanity/commit/bb6536ba96f5844a8bbc7b84a1e5dc2e93b160b5))
+
 ## [7.5.0](https://github.com/sanity-io/gatsby-source-sanity/compare/v7.4.1...v7.5.0) (2022-09-29)
 
 ### Bug Fixes
