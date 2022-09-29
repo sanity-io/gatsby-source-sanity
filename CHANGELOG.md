@@ -7,10 +7,6 @@ All notable changes to this project will be documented in this file. See
 
 ## [7.5.0](https://github.com/sanity-io/gatsby-source-sanity/compare/v7.4.1...v7.5.0) (2022-09-29)
 
-### Features
-
-- use latest image cdn packages ([#176](https://github.com/sanity-io/gatsby-source-sanity/issues/176)) ([98e53bf](https://github.com/sanity-io/gatsby-source-sanity/commit/98e53bf8facae21205b5f7204e39907d6d537920))
-
 ### Bug Fixes
 
 - helps incremental builds of large datasets by paginating the ([2a7ff63](https://github.com/sanity-io/gatsby-source-sanity/commit/2a7ff638af621647544137ee9030371f401bff5f)), closes [#149](https://github.com/sanity-io/gatsby-source-sanity/issues/149)
