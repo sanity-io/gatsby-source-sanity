@@ -112,7 +112,7 @@ export function getTypeMapFromGraphQLSchema(sdl: string): TypeMap {
           const aliasFor = getAliasDirective(fieldDef) || ''
           fields[aliasFor] = {
             type: fieldDef.type,
-            namedType: {kind: 'NamedType', name: {kind: 'Name', value: 'JSON'}},
+            namedType: {kind: 'NamedType' as any, name: {kind: 'Name' as any, value: 'JSON'}},
             isList: false,
             aliasFor: null,
             isReference: false,
@@ -120,8 +120,8 @@ export function getTypeMapFromGraphQLSchema(sdl: string): TypeMap {
 
           const aliasName = '_' + camelCase(`raw ${aliasFor}`)
           fields[aliasName] = {
-            type: {kind: 'NamedType', name: {kind: 'Name', value: 'JSON'}},
-            namedType: {kind: 'NamedType', name: {kind: 'Name', value: 'JSON'}},
+            type: {kind: 'NamedType' as any, name: {kind: 'Name' as any, value: 'JSON'}},
+            namedType: {kind: 'NamedType' as any, name: {kind: 'Name' as any, value: 'JSON'}},
             aliasFor,
             isList: false,
             isReference: false,
@@ -142,8 +142,8 @@ export function getTypeMapFromGraphQLSchema(sdl: string): TypeMap {
         if (!typeMap.scalars.includes(namedType.name.value)) {
           const aliasName = '_' + camelCase(`raw ${fieldDef.name.value}`)
           fields[aliasName] = {
-            type: {kind: 'NamedType', name: {kind: 'Name', value: 'JSON'}},
-            namedType: {kind: 'NamedType', name: {kind: 'Name', value: 'JSON'}},
+            type: {kind: 'NamedType' as any, name: {kind: 'Name' as any, value: 'JSON'}},
+            namedType: {kind: 'NamedType' as any, name: {kind: 'Name' as any, value: 'JSON'}},
             aliasFor: fieldDef.name.value,
             isList: false,
             isReference: false,
@@ -206,7 +206,7 @@ function getAliasDirective(field: FieldDefinitionNode): string | null {
     return null
   }
 
-  return valueFromAST(forArg.value, GraphQLString, {})
+  return valueFromAST(forArg.value, GraphQLString, {}) as any
 }
 
 function getReferenceDirective(field: FieldDefinitionNode) {
