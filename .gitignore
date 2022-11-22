@@ -5,3 +5,6 @@ lib/
 lib-es5/
 yarn.lock
 coverage
+.cache
+public
+.vercel
