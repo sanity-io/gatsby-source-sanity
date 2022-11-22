@@ -9,9 +9,7 @@
     },
     {
       "description": "Dependency updates to other package jsons than the root should always use the chore scope as they aren't published to npm",
-      "matchFiles": [
-        "examples/blog/package.json",
-      ],
+      "matchFiles": ["examples/blog/package.json"],
       "extends": [":semanticCommitTypeAll(chore)"],
       "groupSlug": "examples"
     }
