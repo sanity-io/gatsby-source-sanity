@@ -5,6 +5,18 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.6.0](https://github.com/sanity-io/gatsby-source-sanity/compare/v7.5.1...v7.6.0) (2022-11-22)
+
+### Features
+
+- support gatsby v5 ([#195](https://github.com/sanity-io/gatsby-source-sanity/issues/195)) ([063d533](https://github.com/sanity-io/gatsby-source-sanity/commit/063d5335f23f667a0e5e1b087d886d4ec9989a97))
+
+### Bug Fixes
+
+- **deps:** update dependency @sanity/client to v3 ([#178](https://github.com/sanity-io/gatsby-source-sanity/issues/178)) ([c7952b7](https://github.com/sanity-io/gatsby-source-sanity/commit/c7952b7fe4edcc80f9a2f0becb26812653f550fc))
+- **deps:** update dependency axios to v1 ([#185](https://github.com/sanity-io/gatsby-source-sanity/issues/185)) ([7b0d7e6](https://github.com/sanity-io/gatsby-source-sanity/commit/7b0d7e6efe272cc4d278bfda39547727f9f5221c))
+- **deps:** update dependency semver to ^7.3.8 ([#184](https://github.com/sanity-io/gatsby-source-sanity/issues/184)) ([504db33](https://github.com/sanity-io/gatsby-source-sanity/commit/504db337574e93e297ba2e99869ac851438dddf3))
+
 ## [7.5.1](https://github.com/sanity-io/gatsby-source-sanity/compare/v7.5.0...v7.5.1) (2022-09-29)
 
 ### Bug Fixes
