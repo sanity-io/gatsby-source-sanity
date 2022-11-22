@@ -8,10 +8,10 @@
     "start": "gatsby develop"
   },
   "dependencies": {
-    "gatsby": "^5.0.0",
+    "gatsby": "^5.1.0",
     "gatsby-plugin-image": "^3.1.0",
     "gatsby-plugin-sharp": "^5.1.0",
-    "gatsby-source-sanity": "7.5.2-valhalla.1",
+    "gatsby-source-sanity": "^7.6.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
