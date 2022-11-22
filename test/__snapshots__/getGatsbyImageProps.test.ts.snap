@@ -1,16 +1,16 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`[id] gatsbyImageData constrained jpg with width (600) 1`] = `
-Object {
+{
   "backgroundColor": undefined,
   "height": 400,
-  "images": Object {
-    "fallback": Object {
+  "images": {
+    "fallback": {
       "sizes": "(min-width: 300px) 300px, 100vw",
       "src": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=300&h=200&auto=format",
       "srcSet": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=300&h=200&auto=format 300w",
     },
-    "sources": Array [],
+    "sources": [],
   },
   "layout": "constrained",
   "width": 600,
@@ -18,16 +18,16 @@ Object {
 `;
 
 exports[`[id] gatsbyImageData fixed jpg 1`] = `
-Object {
+{
   "backgroundColor": undefined,
   "height": 200,
-  "images": Object {
-    "fallback": Object {
+  "images": {
+    "fallback": {
       "sizes": "300px",
       "src": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=300&h=200&auto=format",
       "srcSet": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=300&h=200&auto=format 300w",
     },
-    "sources": Array [],
+    "sources": [],
   },
   "layout": "fixed",
   "width": 300,
@@ -35,16 +35,16 @@ Object {
 `;
 
 exports[`[id] gatsbyImageData fullWidth jpg 1`] = `
-Object {
+{
   "backgroundColor": undefined,
   "height": 0.6666666666666666,
-  "images": Object {
-    "fallback": Object {
+  "images": {
+    "fallback": {
       "sizes": "100vw",
       "src": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=300&h=200&auto=format",
       "srcSet": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=300&h=200&auto=format 300w",
     },
-    "sources": Array [],
+    "sources": [],
   },
   "layout": "fullWidth",
   "width": 1,
@@ -52,16 +52,16 @@ Object {
 `;
 
 exports[`[id] gatsbyImageData jpeg with width/height (300x300) > original size, same aspect 1`] = `
-Object {
+{
   "backgroundColor": undefined,
   "height": 300,
-  "images": Object {
-    "fallback": Object {
+  "images": {
+    "fallback": {
       "sizes": "(min-width: 70px) 70px, 100vw",
       "src": "https://cdn.sanity.io/images/projectId/dataset/bf1942-70x70.jpg?w=70&h=70&auto=format",
       "srcSet": "https://cdn.sanity.io/images/projectId/dataset/bf1942-70x70.jpg?w=70&h=70&auto=format 70w",
     },
-    "sources": Array [],
+    "sources": [],
   },
   "layout": "constrained",
   "width": 300,
@@ -69,16 +69,16 @@ Object {
 `;
 
 exports[`[id] gatsbyImageData jpeg with width/height (320x240) > original size, different aspect 1`] = `
-Object {
+{
   "backgroundColor": undefined,
   "height": 240,
-  "images": Object {
-    "fallback": Object {
+  "images": {
+    "fallback": {
       "sizes": "(min-width: 70px) 70px, 100vw",
       "src": "https://cdn.sanity.io/images/projectId/dataset/bf1942-70x70.jpg?rect=0,9,70,53&w=70&h=53&auto=format",
       "srcSet": "https://cdn.sanity.io/images/projectId/dataset/bf1942-70x70.jpg?rect=0,9,70,53&w=70&h=53&auto=format 70w",
     },
-    "sources": Array [],
+    "sources": [],
   },
   "layout": "constrained",
   "width": 320,
@@ -86,16 +86,16 @@ Object {
 `;
 
 exports[`[id] gatsbyImageData jpg without params 1`] = `
-Object {
+{
   "backgroundColor": undefined,
   "height": 200,
-  "images": Object {
-    "fallback": Object {
+  "images": {
+    "fallback": {
       "sizes": "(min-width: 300px) 300px, 100vw",
       "src": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=300&h=200&auto=format",
       "srcSet": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=300&h=200&auto=format 300w",
     },
-    "sources": Array [],
+    "sources": [],
   },
   "layout": "constrained",
   "width": 300,
@@ -103,16 +103,16 @@ Object {
 `;
 
 exports[`[id] gatsbyImageData, jpeg with width (300) > original size 1`] = `
-Object {
+{
   "backgroundColor": undefined,
   "height": 300,
-  "images": Object {
-    "fallback": Object {
+  "images": {
+    "fallback": {
       "sizes": "(min-width: 70px) 70px, 100vw",
       "src": "https://cdn.sanity.io/images/projectId/dataset/bf1942-70x70.jpg?w=70&h=70&auto=format",
       "srcSet": "https://cdn.sanity.io/images/projectId/dataset/bf1942-70x70.jpg?w=70&h=70&auto=format 70w",
     },
-    "sources": Array [],
+    "sources": [],
   },
   "layout": "constrained",
   "width": 300,
@@ -120,16 +120,16 @@ Object {
 `;
 
 exports[`[ref] gatabyImageData jpg without params 1`] = `
-Object {
+{
   "backgroundColor": undefined,
   "height": 200,
-  "images": Object {
-    "fallback": Object {
+  "images": {
+    "fallback": {
       "sizes": "(min-width: 300px) 300px, 100vw",
       "src": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=300&h=200&auto=format",
       "srcSet": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=300&h=200&auto=format 300w",
     },
-    "sources": Array [],
+    "sources": [],
   },
   "layout": "constrained",
   "width": 300,
@@ -137,16 +137,16 @@ Object {
 `;
 
 exports[`[ref] gatsbyImageData constrained jpg with width (600) 1`] = `
-Object {
+{
   "backgroundColor": undefined,
   "height": 400,
-  "images": Object {
-    "fallback": Object {
+  "images": {
+    "fallback": {
       "sizes": "(min-width: 300px) 300px, 100vw",
       "src": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=300&h=200&auto=format",
       "srcSet": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=300&h=200&auto=format 300w",
     },
-    "sources": Array [],
+    "sources": [],
   },
   "layout": "constrained",
   "width": 600,
@@ -154,16 +154,16 @@ Object {
 `;
 
 exports[`[ref] gatsbyImageData fixed jpg 1`] = `
-Object {
+{
   "backgroundColor": undefined,
   "height": 200,
-  "images": Object {
-    "fallback": Object {
+  "images": {
+    "fallback": {
       "sizes": "300px",
       "src": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=300&h=200&auto=format",
       "srcSet": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=300&h=200&auto=format 300w",
     },
-    "sources": Array [],
+    "sources": [],
   },
   "layout": "fixed",
   "width": 300,
@@ -171,16 +171,16 @@ Object {
 `;
 
 exports[`[ref] gatsbyImageData fullWidth jpg 1`] = `
-Object {
+{
   "backgroundColor": undefined,
   "height": 0.6666666666666666,
-  "images": Object {
-    "fallback": Object {
+  "images": {
+    "fallback": {
       "sizes": "100vw",
       "src": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=300&h=200&auto=format",
       "srcSet": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=300&h=200&auto=format 300w",
     },
-    "sources": Array [],
+    "sources": [],
   },
   "layout": "fullWidth",
   "width": 1,
@@ -188,16 +188,16 @@ Object {
 `;
 
 exports[`[resolved] gatabyImageData jpg without params 1`] = `
-Object {
+{
   "backgroundColor": undefined,
   "height": 200,
-  "images": Object {
-    "fallback": Object {
+  "images": {
+    "fallback": {
       "sizes": "(min-width: 300px) 300px, 100vw",
       "src": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=300&h=200&auto=format",
       "srcSet": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=300&h=200&auto=format 300w",
     },
-    "sources": Array [],
+    "sources": [],
   },
   "layout": "constrained",
   "width": 300,
@@ -205,19 +205,19 @@ Object {
 `;
 
 exports[`[resolved] gatsbyImageData blurred placeholder 1`] = `
-Object {
+{
   "backgroundColor": undefined,
   "height": 200,
-  "images": Object {
-    "fallback": Object {
+  "images": {
+    "fallback": {
       "sizes": "(min-width: 300px) 300px, 100vw",
       "src": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=300&h=200&auto=format",
       "srcSet": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=300&h=200&auto=format 300w",
     },
-    "sources": Array [],
+    "sources": [],
   },
   "layout": "constrained",
-  "placeholder": Object {
+  "placeholder": {
     "fallback": "data:image/jpeg;base64,someString",
   },
   "width": 300,
@@ -225,16 +225,16 @@ Object {
 `;
 
 exports[`[resolved] gatsbyImageData constrained jpg with width (600) 1`] = `
-Object {
+{
   "backgroundColor": undefined,
   "height": 400,
-  "images": Object {
-    "fallback": Object {
+  "images": {
+    "fallback": {
       "sizes": "(min-width: 300px) 300px, 100vw",
       "src": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=300&h=200&auto=format",
       "srcSet": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=300&h=200&auto=format 300w",
     },
-    "sources": Array [],
+    "sources": [],
   },
   "layout": "constrained",
   "width": 600,
@@ -242,16 +242,16 @@ Object {
 `;
 
 exports[`[resolved] gatsbyImageData dominantColor placeholder 1`] = `
-Object {
+{
   "backgroundColor": "rebeccapurple",
   "height": 200,
-  "images": Object {
-    "fallback": Object {
+  "images": {
+    "fallback": {
       "sizes": "(min-width: 300px) 300px, 100vw",
       "src": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=300&h=200&auto=format",
       "srcSet": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=300&h=200&auto=format 300w",
     },
-    "sources": Array [],
+    "sources": [],
   },
   "layout": "constrained",
   "width": 300,
@@ -259,16 +259,16 @@ Object {
 `;
 
 exports[`[resolved] gatsbyImageData fixed jpg 1`] = `
-Object {
+{
   "backgroundColor": undefined,
   "height": 200,
-  "images": Object {
-    "fallback": Object {
+  "images": {
+    "fallback": {
       "sizes": "300px",
       "src": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=300&h=200&auto=format",
       "srcSet": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=300&h=200&auto=format 300w",
     },
-    "sources": Array [],
+    "sources": [],
   },
   "layout": "fixed",
   "width": 300,
@@ -276,16 +276,16 @@ Object {
 `;
 
 exports[`[resolved] gatsbyImageData fullWidth jpg 1`] = `
-Object {
+{
   "backgroundColor": undefined,
   "height": 0.6666666666666666,
-  "images": Object {
-    "fallback": Object {
+  "images": {
+    "fallback": {
       "sizes": "100vw",
       "src": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=300&h=200&auto=format",
       "srcSet": "https://cdn.sanity.io/images/projectId/dataset/abc123-300x200.jpg?w=300&h=200&auto=format 300w",
     },
-    "sources": Array [],
+    "sources": [],
   },
   "layout": "fullWidth",
   "width": 1,
@@ -293,11 +293,11 @@ Object {
 `;
 
 exports[`[resolved] gatsbyImageData webp dominant color 1`] = `
-Object {
+{
   "backgroundColor": undefined,
   "height": 2832,
-  "images": Object {
-    "fallback": Object {
+  "images": {
+    "fallback": {
       "sizes": "(min-width: 4240px) 4240px, 100vw",
       "src": "https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=4240&h=2832&auto=format",
       "srcSet": "https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?rect=3,0,4235,2832&w=320&h=214&auto=format 320w,
@@ -314,7 +314,7 @@ https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=3840&h=25
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=4096&h=2736&auto=format 4096w,
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=4240&h=2832&auto=format 4240w",
     },
-    "sources": Array [],
+    "sources": [],
   },
   "layout": "constrained",
   "width": 4240,
@@ -322,11 +322,11 @@ https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=4240&h=28
 `;
 
 exports[`[resolved] gatsbyImageData webp fullWidth 1`] = `
-Object {
+{
   "backgroundColor": undefined,
   "height": 0.6679245283018868,
-  "images": Object {
-    "fallback": Object {
+  "images": {
+    "fallback": {
       "sizes": "100vw",
       "src": "https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?rect=3,0,4235,2832&w=320&h=214&auto=format",
       "srcSet": "https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?rect=3,0,4235,2832&w=320&h=214&auto=format 320w,
@@ -342,7 +342,7 @@ https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?rect=1,0,42
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=3840&h=2565&auto=format 3840w,
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=4096&h=2736&auto=format 4096w",
     },
-    "sources": Array [],
+    "sources": [],
   },
   "layout": "fullWidth",
   "width": 1,
@@ -350,11 +350,11 @@ https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=4096&h=27
 `;
 
 exports[`[resolved] gatsbyImageData webp without params 1`] = `
-Object {
+{
   "backgroundColor": undefined,
   "height": 2832,
-  "images": Object {
-    "fallback": Object {
+  "images": {
+    "fallback": {
       "sizes": "(min-width: 4240px) 4240px, 100vw",
       "src": "https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=4240&h=2832&auto=format",
       "srcSet": "https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?rect=3,0,4235,2832&w=320&h=214&auto=format 320w,
@@ -371,7 +371,7 @@ https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=3840&h=25
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=4096&h=2736&auto=format 4096w,
 https://cdn.sanity.io/images/projectId/dataset/def456-4240x2832.webp?w=4240&h=2832&auto=format 4240w",
     },
-    "sources": Array [],
+    "sources": [],
   },
   "layout": "constrained",
   "width": 4240,
