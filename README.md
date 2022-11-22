@@ -1,4 +1,4 @@
-# gatsby-source-sanity
+# gatsby-source-sanity<!-- omit in toc -->
 
 Gatsby source plugin for pulling data from [Sanity.io](https://www.sanity.io/) into [Gatsby](https://www.gatsbyjs.com) websites. Develop with real-time preview of all content changes. Compatible with `gatsby-plugin-image`. Uses your project's GraphQL schema definitions to avoid accidental missing fields (no dummy-content needed).
 
@@ -9,7 +9,7 @@ Get up and running in minutes with a fully configured starter project:
 
 [![Watch a video about the company website built with Gatsby using Sanity.io as a headless CMS](https://cdn.sanity.io/images/3do82whm/production/4f652e6d114e7010aa633b81cbcb97c335980fc8-1920x1080.png?w=500)](https://www.youtube.com/watch?v=STtpXBvJmDA)
 
-## Table of contents
+## Table of contents<!-- omit in toc -->
 
 - [Install](#install)
 - [Basic usage](#basic-usage)
@@ -17,6 +17,8 @@ Get up and running in minutes with a fully configured starter project:
 - [Preview of unpublished content](#preview-of-unpublished-content)
 - [GraphQL API](#graphql-api)
 - [Using images](#using-images)
+  - [Using Gatsby's Image CDN (beta)](#using-gatsbys-image-cdn-beta)
+  - [Using images outside of GraphQL](#using-images-outside-of-graphql)
 - [Generating pages](#generating-pages)
 - ["Raw" fields](#raw-fields)
 - [Portable Text / Block Content](#portable-text--block-content)
@@ -26,6 +28,7 @@ Get up and running in minutes with a fully configured starter project:
 - [How this source plugin works](#how-this-source-plugin-works)
 - [Credits](#credits)
 - [Develop](#develop)
+  - [Release new version](#release-new-version)
 
 [See the getting started video](https://www.youtube.com/watch?v=qU4lFYp3KiQ)
 
