@@ -5,6 +5,12 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.6.1](https://github.com/sanity-io/gatsby-source-sanity/compare/v7.6.0...v7.6.1) (2022-12-14)
+
+### Bug Fixes
+
+- **deps:** Revert axios v1 bump in [#185](https://github.com/sanity-io/gatsby-source-sanity/issues/185) ([#207](https://github.com/sanity-io/gatsby-source-sanity/issues/207)) ([820c7b2](https://github.com/sanity-io/gatsby-source-sanity/commit/820c7b2849dd831308cd0d213f7de60007849993))
+
 ## [7.6.0](https://github.com/sanity-io/gatsby-source-sanity/compare/v7.5.1...v7.6.0) (2022-11-22)
 
 ### Features
