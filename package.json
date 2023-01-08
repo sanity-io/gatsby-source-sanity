@@ -56,7 +56,7 @@
     "url-parse": "^1.5.10"
   },
   "devDependencies": {
-    "@sanity/semantic-release-preset": "^2.0.2",
+    "@sanity/semantic-release-preset": "^3.0.2",
     "@types/debug": "^4.1.7",
     "@types/jest": "^29.2.3",
     "@types/lodash": "^4.14.189",
