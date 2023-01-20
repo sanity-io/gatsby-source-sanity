@@ -5,6 +5,13 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.6.2](https://github.com/sanity-io/gatsby-source-sanity/compare/v7.6.1...v7.6.2) (2023-01-20)
+
+### Bug Fixes
+
+- **deps:** update dependencies (non-major) ([#201](https://github.com/sanity-io/gatsby-source-sanity/issues/201)) ([991b913](https://github.com/sanity-io/gatsby-source-sanity/commit/991b91362bd8df8aa360ec7e77f2c87ae7d1a5de))
+- getDocumentIds pagination query if custom \_id values are used ([#208](https://github.com/sanity-io/gatsby-source-sanity/issues/208)) ([a3357dc](https://github.com/sanity-io/gatsby-source-sanity/commit/a3357dc822019f30571fcf35bac1f7e762fbaf8b))
+
 ## [7.6.1](https://github.com/sanity-io/gatsby-source-sanity/compare/v7.6.0...v7.6.1) (2022-12-14)
 
 ### Bug Fixes
