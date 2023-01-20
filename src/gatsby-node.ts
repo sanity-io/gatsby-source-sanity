@@ -201,8 +201,8 @@ const getDocumentIds = async (client: SanityClient): Promise<string[]> => {
   while (true) {
     const batch = await client.fetch<string[]>(
       prevId !== undefined
-        ? `*[!(_type match "system.**") && _id > $prevId][0...$batchSize]._id`
-        : `*[!(_type match "system.**")][0...$batchSize]._id`,
+        ? `*[!(_type match "system.**") && _id > $prevId]|order(_id asc)[0...$batchSize]._id`
+        : `*[!(_type match "system.**")]|order(_id asc)[0...$batchSize]._id`,
       {
         prevId: prevId || null,
         batchSize,
