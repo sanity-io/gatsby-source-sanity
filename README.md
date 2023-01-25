@@ -40,7 +40,7 @@ From the command line, use npm (node package manager) to install the plugin:
 npm install gatsby-source-sanity gatsby-plugin-image
 ```
 
-⚠️ Warning: If using Gatsby v4, make sure you've installed version 7.1.0 or higher. The plugin has a dependency on `gatsby-plugin-image` which itself has dependencies. Check [`gatsb-plugin-image` README](https://www.gatsbyjs.com/plugins/gatsby-plugin-image/#installation) for instructions.
+⚠️ Warning: If using Gatsby v4, make sure you've installed version 7.1.0 or higher. The plugin has a dependency on `gatsby-plugin-image` which itself has dependencies. Check [`gatsby-plugin-image` README](https://www.gatsbyjs.com/plugins/gatsby-plugin-image/#installation) for instructions.
 
 In the `gatsby-config.js` file in the Gatsby project's root directory, add the plugin configuration inside of the `plugins` section:
 
