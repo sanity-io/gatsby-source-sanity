@@ -37,7 +37,7 @@
     "watch": "tsc --watch & tsc && tsc -t ES5 --outDir lib-es5 --watch"
   },
   "dependencies": {
-    "@sanity/client": "^3.4.1",
+    "@sanity/client": "^4.0.1",
     "@sanity/image-url": "^1.0.2",
     "@sanity/mutator": "^2.33.2",
     "@types/url-parse": "^1.4.8",
