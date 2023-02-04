@@ -8,16 +8,16 @@
     "start": "gatsby develop"
   },
   "dependencies": {
-    "gatsby": "^5.4.2",
-    "gatsby-plugin-image": "^3.4.0",
-    "gatsby-plugin-sharp": "^5.4.0",
-    "gatsby-source-sanity": "7.6.1",
+    "gatsby": "^5.5.0",
+    "gatsby-plugin-image": "^3.5.0",
+    "gatsby-plugin-sharp": "^5.5.0",
+    "gatsby-source-sanity": "7.6.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.13",
-    "gatsby-plugin-postcss": "^6.4.0",
+    "gatsby-plugin-postcss": "^6.5.0",
     "postcss": "^8.4.21",
     "tailwindcss": "^3.2.4"
   },
