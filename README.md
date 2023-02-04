@@ -40,7 +40,7 @@ From the command line, use npm (node package manager) to install the plugin:
 npm install gatsby-source-sanity gatsby-plugin-image
 ```
 
-⚠️ Warning: If using Gatsby v4, make sure you've installed version 7.1.0 or higher. The plugin has a dependency on `gatsby-plugin-image` which itself has dependencies. Check [`gatsb-plugin-image` README](https://www.gatsbyjs.com/plugins/gatsby-plugin-image/#installation) for instructions.
+⚠️ Warning: If using Gatsby v4, make sure you've installed version 7.1.0 or higher. The plugin has a dependency on `gatsby-plugin-image` which itself has dependencies. Check [`gatsby-plugin-image` README](https://www.gatsbyjs.com/plugins/gatsby-plugin-image/#installation) for instructions.
 
 In the `gatsby-config.js` file in the Gatsby project's root directory, add the plugin configuration inside of the `plugins` section:
 
@@ -81,15 +81,15 @@ Explore `http://localhost:8000/___graphql` after running `gatsby develop` to und
 
 ## Options
 
-| Options         | Type    | Default   | Description                                                                                                                                                        |
-| --------------- | ------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| projectId       | string  |           | **[required]** Your Sanity project's ID                                                                                                                            |
-| dataset         | string  |           | **[required]** The dataset to fetch from                                                                                                                           |
-| token           | string  |           | Authentication token for fetching data from private datasets, or when using `overlayDrafts` [Learn more](https://www.sanity.io/docs/http-auth)                     |
-| graphqlTag      | string  | `default` | If the Sanity GraphQL API was deployed using `--tag <name>`, use this to specify the tag name.                                                                     |
-| overlayDrafts   | boolean | `false`   | Set to `true` in order for drafts to replace their published version. By default, drafts will be skipped.                                                          |
-| watchMode       | boolean | `false`   | Set to `true` to keep a listener open and update with the latest changes in realtime. If you add a `token` you will get all content updates down to each keypress. |
-| watchModeBuffer | number  | `150`     | How many milliseconds to wait on watchMode changes before applying them to Gatsby's GraphQL layer. Introduced in 7.2.0.                                            |
+| Options         | Type    | Default   | Description                                                                                                                                                         |
+| --------------- | ------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| projectId       | string  |           | **[required]** Your Sanity project's ID                                                                                                                             |
+| dataset         | string  |           | **[required]** The dataset to fetch from                                                                                                                            |
+| token           | string  |           | Authentication token for fetching data from private datasets, or when using `overlayDrafts` [Learn more](https://www.sanity.io/docs/http-auth)                      |
+| graphqlTag      | string  | `default` | If the Sanity GraphQL API was deployed using `--tag <name>`, use this to specify the tag name.                                                                      |
+| overlayDrafts   | boolean | `false`   | Set to `true` in order for drafts to replace their published version. By default, drafts will be skipped.                                                           |
+| watchMode       | boolean | `false`   | Set to `true` to keep a listener open and update with the latest changes in realtime. If you add a `token` you will get all content updates down to each key press. |
+| watchModeBuffer | number  | `150`     | How many milliseconds to wait on watchMode changes before applying them to Gatsby's GraphQL layer. Introduced in 7.2.0.                                             |
 
 ## Preview of unpublished content
 
