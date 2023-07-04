@@ -1,7 +1,7 @@
 import {Actions, NodePluginArgs} from 'gatsby'
 import {extractWithPath} from '@sanity/mutator'
 import {specifiedScalarTypes} from 'gatsby/graphql'
-import {set, startCase, camelCase, cloneDeep, upperFirst} from 'lodash'
+import {get, set, startCase, camelCase, cloneDeep, upperFirst} from 'lodash'
 import {SanityDocument} from '../types/sanity'
 import {safeId, unprefixId} from './documentIds'
 import {TypeMap} from './remoteGraphQLSchema'
@@ -35,6 +35,9 @@ export function toGatsbyNode(doc: SanityDocument, options: ProcessingOptions): S
   const rawAliases = getRawAliases(doc, options)
   const safe = prefixConflictingKeys(doc)
   const withRefs = rewriteNodeReferences(safe, options)
+
+  addInternalTypesToUnionFields(withRefs, options)
+
   const type = getTypeName(doc._type)
   const urlBuilder = imageUrlBuilder(options.client)
 
@@ -148,4 +151,55 @@ function rewriteNodeReferences(doc: SanityDocument, options: ProcessingOptions) 
   })
 
   return newDoc
+}
+// Adds `internal: { type: 'TheTypeName' }` to union fields nodes, to allow runtime
+// type resolution.
+function addInternalTypesToUnionFields(doc: SanityDocument, options: ProcessingOptions) {
+  const {typeMap} = options
+  const types = extractWithPath('..[_type]', doc)
+
+  const typeName = getTypeName(doc._type)
+  const thisType = typeMap.objects[typeName]
+  if (!thisType) {
+    return
+  }
+
+  for (const type of types) {
+    // Not needed for references or root objects
+    if (type.value === 'reference' || type.path.length < 2) {
+      continue
+    }
+
+    //  extractWithPath returns integers to indicate array indices for list types
+    const isListType = Number.isInteger(type.path[type.path.length - 2])
+
+    //  For list types we need to go up an extra level to get the actual field name
+    const parentOffset = isListType ? 3 : 2
+
+    const parentNode =
+      type.path.length === parentOffset ? doc : get(doc, type.path.slice(0, -parentOffset))
+    const parentTypeName = getTypeName(parentNode._type)
+    const parentType = typeMap.objects[parentTypeName]
+
+    if (!parentType) {
+      continue
+    }
+
+    const field = parentType.fields[type.path[type.path.length - parentOffset]]
+
+    if (!field) {
+      continue
+    }
+
+    const fieldTypeName = getTypeName(field.namedType.name.value)
+
+    // All this was just to check if we're dealing with a union field
+    if (!typeMap.unions[fieldTypeName]) {
+      continue
+    }
+    const typeName = getTypeName(type.value)
+
+    // Add the internal type to the field
+    set(doc, type.path.slice(0, -1).concat('internal'), {type: typeName})
+  }
 }
