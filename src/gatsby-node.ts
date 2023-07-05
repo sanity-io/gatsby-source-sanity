@@ -43,6 +43,7 @@ import {
 } from './util/remoteGraphQLSchema'
 import {rewriteGraphQLSchema} from './util/rewriteGraphQLSchema'
 import validateConfig, {PluginConfig} from './util/validateConfig'
+import {ProcessingOptions} from './util/normalize'
 
 let coreSupportsOnPluginInit: 'unstable' | 'stable' | undefined
 
@@ -101,7 +102,7 @@ const initializePlugin = async (
     stateCache[graphqlSdlKey] = graphqlSdl
 
     reporter.info('[sanity] Stitching GraphQL schemas from SDL')
-    const typeMap = getTypeMapFromGraphQLSchema(api)
+    const typeMap = getTypeMapFromGraphQLSchema(api, config.typePrefix)
     const typeMapKey = getCacheKey(config, CACHE_KEYS.TYPE_MAP)
     stateCache[typeMapKey] = typeMap
   } catch (err: any) {
@@ -233,7 +234,7 @@ export const sourceNodes: GatsbyNode['sourceNodes'] = async (
   const url = client.getUrl(`/data/export/${dataset}?tag=sanity.gatsby.source-nodes`)
 
   // Stitches together required methods from within the context and actions objects
-  const processingOptions = {
+  const processingOptions: ProcessingOptions = {
     typeMap,
     createNodeId,
     createNode,
@@ -241,6 +242,7 @@ export const sourceNodes: GatsbyNode['sourceNodes'] = async (
     createParentChildLink,
     overlayDrafts,
     client,
+    typePrefix: config.typePrefix,
   }
 
   // PREVIEW UPDATES THROUGH WEBHOOKS

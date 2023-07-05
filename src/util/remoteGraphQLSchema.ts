@@ -78,7 +78,7 @@ export async function getRemoteGraphQLSchema(client: SanityClient, config: Plugi
   }
 }
 
-export function getTypeMapFromGraphQLSchema(sdl: string): TypeMap {
+export function getTypeMapFromGraphQLSchema(sdl: string, typePrefix: string | undefined): TypeMap {
   const typeMap: TypeMap = {objects: {}, scalars: [], unions: {}}
   const remoteSchema = parse(sdl)
   const groups = {
@@ -100,7 +100,7 @@ export function getTypeMapFromGraphQLSchema(sdl: string): TypeMap {
       return acc
     }
 
-    const name = getTypeName(typeDef.name.value)
+    const name = getTypeName(typeDef.name.value, typePrefix)
     acc[name] = {
       name,
       kind: 'Object',
@@ -158,10 +158,10 @@ export function getTypeMapFromGraphQLSchema(sdl: string): TypeMap {
 
   const unions: {[key: string]: UnionTypeDef} = {}
   typeMap.unions = groups.UnionTypeDefinition.reduce((acc, typeDef: UnionTypeDefinitionNode) => {
-    const name = getTypeName(typeDef.name.value)
+    const name = getTypeName(typeDef.name.value, typePrefix)
     acc[name] = {
       name,
-      types: (typeDef.types || []).map((type) => getTypeName(type.name.value)),
+      types: (typeDef.types || []).map((type) => getTypeName(type.name.value, typePrefix)),
     }
     return acc
   }, unions)

@@ -20,7 +20,7 @@ export default function getSyncWithGatsby(props: {
   args: SourceNodesArgs
 }): SyncWithGatsby {
   const {documents, gatsbyNodes, processingOptions, args} = props
-  const {typeMap, overlayDrafts} = processingOptions
+  const {typeMap, overlayDrafts, typePrefix} = processingOptions
   const {reporter, actions} = args
   const {createNode, deleteNode} = actions
 
@@ -38,7 +38,7 @@ export default function getSyncWithGatsby(props: {
 
     const doc = draft || published
     if (doc) {
-      const type = getTypeName(doc._type)
+      const type = getTypeName(doc._type, typePrefix)
       if (!typeMap.objects[type]) {
         reporter.warn(
           `[sanity] Document "${doc._id}" has type ${doc._type} (${type}), which is not declared in the GraphQL schema. Make sure you run "graphql deploy". Skipping document.`,

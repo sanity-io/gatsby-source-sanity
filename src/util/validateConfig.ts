@@ -11,6 +11,7 @@ export interface PluginConfig extends PluginOptions {
   overlayDrafts?: boolean
   watchMode?: boolean
   watchModeBuffer?: number
+  typePrefix?: string
 }
 
 export default function validateConfig(

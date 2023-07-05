@@ -313,7 +313,7 @@ function maybeRewriteFieldName(
   }
 
   const parentTypeName = parent.name.value
-  const newFieldName = getConflictFreeFieldName(field.name.value)
+  const newFieldName = getConflictFreeFieldName(field.name.value, context.config.typePrefix)
 
   context.reporter.warn(
     `[sanity] Type \`${parentTypeName}\` has field with name \`${field.name.value}\`, which conflicts with Gatsby's internal properties. Renaming to \`${newFieldName}\``,
