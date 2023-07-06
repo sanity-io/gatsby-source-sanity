@@ -5,6 +5,12 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.7.0](https://github.com/sanity-io/gatsby-source-sanity/compare/v7.6.3...v7.7.0) (2023-07-06)
+
+### Features
+
+- use `[@link](https://github.com/link)` directive instead of custom resolvers ([#242](https://github.com/sanity-io/gatsby-source-sanity/issues/242)) ([834e5bf](https://github.com/sanity-io/gatsby-source-sanity/commit/834e5bf2f666f94328901886939358d2eae071b1))
+
 ## [7.6.3](https://github.com/sanity-io/gatsby-source-sanity/compare/v7.6.2...v7.6.3) (2023-02-04)
 
 ### Bug Fixes
