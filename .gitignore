@@ -9,3 +9,4 @@ coverage
 public
 .vercel
 .vscode
+.DS_Store

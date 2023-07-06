@@ -19,6 +19,7 @@ import {
   DirectiveNode,
   ScalarTypeDefinitionNode,
   specifiedScalarTypes,
+  Kind,
 } from 'gatsby/graphql'
 import {camelCase} from 'lodash'
 import {RESTRICTED_NODE_FIELDS, getConflictFreeFieldName} from './normalize'
@@ -92,14 +93,14 @@ function transformObjectTypeDefinition(
 
   // Implement Gatsby node interface if it is a document
   if (isDocumentType(node)) {
-    interfaces.push({kind: 'NamedType' as any, name: {kind: 'Name' as any, value: 'Node'}})
+    interfaces.push({kind: Kind.NAMED_TYPE, name: {kind: Kind.NAME, value: 'Node'}})
   }
 
   return {
     ...node,
     name: {...node.name, value: getTypeName(node.name.value)},
     interfaces,
-    directives: [{kind: 'Directive' as any, name: {kind: 'Name' as any, value: 'dontInfer'}}],
+    directives: [{kind: Kind.DIRECTIVE, name: {kind: Kind.NAME, value: 'dontInfer'}}],
     fields: [
       ...fields
         .filter((field) => !isJsonAlias(field))
@@ -122,15 +123,15 @@ function getRawFields(
 
       acc.push({
         kind: field.kind,
-        name: {kind: 'Name' as any, value: '_' + camelCase(`raw ${name}`)},
-        type: {kind: 'NamedType' as any, name: {kind: 'Name' as any, value: 'JSON'}},
+        name: {kind: Kind.NAME, value: '_' + camelCase(`raw ${name}`)},
+        type: {kind: Kind.NAMED_TYPE, name: {kind: Kind.NAME, value: 'JSON'}},
         arguments: [
           {
-            kind: 'InputValueDefinition' as any,
-            name: {kind: 'Name' as any, value: 'resolveReferences'},
+            kind: Kind.INPUT_VALUE_DEFINITION,
+            name: {kind: Kind.NAME, value: 'resolveReferences'},
             type: {
-              kind: 'NamedType' as any,
-              name: {kind: 'Name' as any, value: 'SanityResolveReferencesConfiguration'},
+              kind: Kind.NAMED_TYPE,
+              name: {kind: Kind.NAME, value: 'SanityResolveReferencesConfiguration'},
             },
           },
         ],
@@ -196,19 +197,19 @@ function isJsonAlias(field: FieldDefinitionNode): boolean {
 
 function makeBlockField(name: string): FieldDefinitionNode {
   return {
-    kind: 'FieldDefinition' as any,
+    kind: Kind.FIELD_DEFINITION,
     name: {
-      kind: 'Name' as any,
+      kind: Kind.NAME,
       value: name,
     },
     arguments: [],
     directives: [],
     type: {
-      kind: 'ListType' as any,
+      kind: Kind.LIST_TYPE,
       type: {
-        kind: 'NamedType' as any,
+        kind: Kind.NAMED_TYPE,
         name: {
-          kind: 'Name' as any,
+          kind: Kind.NAME,
           value: 'SanityBlock',
         },
       },
@@ -224,12 +225,16 @@ function makeNullable(nodeType: TypeNode): TypeNode {
   if (nodeType.kind === 'ListType') {
     const unwrapped = maybeRewriteType(unwrapType(nodeType))
     return {
-      kind: 'ListType' as any,
+      kind: Kind.LIST_TYPE,
       type: makeNullable(unwrapped),
     }
   }
 
   return maybeRewriteType(nodeType.type) as NamedTypeNode
+}
+
+function isReferenceField(field: FieldDefinitionNode): boolean {
+  return (field.directives || []).some((dir) => dir.name.value === 'reference')
 }
 
 function transformFieldNodeAst(
@@ -247,8 +252,22 @@ function transformFieldNodeAst(
 
   if (field.type.kind === 'NamedType' && field.type.name.value === 'Date') {
     field.directives.push({
-      kind: 'Directive' as any,
-      name: {kind: 'Name' as any, value: 'dateformat'},
+      kind: Kind.DIRECTIVE,
+      name: {kind: Kind.NAME, value: 'dateformat'},
+    })
+  }
+
+  if (isReferenceField(node)) {
+    field.directives.push({
+      kind: Kind.DIRECTIVE,
+      name: {kind: Kind.NAME, value: 'link'},
+      arguments: [
+        {
+          kind: Kind.ARGUMENT,
+          name: {kind: Kind.NAME, value: 'from'},
+          value: {kind: Kind.STRING, value: `${field.name.value}._ref`},
+        },
+      ],
     })
   }
 
@@ -257,12 +276,11 @@ function transformFieldNodeAst(
 
 function rewireIdType(nodeType: TypeNode): TypeNode {
   if (nodeType.kind === 'NamedType' && nodeType.name.value === 'ID') {
-    return {...nodeType, name: {kind: 'Name' as any, value: 'String'}}
+    return {...nodeType, name: {kind: Kind.NAME, value: 'String'}}
   }
 
   return nodeType
 }
-
 function maybeRewriteType(nodeType: TypeNode): TypeNode {
   const type = nodeType as NamedTypeNode
   if (typeof type.name === 'undefined') {
@@ -271,14 +289,14 @@ function maybeRewriteType(nodeType: TypeNode): TypeNode {
 
   // Gatsby has a date type, but not a datetime, so rewire it
   if (type.name.value === 'DateTime') {
-    return {...type, name: {kind: 'Name' as any, value: 'Date'}}
+    return {...type, name: {kind: Kind.NAME, value: 'Date'}}
   }
 
   if (builtins.includes(type.name.value)) {
     return type
   }
 
-  return {...type, name: {kind: 'Name' as any, value: getTypeName(type.name.value)}}
+  return {...type, name: {kind: Kind.NAME, value: getTypeName(type.name.value)}}
 }
 
 function maybeRewriteFieldName(
@@ -321,17 +339,17 @@ function getTypeName(name: string) {
 
 function getResolveReferencesConfigType(): DefinitionNode {
   return {
-    kind: 'InputObjectTypeDefinition' as any,
-    name: {kind: 'Name' as any, value: 'SanityResolveReferencesConfiguration'},
+    kind: Kind.INPUT_OBJECT_TYPE_DEFINITION,
+    name: {kind: Kind.NAME, value: 'SanityResolveReferencesConfiguration'},
     fields: [
       {
-        kind: 'InputValueDefinition' as any,
-        name: {kind: 'Name' as any, value: 'maxDepth'},
+        kind: Kind.INPUT_VALUE_DEFINITION,
+        name: {kind: Kind.NAME, value: 'maxDepth'},
         type: {
-          kind: 'NonNullType' as any,
-          type: {kind: 'NamedType' as any, name: {kind: 'Name' as any, value: 'Int'}},
+          kind: Kind.NON_NULL_TYPE,
+          type: {kind: Kind.NAMED_TYPE, name: {kind: Kind.NAME, value: 'Int'}},
         },
-        description: {kind: 'StringValue' as any, value: 'Max depth to resolve references to'},
+        description: {kind: Kind.STRING, value: 'Max depth to resolve references to'},
       },
     ],
   }
