@@ -87,7 +87,10 @@ export function getTypeName(type: string, typePrefix: string | undefined) {
     return typeName
   }
 
-  return `${typePrefix ?? ''}Sanity${typeName.replace(/\s+/g, '').replace(/^Sanity/, '')}`
+  const sanitized = typeName.replace(/\s+/g, '')
+
+  const prefix = `${typePrefix ?? ''}${sanitized.startsWith('Sanity') ? '' : 'Sanity'}`
+  return sanitized.startsWith(prefix) ? sanitized : `${prefix}${sanitized}`
 }
 
 // {foo: 'bar', children: []} => {foo: 'bar', sanityChildren: []}

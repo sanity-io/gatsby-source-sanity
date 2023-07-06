@@ -22,7 +22,7 @@ import {
   Kind,
 } from 'gatsby/graphql'
 import {camelCase} from 'lodash'
-import {RESTRICTED_NODE_FIELDS, getConflictFreeFieldName} from './normalize'
+import {RESTRICTED_NODE_FIELDS, getConflictFreeFieldName, getTypeName} from './normalize'
 import {PluginConfig} from './validateConfig'
 
 interface AstRewriterContext {
@@ -87,18 +87,20 @@ function transformObjectTypeDefinition(
     .map(getJsonAliasTarget)
     .filter((target): target is string => target !== null)
 
-  const blockFields = jsonTargets.map(makeBlockField)
-  const interfaces = (node.interfaces || []).map(maybeRewriteType) as NamedTypeNode[]
+  const blockFields = jsonTargets.map((target) => makeBlockField(target, context))
+  const interfaces = (node.interfaces || []).map((iface) =>
+    maybeRewriteType(iface, context),
+  ) as NamedTypeNode[]
   const rawFields = getRawFields(fields, scalars)
 
   // Implement Gatsby node interface if it is a document
-  if (isDocumentType(node)) {
+  if (isDocumentType(node, context)) {
     interfaces.push({kind: Kind.NAMED_TYPE, name: {kind: Kind.NAME, value: 'Node'}})
   }
 
   return {
     ...node,
-    name: {...node.name, value: getTypeName(node.name.value)},
+    name: {...node.name, value: getTypeName(node.name.value, context.config.typePrefix)},
     interfaces,
     directives: [{kind: Kind.DIRECTIVE, name: {kind: Kind.NAME, value: 'dontInfer'}}],
     fields: [
@@ -151,8 +153,8 @@ function transformUnionTypeDefinition(
 ): UnionTypeDefinitionNode {
   return {
     ...node,
-    types: (node.types || []).map(maybeRewriteType) as NamedTypeNode[],
-    name: {...node.name, value: getTypeName(node.name.value)},
+    types: (node.types || []).map((type) => maybeRewriteType(type, context)) as NamedTypeNode[],
+    name: {...node.name, value: getTypeName(node.name.value, context.config.typePrefix)},
   }
 }
 
@@ -164,7 +166,7 @@ function transformInterfaceTypeDefinition(
   return {
     ...node,
     fields: fields.map((field) => transformFieldNodeAst(field, node, context)),
-    name: {...node.name, value: getTypeName(node.name.value)},
+    name: {...node.name, value: getTypeName(node.name.value, context.config.typePrefix)},
   }
 }
 
@@ -195,7 +197,7 @@ function isJsonAlias(field: FieldDefinitionNode): boolean {
   return getJsonAliasTarget(field) !== null
 }
 
-function makeBlockField(name: string): FieldDefinitionNode {
+function makeBlockField(name: string, context: AstRewriterContext): FieldDefinitionNode {
   return {
     kind: Kind.FIELD_DEFINITION,
     name: {
@@ -210,27 +212,27 @@ function makeBlockField(name: string): FieldDefinitionNode {
         kind: Kind.NAMED_TYPE,
         name: {
           kind: Kind.NAME,
-          value: 'SanityBlock',
+          value: getTypeName('Block', context.config.typePrefix),
         },
       },
     },
   }
 }
 
-function makeNullable(nodeType: TypeNode): TypeNode {
+function makeNullable(nodeType: TypeNode, context: AstRewriterContext): TypeNode {
   if (nodeType.kind === 'NamedType') {
-    return maybeRewriteType(nodeType)
+    return maybeRewriteType(nodeType, context)
   }
 
   if (nodeType.kind === 'ListType') {
-    const unwrapped = maybeRewriteType(unwrapType(nodeType))
+    const unwrapped = maybeRewriteType(unwrapType(nodeType), context)
     return {
       kind: Kind.LIST_TYPE,
-      type: makeNullable(unwrapped),
+      type: makeNullable(unwrapped, context),
     }
   }
 
-  return maybeRewriteType(nodeType.type) as NamedTypeNode
+  return maybeRewriteType(nodeType.type, context) as NamedTypeNode
 }
 
 function isReferenceField(field: FieldDefinitionNode): boolean {
@@ -245,7 +247,7 @@ function transformFieldNodeAst(
   const field = {
     ...node,
     name: maybeRewriteFieldName(node, parent, context),
-    type: rewireIdType(makeNullable(node.type)),
+    type: rewireIdType(makeNullable(node.type, context)),
     description: undefined,
     directives: [] as DirectiveNode[],
   }
@@ -281,7 +283,7 @@ function rewireIdType(nodeType: TypeNode): TypeNode {
 
   return nodeType
 }
-function maybeRewriteType(nodeType: TypeNode): TypeNode {
+function maybeRewriteType(nodeType: TypeNode, context: AstRewriterContext): TypeNode {
   const type = nodeType as NamedTypeNode
   if (typeof type.name === 'undefined') {
     return nodeType
@@ -296,7 +298,10 @@ function maybeRewriteType(nodeType: TypeNode): TypeNode {
     return type
   }
 
-  return {...type, name: {kind: Kind.NAME, value: getTypeName(type.name.value)}}
+  return {
+    ...type,
+    name: {kind: Kind.NAME, value: getTypeName(type.name.value, context.config.typePrefix)},
+  }
 }
 
 function maybeRewriteFieldName(
@@ -308,7 +313,7 @@ function maybeRewriteFieldName(
     return field.name
   }
 
-  if (parent.kind === 'ObjectTypeDefinition' && !isDocumentType(parent)) {
+  if (parent.kind === 'ObjectTypeDefinition' && !isDocumentType(parent, context)) {
     return field.name
   }
 
@@ -325,16 +330,15 @@ function maybeRewriteFieldName(
   }
 }
 
-function isDocumentType(node: ObjectTypeDefinitionNode): boolean {
+function isDocumentType(node: ObjectTypeDefinitionNode, context: AstRewriterContext): boolean {
+  const docTypes = [
+    getTypeName('SanityDocument', context.config.typePrefix),
+    'SanityDocument',
+    'Document',
+  ]
   return (node.interfaces || []).some(
-    (iface) =>
-      iface.kind === 'NamedType' &&
-      (iface.name.value === 'SanityDocument' || iface.name.value === 'Document'),
+    (iface) => iface.kind === 'NamedType' && docTypes.includes(iface.name.value),
   )
-}
-
-function getTypeName(name: string) {
-  return name.startsWith('Sanity') ? name : `Sanity${name}`
 }
 
 function getResolveReferencesConfigType(): DefinitionNode {

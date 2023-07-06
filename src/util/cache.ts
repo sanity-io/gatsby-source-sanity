@@ -11,5 +11,5 @@ export enum CACHE_KEYS {
 }
 
 export function getCacheKey(config: PluginConfig, suffix: CACHE_KEYS) {
-  return `${config.projectId}-${config.dataset}-${suffix}`
+  return `${config.projectId}-${config.dataset}-${config.typePrefix ?? ''}-${suffix}`
 }
