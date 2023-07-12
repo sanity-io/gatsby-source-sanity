@@ -5,6 +5,12 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.8.0](https://github.com/sanity-io/gatsby-source-sanity/compare/v7.7.0...v7.8.0) (2023-07-12)
+
+### Features
+
+- add support for type prefix ([#243](https://github.com/sanity-io/gatsby-source-sanity/issues/243)) ([48ab7ea](https://github.com/sanity-io/gatsby-source-sanity/commit/48ab7ea1e4a8bcc8082df1bc6efe27071438e159))
+
 ## [7.7.0](https://github.com/sanity-io/gatsby-source-sanity/compare/v7.6.3...v7.7.0) (2023-07-06)
 
 ### Features
