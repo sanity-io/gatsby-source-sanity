@@ -12,9 +12,6 @@ import {SanityClient} from '@sanity/client'
 
 const scalarTypeNames = specifiedScalarTypes.map((def) => def.name).concat(['JSON', 'Date'])
 
-// Movie => SanityMovie
-const typePrefix = 'Sanity'
-
 // Node fields used internally by Gatsby.
 export const RESTRICTED_NODE_FIELDS = ['id', 'children', 'parent', 'fields', 'internal']
 
@@ -26,6 +23,7 @@ export interface ProcessingOptions {
   createParentChildLink: Actions['createParentChildLink']
   overlayDrafts: boolean
   client: SanityClient
+  typePrefix?: string
 }
 
 // Transform a Sanity document into a Gatsby node
@@ -33,12 +31,12 @@ export function toGatsbyNode(doc: SanityDocument, options: ProcessingOptions): S
   const {createNodeId, createContentDigest, overlayDrafts} = options
 
   const rawAliases = getRawAliases(doc, options)
-  const safe = prefixConflictingKeys(doc)
+  const safe = prefixConflictingKeys(doc, options.typePrefix)
   const withRefs = rewriteNodeReferences(safe, options)
 
   addInternalTypesToUnionFields(withRefs, options)
 
-  const type = getTypeName(doc._type)
+  const type = getTypeName(doc._type, options.typePrefix)
   const urlBuilder = imageUrlBuilder(options.client)
 
   const gatsbyImageCdnFields = [`SanityImageAsset`, `SanityFileAsset`].includes(type)
@@ -79,7 +77,7 @@ export function toGatsbyNode(doc: SanityDocument, options: ProcessingOptions): S
 // movie => SanityMovie
 // blog_post => SanityBlogPost
 // sanity.imageAsset => SanityImageAsset
-export function getTypeName(type: string) {
+export function getTypeName(type: string, typePrefix: string | undefined) {
   if (!type) {
     return type
   }
@@ -89,23 +87,26 @@ export function getTypeName(type: string) {
     return typeName
   }
 
-  return `${typePrefix}${typeName.replace(/\s+/g, '').replace(/^Sanity/, '')}`
+  const sanitized = typeName.replace(/\s+/g, '')
+
+  const prefix = `${typePrefix ?? ''}${sanitized.startsWith('Sanity') ? '' : 'Sanity'}`
+  return sanitized.startsWith(prefix) ? sanitized : `${prefix}${sanitized}`
 }
 
 // {foo: 'bar', children: []} => {foo: 'bar', sanityChildren: []}
-function prefixConflictingKeys(obj: SanityDocument) {
+function prefixConflictingKeys(obj: SanityDocument, typePrefix: string | undefined) {
   // Will be overwritten, but initialize for type safety
   const initial: SanityDocument = {_id: '', _type: '', _rev: '', _createdAt: '', _updatedAt: ''}
 
   return Object.keys(obj).reduce((target, key) => {
-    const targetKey = getConflictFreeFieldName(key)
+    const targetKey = getConflictFreeFieldName(key, typePrefix)
     target[targetKey] = obj[key]
 
     return target
   }, initial)
 }
 
-export function getConflictFreeFieldName(fieldName: string) {
+export function getConflictFreeFieldName(fieldName: string, typePrefix: string | undefined) {
   return RESTRICTED_NODE_FIELDS.includes(fieldName)
     ? `${camelCase(typePrefix)}${upperFirst(fieldName)}`
     : fieldName
@@ -113,7 +114,7 @@ export function getConflictFreeFieldName(fieldName: string) {
 
 function getRawAliases(doc: SanityDocument, options: ProcessingOptions) {
   const {typeMap} = options
-  const typeName = getTypeName(doc._type)
+  const typeName = getTypeName(doc._type, options.typePrefix)
   const type = typeMap.objects[typeName]
   if (!type) {
     return {}
@@ -158,7 +159,7 @@ function addInternalTypesToUnionFields(doc: SanityDocument, options: ProcessingO
   const {typeMap} = options
   const types = extractWithPath('..[_type]', doc)
 
-  const typeName = getTypeName(doc._type)
+  const typeName = getTypeName(doc._type, options.typePrefix)
   const thisType = typeMap.objects[typeName]
   if (!thisType) {
     return
@@ -178,7 +179,7 @@ function addInternalTypesToUnionFields(doc: SanityDocument, options: ProcessingO
 
     const parentNode =
       type.path.length === parentOffset ? doc : get(doc, type.path.slice(0, -parentOffset))
-    const parentTypeName = getTypeName(parentNode._type)
+    const parentTypeName = getTypeName(parentNode._type, options.typePrefix)
     const parentType = typeMap.objects[parentTypeName]
 
     if (!parentType) {
@@ -191,13 +192,13 @@ function addInternalTypesToUnionFields(doc: SanityDocument, options: ProcessingO
       continue
     }
 
-    const fieldTypeName = getTypeName(field.namedType.name.value)
+    const fieldTypeName = getTypeName(field.namedType.name.value, options.typePrefix)
 
     // All this was just to check if we're dealing with a union field
     if (!typeMap.unions[fieldTypeName]) {
       continue
     }
-    const typeName = getTypeName(type.value)
+    const typeName = getTypeName(type.value, options.typePrefix)
 
     // Add the internal type to the field
     set(doc, type.path.slice(0, -1).concat('internal'), {type: typeName})

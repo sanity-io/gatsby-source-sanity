@@ -22,6 +22,7 @@ Get up and running in minutes with a fully configured starter project:
 - [Generating pages](#generating-pages)
 - ["Raw" fields](#raw-fields)
 - [Portable Text / Block Content](#portable-text--block-content)
+- [Using multiple datasets](#using-multiple-datasets)
 - [Real-time content preview with watch mode](#real-time-content-preview-with-watch-mode)
 - [Updating content for editors with preview servers](#updating-content-for-editors-with-preview-servers)
 - [Using .env variables](#using-env-variables)
@@ -81,15 +82,16 @@ Explore `http://localhost:8000/___graphql` after running `gatsby develop` to und
 
 ## Options
 
-| Options         | Type    | Default   | Description                                                                                                                                                         |
-| --------------- | ------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| projectId       | string  |           | **[required]** Your Sanity project's ID                                                                                                                             |
-| dataset         | string  |           | **[required]** The dataset to fetch from                                                                                                                            |
-| token           | string  |           | Authentication token for fetching data from private datasets, or when using `overlayDrafts` [Learn more](https://www.sanity.io/docs/http-auth)                      |
-| graphqlTag      | string  | `default` | If the Sanity GraphQL API was deployed using `--tag <name>`, use this to specify the tag name.                                                                      |
-| overlayDrafts   | boolean | `false`   | Set to `true` in order for drafts to replace their published version. By default, drafts will be skipped.                                                           |
-| watchMode       | boolean | `false`   | Set to `true` to keep a listener open and update with the latest changes in realtime. If you add a `token` you will get all content updates down to each key press. |
-| watchModeBuffer | number  | `150`     | How many milliseconds to wait on watchMode changes before applying them to Gatsby's GraphQL layer. Introduced in 7.2.0.                                             |
+| Options         | Type    | Default   | Description                                                                                                                                                          |
+| --------------- | ------- | --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| projectId       | string  |           | **[required]** Your Sanity project's ID                                                                                                                              |
+| dataset         | string  |           | **[required]** The dataset to fetch from                                                                                                                             |
+| token           | string  |           | Authentication token for fetching data from private datasets, or when using `overlayDrafts` [Learn more](https://www.sanity.io/docs/http-auth)                       |
+| graphqlTag      | string  | `default` | If the Sanity GraphQL API was deployed using `--tag <name>`, use this to specify the tag name.                                                                       |
+| overlayDrafts   | boolean | `false`   | Set to `true` in order for drafts to replace their published version. By default, drafts will be skipped.                                                            |
+| watchMode       | boolean | `false`   | Set to `true` to keep a listener open and update with the latest changes in realtime. If you add a `token` you will get all content updates down to each key press.  |
+| watchModeBuffer | number  | `150`     | How many milliseconds to wait on watchMode changes before applying them to Gatsby's GraphQL layer. Introduced in 7.2.0.                                              |
+| typePrefix      | string  |           | Prefix to use for the GraphQL types. This is prepended to `Sanity` in the type names and allows you to have multiple instances of the plugin in your Gatsby project. |
 
 ## Preview of unpublished content
 
@@ -243,6 +245,35 @@ Rich text in Sanity is usually represented as [Portable Text](https://www.portab
 These data structures can be deep and a chore to query (specifying all the possible fields). As [noted above](#raw-fields), there is a "raw" alternative available for these fields which is usually what you'll want to use.
 
 You can install [@portabletext/react](https://www.npmjs.com/package/@portabletext/react) from npm and use it in your Gatsby project to serialize Portable Text. It lets you use your own React components to override defaults and render custom content types. [Learn more about Portable Text in our documentation](https://www.sanity.io/docs/content-studio/what-you-need-to-know-about-block-text).
+
+## Using multiple datasets
+
+If you want to use more than one dataset in your site, you can do so by adding multiple instances of the plugin to your `gatsby-config.js` file. To avoid conflicting type names you can use the `typeName` option to set a custom prefix for the GraphQL types. These can be datasets from different projects, or different datasets within the same project.
+
+```js
+// In your gatsby-config.js
+module.exports = {
+  plugins: [
+    {
+      resolve: 'gatsby-source-sanity',
+      options: {
+        projectId: 'abc123',
+        dataset: 'production',
+      },
+    },
+    {
+      resolve: 'gatsby-source-sanity',
+      options: {
+        projectId: 'abc123',
+        dataset: 'staging',
+        typePrefix: 'Staging',
+      },
+    },
+  ],
+}
+```
+
+In this case, the type names for the first instance will be `Sanity<typeName>`, while the second will be `StagingSanity<typeName>`.
 
 ## Real-time content preview with watch mode
 
