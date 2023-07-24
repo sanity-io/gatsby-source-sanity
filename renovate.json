@@ -1,9 +1,6 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "github>sanity-io/renovate-presets//ecosystem/auto",
-    ":reviewer(team:ecosystem)"
-  ],
+  "extends": ["github>sanity-io/renovate-config", ":reviewer(team:ecosystem)"],
   "packageRules": [
     {
       "matchPackageNames": ["gatsby-source-sanity"],
