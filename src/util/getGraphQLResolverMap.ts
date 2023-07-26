@@ -32,11 +32,13 @@ export function getGraphQLResolverMap(
     const objectType = typeMap.objects[typeName]
     const fieldNames = Object.keys(objectType.fields)
 
-    // Add resolvers for unions
+    // Add resolvers for unions and lists
     resolvers[objectType.name] = fieldNames
       .map((fieldName) => ({fieldName, ...objectType.fields[fieldName]}))
-      .filter((field) =>
-        isMixedUnion(getTypeName(field.namedType.name.value, pluginConfig.typePrefix), typeMap),
+      .filter(
+        (field) =>
+          field.isList ||
+          isMixedUnion(getTypeName(field.namedType.name.value, pluginConfig.typePrefix), typeMap),
       )
       .reduce((fields, field) => {
         const targetField = objectType.isDocument
