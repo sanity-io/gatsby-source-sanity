@@ -8,20 +8,6 @@ import {PluginConfig} from './validateConfig'
 import {getConflictFreeFieldName, getTypeName} from './normalize'
 import {SanityRef} from '../types/sanity'
 
-/**
- * Is the type a union with both document and non-document types
- */
-function isMixedUnion(typeName: string, typeMap: TypeMap) {
-  const union = typeMap.unions[typeName]
-  if (!union) {
-    return false
-  }
-  return (
-    union.types.some((typeName) => typeMap.objects[typeName]?.isDocument) &&
-    union.types.some((typeName) => !typeMap.objects[typeName]?.isDocument)
-  )
-}
-
 export function getGraphQLResolverMap(
   typeMap: TypeMap,
   pluginConfig: PluginConfig,
@@ -32,14 +18,10 @@ export function getGraphQLResolverMap(
     const objectType = typeMap.objects[typeName]
     const fieldNames = Object.keys(objectType.fields)
 
-    // Add resolvers for unions and lists
+    // Add resolvers for lists
     resolvers[objectType.name] = fieldNames
       .map((fieldName) => ({fieldName, ...objectType.fields[fieldName]}))
-      .filter(
-        (field) =>
-          field.isList ||
-          isMixedUnion(getTypeName(field.namedType.name.value, pluginConfig.typePrefix), typeMap),
-      )
+      .filter((field) => field.isList)
       .reduce((fields, field) => {
         const targetField = objectType.isDocument
           ? getConflictFreeFieldName(field.fieldName, pluginConfig.typePrefix)
