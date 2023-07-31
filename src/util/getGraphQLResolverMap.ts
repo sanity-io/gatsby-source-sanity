@@ -1,10 +1,12 @@
 import {camelCase} from 'lodash'
 import {CreateResolversArgs} from 'gatsby'
 import {GraphQLFieldResolver} from 'gatsby/graphql'
-import {GatsbyResolverMap, GatsbyGraphQLContext} from '../types/gatsby'
+import {GatsbyResolverMap, GatsbyGraphQLContext, GatsbyNodeModel} from '../types/gatsby'
 import {TypeMap, FieldDef} from './remoteGraphQLSchema'
 import {resolveReferences} from './resolveReferences'
 import {PluginConfig} from './validateConfig'
+import {getConflictFreeFieldName, getTypeName} from './normalize'
+import {SanityRef} from '../types/sanity'
 
 export function getGraphQLResolverMap(
   typeMap: TypeMap,
@@ -15,6 +17,19 @@ export function getGraphQLResolverMap(
   Object.keys(typeMap.objects).forEach((typeName) => {
     const objectType = typeMap.objects[typeName]
     const fieldNames = Object.keys(objectType.fields)
+
+    // Add resolvers for lists
+    resolvers[objectType.name] = fieldNames
+      .map((fieldName) => ({fieldName, ...objectType.fields[fieldName]}))
+      .filter((field) => field.isList)
+      .reduce((fields, field) => {
+        const targetField = objectType.isDocument
+          ? getConflictFreeFieldName(field.fieldName, pluginConfig.typePrefix)
+          : field.fieldName
+
+        fields[targetField] = {resolve: getResolver(field, pluginConfig.typePrefix)}
+        return fields
+      }, resolvers[objectType.name] || {})
 
     // Add raw resolvers
     resolvers[objectType.name] = fieldNames
@@ -27,6 +42,39 @@ export function getGraphQLResolverMap(
   })
 
   return resolvers
+}
+
+function getResolver(
+  field: FieldDef & {fieldName: string},
+  typePrefix?: string,
+): GraphQLFieldResolver<{[key: string]: any}, GatsbyGraphQLContext> {
+  return (source, args, context) => {
+    if (field.isList) {
+      const items: SanityRef[] = source[field.fieldName] || []
+      return items && Array.isArray(items)
+        ? items.map((item) => maybeResolveReference(item, context.nodeModel, typePrefix))
+        : []
+    }
+
+    const item: SanityRef | undefined = source[field.fieldName]
+    return maybeResolveReference(item, context.nodeModel, typePrefix)
+  }
+}
+
+function maybeResolveReference(
+  item: {_ref?: string; _type?: string; internal?: {}} | undefined,
+  nodeModel: GatsbyNodeModel,
+  typePrefix?: string,
+) {
+  if (item && typeof item._ref === 'string') {
+    return nodeModel.getNodeById({id: item._ref})
+  }
+
+  if (item && typeof item._type === 'string' && !item.internal) {
+    return {...item, internal: {type: getTypeName(item._type, typePrefix)}}
+  }
+
+  return item
 }
 
 function getRawResolver(
