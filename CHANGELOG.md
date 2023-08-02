@@ -5,6 +5,13 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.8.1](https://github.com/sanity-io/gatsby-source-sanity/compare/v7.8.0...v7.8.1) (2023-08-02)
+
+### Bug Fixes
+
+- **deps:** update non-major ([#239](https://github.com/sanity-io/gatsby-source-sanity/issues/239)) ([02eecf6](https://github.com/sanity-io/gatsby-source-sanity/commit/02eecf692cdc6c5e2f13c27b2a288b5ad5a9a369))
+- use resolver for lists ([#248](https://github.com/sanity-io/gatsby-source-sanity/issues/248)) ([e587dce](https://github.com/sanity-io/gatsby-source-sanity/commit/e587dcecc793196f7d2fb71fcb447f2f28f32d1b))
+
 ## [7.8.0](https://github.com/sanity-io/gatsby-source-sanity/compare/v7.7.0...v7.8.0) (2023-07-12)
 
 ### Features
