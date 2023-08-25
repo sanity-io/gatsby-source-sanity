@@ -275,7 +275,7 @@ export const sourceNodes: GatsbyNode['sourceNodes'] = async (
   })
 
   // If we have a warm build, let's fetch only those which changed since the last build
-  const lastBuildTime = getLastBuildTime(args)
+  const lastBuildTime = getLastBuildTime(args, pluginConfig)
   let deltaHandled = false
   if (lastBuildTime) {
     try {
@@ -327,6 +327,7 @@ export const sourceNodes: GatsbyNode['sourceNodes'] = async (
         lastBuildTime,
         client,
         syncWithGatsby,
+        pluginConfig
       })
       if (!deltaHandled) {
         reporter.warn(
@@ -410,7 +411,7 @@ export const sourceNodes: GatsbyNode['sourceNodes'] = async (
   }
 
   // register the current build time for accessing it in handleDeltaChanges for future builds
-  registerBuildTime(args)
+  registerBuildTime(args, pluginConfig)
 }
 
 export const setFieldsOnGraphQLNodeType: GatsbyNode['setFieldsOnGraphQLNodeType'] = async (
