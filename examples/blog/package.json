@@ -1,5 +1,7 @@
 {
   "private": true,
+  "name": "example-blog",
+  "version": "1.0.0",
   "scripts": {
     "build": "gatsby build",
     "clean": "gatsby clean",
