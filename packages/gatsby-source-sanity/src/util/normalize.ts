@@ -82,6 +82,10 @@ export function getTypeName(type: string, typePrefix: string | undefined) {
     return type
   }
 
+  if (typePrefix && type.startsWith(typePrefix)) {
+    return type
+  }
+
   const typeName = startCase(type)
   if (scalarTypeNames.includes(typeName)) {
     return typeName
@@ -89,14 +93,18 @@ export function getTypeName(type: string, typePrefix: string | undefined) {
 
   const sanitized = typeName.replace(/\s+/g, '')
 
+
   const prefix = `${typePrefix ?? ''}${sanitized.startsWith('Sanity') ? '' : 'Sanity'}`
-  return sanitized.startsWith(prefix) ? sanitized : `${prefix}${sanitized}`
+  const result = sanitized.startsWith(prefix) ? sanitized : `${prefix}${sanitized}`
+
+  return result
 }
 
 // {foo: 'bar', children: []} => {foo: 'bar', sanityChildren: []}
 function prefixConflictingKeys(obj: SanityDocument, typePrefix: string | undefined) {
   // Will be overwritten, but initialize for type safety
   const initial: SanityDocument = {_id: '', _type: '', _rev: '', _createdAt: '', _updatedAt: ''}
+
 
   return Object.keys(obj).reduce((target, key) => {
     const targetKey = getConflictFreeFieldName(key, typePrefix)
