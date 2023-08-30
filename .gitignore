@@ -3,7 +3,7 @@
 node_modules
 lib/
 lib-es5/
-package-lock.json
+yarn.lock
 coverage
 .cache
 public
