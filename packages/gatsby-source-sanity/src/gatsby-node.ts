@@ -20,7 +20,7 @@ import debug from './debug'
 import {extendImageNode} from './images/extendImageNode'
 import {SanityInputNode} from './types/gatsby'
 import {SanityDocument, SanityWebhookBody} from './types/sanity'
-import {CACHE_KEYS, getCacheKey} from './util/cache'
+import {CACHE_KEYS, getCacheKey, type SanityConfigMap} from './util/cache'
 import {prefixId, unprefixId} from './util/documentIds'
 import downloadDocuments from './util/downloadDocuments'
 import {
@@ -67,7 +67,7 @@ const defaultConfig = {
 const stateCache: {[key: string]: any} = {}
 
 const initializePlugin = async (
-  {reporter}: ParentSpanPluginArgs,
+  {reporter, cache}: ParentSpanPluginArgs,
   pluginOptions?: PluginOptions,
 ) => {
   const config = {...defaultConfig, ...pluginOptions}
@@ -123,6 +123,17 @@ const initializePlugin = async (
       context: {sourceMessage: `${prefix}${err.message}`},
     })
   }
+
+  // Save plugin config to cache so other instances of sanity source plugin can
+  // read it. This can be useful if you need to look up which prefix or other
+  // configuration a particular Sanity source is using in a multi-source setup.
+  const configMapCacheKey = getCacheKey(config, CACHE_KEYS.CONFIG_MAP)
+  const configMap: SanityConfigMap = (await cache.get(configMapCacheKey)) || {}
+  configMap[`${config.projectId}-${config.dataset}`] = {
+    ...config,
+    token: undefined,
+  }
+  await cache.set(configMapCacheKey, configMap)
 }
 
 export const onPreInit: GatsbyNode['onPreInit'] = async ({reporter}: ParentSpanPluginArgs) => {
@@ -326,7 +337,7 @@ export const sourceNodes: GatsbyNode['sourceNodes'] = async (
         lastBuildTime,
         client,
         syncWithGatsby,
-        config
+        config,
       })
       if (!deltaHandled) {
         reporter.warn(
@@ -408,6 +419,7 @@ export const sourceNodes: GatsbyNode['sourceNodes'] = async (
     // do the initial sync from sanity documents to gatsby nodes
     syncAllWithGatsby()
   }
+
 
   // register the current build time for accessing it in handleDeltaChanges for future builds
   await args.cache.set(getCacheKey(config, CACHE_KEYS.LAST_BUILD), new Date().toISOString())
