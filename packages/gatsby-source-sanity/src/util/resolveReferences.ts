@@ -12,6 +12,10 @@ interface ResolveReferencesOptions {
   overlayDrafts: boolean
 }
 
+export function typeNameIsReferenceType(type: string) {
+  return ['reference', 'crossDatasetReference'].includes(type)
+}
+
 // NOTE: This is now a public API and should be treated as such
 export function resolveReferences(
   obj: any,

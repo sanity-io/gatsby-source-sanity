@@ -9,6 +9,7 @@ import {SanityInputNode} from '../types/gatsby'
 
 import imageUrlBuilder from '@sanity/image-url'
 import {SanityClient} from '@sanity/client'
+import { typeNameIsReferenceType } from './resolveReferences'
 
 const scalarTypeNames = specifiedScalarTypes.map((def) => def.name).concat(['JSON', 'Date'])
 
@@ -171,7 +172,8 @@ function addInternalTypesToUnionFields(doc: SanityDocument, options: ProcessingO
 
   for (const type of types) {
     // Not needed for references or root objects
-    if (type.value === 'reference' || type.path.length < 2) {
+    
+    if (typeNameIsReferenceType(type.value) || type.path.length < 2) {
       continue
     }
 

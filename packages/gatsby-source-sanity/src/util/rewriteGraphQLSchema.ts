@@ -24,6 +24,7 @@ import {
 import {camelCase} from 'lodash'
 import {RESTRICTED_NODE_FIELDS, getConflictFreeFieldName, getTypeName} from './normalize'
 import {PluginConfig} from './validateConfig'
+import { typeNameIsReferenceType } from './resolveReferences'
 
 interface AstRewriterContext {
   reporter: Reporter
@@ -236,7 +237,7 @@ function makeNullable(nodeType: TypeNode, context: AstRewriterContext): TypeNode
 }
 
 function isReferenceField(field: FieldDefinitionNode): boolean {
-  return (field.directives || []).some((dir) => dir.name.value === 'reference')
+  return (field.directives || []).some((dir) => typeNameIsReferenceType(dir.name.value))
 }
 
 function transformFieldNodeAst(

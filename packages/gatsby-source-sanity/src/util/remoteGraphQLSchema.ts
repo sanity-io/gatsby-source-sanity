@@ -17,6 +17,7 @@ import {SanityClient} from '@sanity/client'
 import {getTypeName} from './normalize'
 import {ErrorWithCode} from './errors'
 import {PluginConfig} from './validateConfig'
+import { typeNameIsReferenceType } from './resolveReferences'
 
 export type FieldDef = {
   type: NamedTypeNode | ListTypeNode | NonNullTypeNode
@@ -210,5 +211,5 @@ function getAliasDirective(field: FieldDefinitionNode): string | null {
 }
 
 function getReferenceDirective(field: FieldDefinitionNode) {
-  return (field.directives || []).find((dir) => dir.name.value === 'reference')
+  return (field.directives || []).find((dir) => typeNameIsReferenceType(dir.name.value))
 }
