@@ -13,6 +13,6 @@ export default defineCliConfig({
     {
       id: 'authors',
       workspace: 'authors',
-    }
-  ]
+    },
+  ],
 })

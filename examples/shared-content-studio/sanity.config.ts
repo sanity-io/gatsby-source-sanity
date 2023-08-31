@@ -31,8 +31,49 @@ export default defineConfig([
               dataset: 'shared',
               to: [{type: 'author', preview: {select: {title: 'name'}}}],
             },
+            {
+              name: 'genres',
+              title: 'Genre',
+              type: 'array',
+              of: [
+                {
+                  type: 'reference',
+                  to: [{type: 'genre'}],
+                }
+              ]
+            },
+            {
+              name: 'publisher',
+              title: 'Publisher',
+              type: 'reference',
+              to: [{type: 'publisher'}],
+            }
           ],
         }),
+        defineType({
+          name: 'genre',
+          title: 'Genre',
+          type: 'document' as const,
+          fields: [
+            {
+              name: 'title',
+              title: 'Title',
+              type: 'string',
+            },
+          ],
+        }),
+        defineType({
+          name: 'publisher',
+          title: 'Publisher',
+          type: 'document' as const,
+          fields: [
+            {
+              name: 'name',
+              title: 'Name',
+              type: 'string',
+            },
+          ]
+        })
       ],
     },
   },
