@@ -2,8 +2,9 @@ import {SanityClient} from '@sanity/client'
 import {SourceNodesArgs} from 'gatsby'
 import debug from '../debug'
 import {SanityDocument} from '../types/sanity'
-import {registerBuildTime} from './getPluginStatus'
 import {SyncWithGatsby} from './getSyncWithGatsby'
+import { CACHE_KEYS, getCacheKey } from './cache'
+import { PluginConfig } from './validateConfig'
 
 export const sleep = (ms: number) => {
   return new Promise((resolve) => setTimeout(resolve, ms))
@@ -20,11 +21,13 @@ export default async function handleDeltaChanges({
   lastBuildTime,
   client,
   syncWithGatsby,
+  config,
 }: {
   args: SourceNodesArgs
   lastBuildTime: Date
   client: SanityClient
   syncWithGatsby: SyncWithGatsby
+  config: PluginConfig
 }): Promise<boolean> {
   await sleep(SLEEP_DURATION)
 
@@ -38,7 +41,7 @@ export default async function handleDeltaChanges({
     changedDocs.forEach((doc) => {
       syncWithGatsby(doc._id, doc)
     })
-    registerBuildTime(args)
+    await args.cache.set(getCacheKey(config, CACHE_KEYS.LAST_BUILD), new Date().toISOString())
     args.reporter.info(`[sanity] ${changedDocs.length} documents updated.`)
     return true
   } catch (error) {

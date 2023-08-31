@@ -31,7 +31,6 @@ import {
   SANITY_ERROR_CODE_MESSAGES,
 } from './util/errors'
 import {getGraphQLResolverMap} from './util/getGraphQLResolverMap'
-import {getLastBuildTime, registerBuildTime} from './util/getPluginStatus'
 import getSyncWithGatsby from './util/getSyncWithGatsby'
 import handleDeltaChanges from './util/handleDeltaChanges'
 import {handleWebhookEvent} from './util/handleWebhookEvent'
@@ -275,7 +274,7 @@ export const sourceNodes: GatsbyNode['sourceNodes'] = async (
   })
 
   // If we have a warm build, let's fetch only those which changed since the last build
-  const lastBuildTime = getLastBuildTime(args)
+  const lastBuildTime = await args.cache.get(getCacheKey(config, CACHE_KEYS.LAST_BUILD))
   let deltaHandled = false
   if (lastBuildTime) {
     try {
@@ -327,6 +326,7 @@ export const sourceNodes: GatsbyNode['sourceNodes'] = async (
         lastBuildTime,
         client,
         syncWithGatsby,
+        config
       })
       if (!deltaHandled) {
         reporter.warn(
@@ -410,7 +410,7 @@ export const sourceNodes: GatsbyNode['sourceNodes'] = async (
   }
 
   // register the current build time for accessing it in handleDeltaChanges for future builds
-  registerBuildTime(args)
+  await args.cache.set(getCacheKey(config, CACHE_KEYS.LAST_BUILD), new Date().toISOString())
 }
 
 export const setFieldsOnGraphQLNodeType: GatsbyNode['setFieldsOnGraphQLNodeType'] = async (

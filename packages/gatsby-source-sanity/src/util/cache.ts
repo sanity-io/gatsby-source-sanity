@@ -8,6 +8,7 @@ export enum CACHE_KEYS {
   TYPE_MAP = 'typeMap',
   GRAPHQL_SDL = 'graphqlSdl',
   IMAGE_EXTENSIONS = 'imageExt',
+  LAST_BUILD = 'lastBuildTime',
 }
 
 export function getCacheKey(config: PluginConfig, suffix: CACHE_KEYS) {
