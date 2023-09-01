@@ -11,8 +11,17 @@ export default function Page({data}) {
         </div>
         <div className="relative mx-auto max-w-7xl">
           <div className="mx-auto mt-12 grid max-w-lg gap-5 lg:max-w-none lg:grid-cols-3">
-            {data.allSanityBook.edges.map(({node}) => (
+            {data.allProdSanityBook.edges.map(({node}) => (
               <div key={node._id} className="flex flex-col overflow-hidden rounded-lg shadow-lg">
+                <div className="flex-shrink-0">
+                  {node.cover ? (
+                    <GatsbyImage
+                      alt=""
+                      className="h-48 w-full object-cover"
+                      image={node.cover.asset.gatsbyImageData}
+                    />
+                  ) : null}
+                </div>
                 <div className="flex flex-1 flex-col justify-between bg-white p-6">
                   <div className="flex-1">
                     <a className="mt-2 block">
@@ -56,11 +65,16 @@ export const Head = () => <title>gatsby-source-sanity</title>
 
 export const query = graphql`
   query {
-    allSanityBook {
+    allProdSanityBook {
       edges {
         node {
           _id
           title
+          cover {
+            asset {
+              gatsbyImageData(fit: FILLMAX, placeholder: BLURRED)
+            }
+          }
         }
       }
     }

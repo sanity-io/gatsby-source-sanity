@@ -9,6 +9,7 @@ module.exports = {
       options: {
         projectId: 'jn1oq55b',
         dataset: 'production',
+        typePrefix: 'prod',
       },
       //typePrefix: 'prod',
     },
@@ -17,6 +18,7 @@ module.exports = {
       options: {
         projectId: 'jn1oq55b',
         dataset: 'shared',
+        typePrefix: 'shared',
       },
       //typePrefix: 'shared',
     },

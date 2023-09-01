@@ -39,14 +39,14 @@ export function toGatsbyNode(doc: SanityDocument, options: ProcessingOptions): S
   const type = getTypeName(doc._type, options.typePrefix)
   const urlBuilder = imageUrlBuilder(options.client)
 
-  const gatsbyImageCdnFields = [`SanityImageAsset`, `SanityFileAsset`].includes(type)
+  const gatsbyImageCdnFields = [`sanity.imageAsset`, `sanity.fileAsset`].includes(doc._type)
     ? {
         filename: withRefs.originalFilename,
         width: withRefs?.metadata?.dimensions?.width,
         height: withRefs?.metadata?.dimensions?.height,
         url: withRefs?.url,
         placeholderUrl:
-          type === `SanityImageAsset`
+          doc._type === `sanity.imageAsset`
             ? urlBuilder
                 .image(withRefs.url)
                 .width(20)

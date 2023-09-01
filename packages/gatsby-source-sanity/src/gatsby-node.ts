@@ -42,7 +42,7 @@ import {
 } from './util/remoteGraphQLSchema'
 import {rewriteGraphQLSchema} from './util/rewriteGraphQLSchema'
 import validateConfig, {PluginConfig} from './util/validateConfig'
-import {ProcessingOptions} from './util/normalize'
+import {ProcessingOptions, getTypeName} from './util/normalize'
 import { mapCrossDatasetReferences } from './util/mapCrossDatasetReferences'
 
 let coreSupportsOnPluginInit: 'unstable' | 'stable' | undefined
@@ -191,7 +191,7 @@ export const createSchemaCustomization: GatsbyNode['createSchemaCustomization'] 
      */
     addRemoteFilePolyfillInterface(
       schema.buildObjectType({
-        name: `SanityImageAsset`,
+        name: getTypeName('SanityImageAsset', pluginConfig.typePrefix),
         fields: {},
         interfaces: [`Node`, `RemoteFile`],
       }),
@@ -432,8 +432,10 @@ export const setFieldsOnGraphQLNodeType: GatsbyNode['setFieldsOnGraphQLNodeType'
   pluginConfig: PluginConfig,
 ) => {
   const {type} = context
+  const {typePrefix} = pluginConfig
+  const sanityImageAssetTypeName = getTypeName('SanityImageAsset', typePrefix)
   let fields: {[key: string]: GraphQLFieldConfig<any, any>} = {}
-  if (type.name === 'SanityImageAsset') {
+  if (type.name === sanityImageAssetTypeName) {
     fields = {...fields, ...extendImageNode(pluginConfig)}
   }
 
