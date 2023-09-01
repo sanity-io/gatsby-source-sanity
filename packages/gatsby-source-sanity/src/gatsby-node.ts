@@ -127,13 +127,12 @@ const initializePlugin = async (
   // Save plugin config to cache so other instances of sanity source plugin can
   // read it. This can be useful if you need to look up which prefix or other
   // configuration a particular Sanity source is using in a multi-source setup.
-  const configMapCacheKey = getCacheKey(config, CACHE_KEYS.CONFIG_MAP)
-  const configMap: SanityConfigMap = (await cache.get(configMapCacheKey)) || {}
+  const configMap: SanityConfigMap = (await cache.get(CACHE_KEYS.CONFIG_MAP)) || {}
   configMap[`${config.projectId}-${config.dataset}`] = {
     ...config,
     token: undefined,
   }
-  await cache.set(configMapCacheKey, configMap)
+  await cache.set(CACHE_KEYS.CONFIG_MAP, configMap)
 }
 
 export const onPreInit: GatsbyNode['onPreInit'] = async ({reporter}: ParentSpanPluginArgs) => {
