@@ -25,10 +25,16 @@ export default defineConfig([
               type: 'string',
             },
             {
+              name: 'cover',
+              title: 'Cover',
+              type: 'image',
+            },
+            {
               name: 'author',
               title: 'Author',
               type: 'crossDatasetReference',
               dataset: 'shared',
+              studioUrl: ({id, type}) => `/authors/desk/${type};${id}`,
               to: [{type: 'author', preview: {select: {title: 'name'}}}],
             },
             {
@@ -98,6 +104,11 @@ export default defineConfig([
               title: 'Name',
               type: 'string',
             },
+            {
+              name: 'profilePicture',
+              title: 'Profile picture',
+              type: 'image',
+            }
           ],
         }),
       ],
