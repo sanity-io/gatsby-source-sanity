@@ -17,7 +17,6 @@ import {SanityClient} from '@sanity/client'
 import {getTypeName} from './normalize'
 import {ErrorWithCode} from './errors'
 import {PluginConfig} from './validateConfig'
-import { typeNameIsReferenceType } from './resolveReferences'
 
 export type FieldDef = {
   type: NamedTypeNode | ListTypeNode | NonNullTypeNode
@@ -131,12 +130,13 @@ export function getTypeMapFromGraphQLSchema(sdl: string, typePrefix: string | un
         }
 
         const namedType = unwrapType(fieldDef.type)
+        const isReference = Boolean(getReferenceDirective(fieldDef)) || Boolean(getCrossDatasetReferenceDirective(fieldDef))
         fields[fieldDef.name.value] = {
           type: fieldDef.type,
           namedType,
           isList: isListType(fieldDef.type),
           aliasFor: null,
-          isReference: Boolean(getReferenceDirective(fieldDef)),
+          isReference
         }
 
         // Add raw alias if not scalar
@@ -211,5 +211,9 @@ function getAliasDirective(field: FieldDefinitionNode): string | null {
 }
 
 function getReferenceDirective(field: FieldDefinitionNode) {
-  return (field.directives || []).find((dir) => typeNameIsReferenceType(dir.name.value))
+  return (field.directives || []).find((dir) => dir.name.value === 'reference')
+}
+
+function getCrossDatasetReferenceDirective(field: FieldDefinitionNode) {
+  return (field.directives || []).find((dir) => dir.name.value === 'cdr')
 }

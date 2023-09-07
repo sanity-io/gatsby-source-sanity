@@ -43,6 +43,7 @@ import {
 import {rewriteGraphQLSchema} from './util/rewriteGraphQLSchema'
 import validateConfig, {PluginConfig} from './util/validateConfig'
 import {ProcessingOptions} from './util/normalize'
+import { mapCrossDatasetReferences } from './util/mapCrossDatasetReferences'
 
 let coreSupportsOnPluginInit: 'unstable' | 'stable' | undefined
 
@@ -96,7 +97,9 @@ const initializePlugin = async (
     const api = await getRemoteGraphQLSchema(client, config)
 
     reporter.info('[sanity] Transforming to Gatsby-compatible GraphQL SDL')
-    const graphqlSdl = await rewriteGraphQLSchema(api, {config, reporter})
+    const cdrMappedApi = mapCrossDatasetReferences(api)
+    const graphqlSdl = await rewriteGraphQLSchema(cdrMappedApi, {config, reporter})
+
     const graphqlSdlKey = getCacheKey(config, CACHE_KEYS.GRAPHQL_SDL)
     stateCache[graphqlSdlKey] = graphqlSdl
 

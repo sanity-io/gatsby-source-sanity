@@ -10,6 +10,7 @@ module.exports = {
         projectId: 'jn1oq55b',
         dataset: 'production',
       },
+      //typePrefix: 'prod',
     },
     {
       resolve: 'gatsby-source-sanity',
@@ -17,6 +18,7 @@ module.exports = {
         projectId: 'jn1oq55b',
         dataset: 'shared',
       },
+      //typePrefix: 'shared',
     },
     `gatsby-plugin-image`,
   ],
