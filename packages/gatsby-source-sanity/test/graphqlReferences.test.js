@@ -82,3 +82,32 @@ test('resolves named cross dataset field reference', async () => {
   const node = res.data.allSanityBook.edges[0].node
   expect(node.extraAuthor.name).toBe('Neal Stephenson')
 })
+
+test('it resolves arrays of references', async () => {
+  const res = await fetchGraphQL(`
+        query {
+          allSanityBook {
+            edges {
+              node {
+                genres {
+                  title
+                }
+              }
+            }
+          }
+        }
+      `)
+
+  expect(res.errors).toBeUndefined()
+  const node = res.data.allSanityBook.edges[0].node
+  const expected = [
+    {
+      title: 'Science Fiction',
+    },
+    {
+      title: 'Cyberpunk',
+    },
+  ]
+
+  expect(node.genres).toEqual(expected)
+})
