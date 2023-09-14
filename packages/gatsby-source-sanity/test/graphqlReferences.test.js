@@ -138,5 +138,5 @@ test('it resolves arrays of cross dataset references', async () => {
     },
   ]
 
-  expect(node.genres).toEqual(expected)
+  expect(node.coauthors).toEqual(expected)
 })
