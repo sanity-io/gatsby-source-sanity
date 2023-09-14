@@ -111,3 +111,32 @@ test('it resolves arrays of references', async () => {
 
   expect(node.genres).toEqual(expected)
 })
+
+test('it resolves arrays of cross dataset references', async () => {
+  const res = await fetchGraphQL(`
+        query {
+          allSanityBook {
+            edges {
+              node {
+                coauthors {
+                  name
+                }
+              }
+            }
+          }
+        }
+      `)
+
+  expect(res.errors).toBeUndefined()
+  const node = res.data.allSanityBook.edges[0].node
+  const expected = [
+    {
+      name: 'Nom de Plume',
+    },
+    {
+      name: 'Neal Stephenson',
+    },
+  ]
+
+  expect(node.genres).toEqual(expected)
+})
