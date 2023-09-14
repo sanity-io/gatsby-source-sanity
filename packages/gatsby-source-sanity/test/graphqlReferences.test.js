@@ -140,3 +140,32 @@ test('it resolves arrays of cross dataset references', async () => {
 
   expect(node.coauthors).toEqual(expected)
 })
+
+test('it resolves cross dataset references that are part of an Union', async () => {
+  const res = await fetchGraphQL(`
+        query {
+          allSanityBook {
+            edges {
+              node {
+                mixedArray {
+                  ... on SanityAuthor {
+                    name
+                  }
+                }
+              }
+            }
+          }
+        }
+      `)
+
+  expect(res.errors).toBeUndefined()
+  const node = res.data.allSanityBook.edges[0].node
+  const expected = [
+    {
+      name: 'Neal Stephenson',
+    },
+  ]
+
+  // expect node.mixedArray to include expected object
+  expect(node.mixedArray).toEqual(expect.arrayContaining(expected))
+})
