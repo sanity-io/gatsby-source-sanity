@@ -118,6 +118,28 @@ export function mapCrossDatasetReferences(api: string) {
       }
       return fieldNode
     },
+    [Kind.UNION_TYPE_DEFINITION](node) {
+      // Check if any of the union types match keys in the cdrMapping
+      const modifiedTypes = node.types?.map(typeNode => {
+        const typeName = typeNode.name.value;
+        if (cdrMapping[typeName]) {
+          return {
+            ...typeNode,
+            name: {
+              kind: Kind.NAME,
+              value: cdrMapping[typeName]
+            }
+          };
+        }
+        return typeNode;  // return the type unchanged if it's not in the cdrMapping
+      });
+  
+      // Return the modified union node
+      return {
+        ...node,
+        types: modifiedTypes
+      };
+    }
   })
 
   return print(modifiedTypes)
