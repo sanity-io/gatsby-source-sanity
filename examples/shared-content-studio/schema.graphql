@@ -1,0 +1,3268 @@
+"""Add date formatting options."""
+directive @dateformat(formatString: String, locale: String, fromNow: Boolean, difference: String) on FIELD_DEFINITION
+
+"""Link to node by foreign-key relation."""
+directive @link(by: String! = "id", from: String, on: String) on FIELD_DEFINITION
+
+"""Link to File node by relative path."""
+directive @fileByRelativePath(from: String) on FIELD_DEFINITION
+
+"""Proxy resolver from another field."""
+directive @proxy(from: String!, fromNode: Boolean! = false) on FIELD_DEFINITION
+
+"""Infer field types from field values."""
+directive @infer on OBJECT
+
+"""Do not infer field types from field values."""
+directive @dontInfer on OBJECT
+
+"""Define the mime-types handled by this type."""
+directive @mimeTypes(
+  """The mime-types handled by this type."""
+  types: [String!]! = []
+) on OBJECT
+
+"""
+Define parent-child relations between types. This is used to add `child*` and
+`children*` convenience fields like `childImageSharp`.
+"""
+directive @childOf(
+  """
+  A list of mime-types this type is a child of. Usually these are the mime-types handled by a transformer plugin.
+  """
+  mimeTypes: [String!]! = []
+
+  """
+  A list of types this type is a child of. Usually these are the types handled by a transformer plugin.
+  """
+  types: [String!]! = []
+) on OBJECT
+
+"""
+DEPRECATED: Use interface inheritance instead, i.e. "interface Foo implements Node".
+
+Adds root query fields for an interface. All implementing types must also implement the Node interface.
+"""
+directive @nodeInterface on INTERFACE
+
+input BooleanQueryOperatorInput {
+  eq: Boolean
+  ne: Boolean
+  in: [Boolean]
+  nin: [Boolean]
+}
+
+"""
+A date string, such as 2007-12-03, compliant with the ISO 8601 standard for
+representation of dates and times using the Gregorian calendar.
+"""
+scalar Date
+
+input DateQueryOperatorInput {
+  eq: Date
+  ne: Date
+  gt: Date
+  gte: Date
+  lt: Date
+  lte: Date
+  in: [Date]
+  nin: [Date]
+}
+
+type Directory implements Node {
+  sourceInstanceName: String!
+  absolutePath: String!
+  relativePath: String!
+  extension: String!
+  size: Int!
+  prettySize: String!
+  modifiedTime(
+    """
+    Format the date using Moment.js' date tokens, e.g. `date(formatString: "YYYY
+    MMMM DD")`. See https://momentjs.com/docs/#/displaying/format/ for
+    documentation for different tokens.
+    """
+    formatString: String
+
+    """Returns a string generated with Moment.js' `fromNow` function"""
+    fromNow: Boolean
+
+    """
+    Returns the difference between this date and the current time. Defaults to
+    "milliseconds" but you can also pass in as the measurement "years",
+    "months", "weeks", "days", "hours", "minutes", and "seconds".
+    """
+    difference: String
+
+    """Configures the locale Moment.js will use to format the date."""
+    locale: String
+  ): Date!
+  accessTime(
+    """
+    Format the date using Moment.js' date tokens, e.g. `date(formatString: "YYYY
+    MMMM DD")`. See https://momentjs.com/docs/#/displaying/format/ for
+    documentation for different tokens.
+    """
+    formatString: String
+
+    """Returns a string generated with Moment.js' `fromNow` function"""
+    fromNow: Boolean
+
+    """
+    Returns the difference between this date and the current time. Defaults to
+    "milliseconds" but you can also pass in as the measurement "years",
+    "months", "weeks", "days", "hours", "minutes", and "seconds".
+    """
+    difference: String
+
+    """Configures the locale Moment.js will use to format the date."""
+    locale: String
+  ): Date!
+  changeTime(
+    """
+    Format the date using Moment.js' date tokens, e.g. `date(formatString: "YYYY
+    MMMM DD")`. See https://momentjs.com/docs/#/displaying/format/ for
+    documentation for different tokens.
+    """
+    formatString: String
+
+    """Returns a string generated with Moment.js' `fromNow` function"""
+    fromNow: Boolean
+
+    """
+    Returns the difference between this date and the current time. Defaults to
+    "milliseconds" but you can also pass in as the measurement "years",
+    "months", "weeks", "days", "hours", "minutes", and "seconds".
+    """
+    difference: String
+
+    """Configures the locale Moment.js will use to format the date."""
+    locale: String
+  ): Date!
+  birthTime(
+    """
+    Format the date using Moment.js' date tokens, e.g. `date(formatString: "YYYY
+    MMMM DD")`. See https://momentjs.com/docs/#/displaying/format/ for
+    documentation for different tokens.
+    """
+    formatString: String
+
+    """Returns a string generated with Moment.js' `fromNow` function"""
+    fromNow: Boolean
+
+    """
+    Returns the difference between this date and the current time. Defaults to
+    "milliseconds" but you can also pass in as the measurement "years",
+    "months", "weeks", "days", "hours", "minutes", and "seconds".
+    """
+    difference: String
+
+    """Configures the locale Moment.js will use to format the date."""
+    locale: String
+  ): Date!
+  root: String!
+  dir: String!
+  base: String!
+  ext: String!
+  name: String!
+  relativeDirectory: String!
+  dev: Int!
+  mode: Int!
+  nlink: Int!
+  uid: Int!
+  gid: Int!
+  rdev: Int!
+  ino: Float!
+  atimeMs: Float!
+  mtimeMs: Float!
+  ctimeMs: Float!
+  atime(
+    """
+    Format the date using Moment.js' date tokens, e.g. `date(formatString: "YYYY
+    MMMM DD")`. See https://momentjs.com/docs/#/displaying/format/ for
+    documentation for different tokens.
+    """
+    formatString: String
+
+    """Returns a string generated with Moment.js' `fromNow` function"""
+    fromNow: Boolean
+
+    """
+    Returns the difference between this date and the current time. Defaults to
+    "milliseconds" but you can also pass in as the measurement "years",
+    "months", "weeks", "days", "hours", "minutes", and "seconds".
+    """
+    difference: String
+
+    """Configures the locale Moment.js will use to format the date."""
+    locale: String
+  ): Date!
+  mtime(
+    """
+    Format the date using Moment.js' date tokens, e.g. `date(formatString: "YYYY
+    MMMM DD")`. See https://momentjs.com/docs/#/displaying/format/ for
+    documentation for different tokens.
+    """
+    formatString: String
+
+    """Returns a string generated with Moment.js' `fromNow` function"""
+    fromNow: Boolean
+
+    """
+    Returns the difference between this date and the current time. Defaults to
+    "milliseconds" but you can also pass in as the measurement "years",
+    "months", "weeks", "days", "hours", "minutes", and "seconds".
+    """
+    difference: String
+
+    """Configures the locale Moment.js will use to format the date."""
+    locale: String
+  ): Date!
+  ctime(
+    """
+    Format the date using Moment.js' date tokens, e.g. `date(formatString: "YYYY
+    MMMM DD")`. See https://momentjs.com/docs/#/displaying/format/ for
+    documentation for different tokens.
+    """
+    formatString: String
+
+    """Returns a string generated with Moment.js' `fromNow` function"""
+    fromNow: Boolean
+
+    """
+    Returns the difference between this date and the current time. Defaults to
+    "milliseconds" but you can also pass in as the measurement "years",
+    "months", "weeks", "days", "hours", "minutes", and "seconds".
+    """
+    difference: String
+
+    """Configures the locale Moment.js will use to format the date."""
+    locale: String
+  ): Date!
+  birthtime: Date @deprecated(reason: "Use `birthTime` instead")
+  birthtimeMs: Float @deprecated(reason: "Use `birthTime` instead")
+  id: ID!
+  parent: Node
+  children: [Node!]!
+  internal: Internal!
+}
+
+type DirectoryConnection {
+  totalCount: Int!
+  edges: [DirectoryEdge!]!
+  nodes: [Directory!]!
+  pageInfo: PageInfo!
+  distinct(field: DirectoryFieldSelector!): [String!]!
+  max(field: DirectoryFieldSelector!): Float
+  min(field: DirectoryFieldSelector!): Float
+  sum(field: DirectoryFieldSelector!): Float
+  group(skip: Int, limit: Int, field: DirectoryFieldSelector!): [DirectoryGroupConnection!]!
+}
+
+type DirectoryEdge {
+  next: Directory
+  node: Directory!
+  previous: Directory
+}
+
+input DirectoryFieldSelector {
+  sourceInstanceName: FieldSelectorEnum
+  absolutePath: FieldSelectorEnum
+  relativePath: FieldSelectorEnum
+  extension: FieldSelectorEnum
+  size: FieldSelectorEnum
+  prettySize: FieldSelectorEnum
+  modifiedTime: FieldSelectorEnum
+  accessTime: FieldSelectorEnum
+  changeTime: FieldSelectorEnum
+  birthTime: FieldSelectorEnum
+  root: FieldSelectorEnum
+  dir: FieldSelectorEnum
+  base: FieldSelectorEnum
+  ext: FieldSelectorEnum
+  name: FieldSelectorEnum
+  relativeDirectory: FieldSelectorEnum
+  dev: FieldSelectorEnum
+  mode: FieldSelectorEnum
+  nlink: FieldSelectorEnum
+  uid: FieldSelectorEnum
+  gid: FieldSelectorEnum
+  rdev: FieldSelectorEnum
+  ino: FieldSelectorEnum
+  atimeMs: FieldSelectorEnum
+  mtimeMs: FieldSelectorEnum
+  ctimeMs: FieldSelectorEnum
+  atime: FieldSelectorEnum
+  mtime: FieldSelectorEnum
+  ctime: FieldSelectorEnum
+  birthtime: FieldSelectorEnum
+  birthtimeMs: FieldSelectorEnum
+  id: FieldSelectorEnum
+  parent: NodeFieldSelector
+  children: NodeFieldSelector
+  internal: InternalFieldSelector
+}
+
+input DirectoryFilterInput {
+  sourceInstanceName: StringQueryOperatorInput
+  absolutePath: StringQueryOperatorInput
+  relativePath: StringQueryOperatorInput
+  extension: StringQueryOperatorInput
+  size: IntQueryOperatorInput
+  prettySize: StringQueryOperatorInput
+  modifiedTime: DateQueryOperatorInput
+  accessTime: DateQueryOperatorInput
+  changeTime: DateQueryOperatorInput
+  birthTime: DateQueryOperatorInput
+  root: StringQueryOperatorInput
+  dir: StringQueryOperatorInput
+  base: StringQueryOperatorInput
+  ext: StringQueryOperatorInput
+  name: StringQueryOperatorInput
+  relativeDirectory: StringQueryOperatorInput
+  dev: IntQueryOperatorInput
+  mode: IntQueryOperatorInput
+  nlink: IntQueryOperatorInput
+  uid: IntQueryOperatorInput
+  gid: IntQueryOperatorInput
+  rdev: IntQueryOperatorInput
+  ino: FloatQueryOperatorInput
+  atimeMs: FloatQueryOperatorInput
+  mtimeMs: FloatQueryOperatorInput
+  ctimeMs: FloatQueryOperatorInput
+  atime: DateQueryOperatorInput
+  mtime: DateQueryOperatorInput
+  ctime: DateQueryOperatorInput
+  birthtime: DateQueryOperatorInput
+  birthtimeMs: FloatQueryOperatorInput
+  id: StringQueryOperatorInput
+  parent: NodeFilterInput
+  children: NodeFilterListInput
+  internal: InternalFilterInput
+}
+
+type DirectoryGroupConnection {
+  totalCount: Int!
+  edges: [DirectoryEdge!]!
+  nodes: [Directory!]!
+  pageInfo: PageInfo!
+  distinct(field: DirectoryFieldSelector!): [String!]!
+  max(field: DirectoryFieldSelector!): Float
+  min(field: DirectoryFieldSelector!): Float
+  sum(field: DirectoryFieldSelector!): Float
+  group(skip: Int, limit: Int, field: DirectoryFieldSelector!): [DirectoryGroupConnection!]!
+  field: String!
+  fieldValue: String
+}
+
+input DirectorySortInput {
+  sourceInstanceName: SortOrderEnum
+  absolutePath: SortOrderEnum
+  relativePath: SortOrderEnum
+  extension: SortOrderEnum
+  size: SortOrderEnum
+  prettySize: SortOrderEnum
+  modifiedTime: SortOrderEnum
+  accessTime: SortOrderEnum
+  changeTime: SortOrderEnum
+  birthTime: SortOrderEnum
+  root: SortOrderEnum
+  dir: SortOrderEnum
+  base: SortOrderEnum
+  ext: SortOrderEnum
+  name: SortOrderEnum
+  relativeDirectory: SortOrderEnum
+  dev: SortOrderEnum
+  mode: SortOrderEnum
+  nlink: SortOrderEnum
+  uid: SortOrderEnum
+  gid: SortOrderEnum
+  rdev: SortOrderEnum
+  ino: SortOrderEnum
+  atimeMs: SortOrderEnum
+  mtimeMs: SortOrderEnum
+  ctimeMs: SortOrderEnum
+  atime: SortOrderEnum
+  mtime: SortOrderEnum
+  ctime: SortOrderEnum
+  birthtime: SortOrderEnum
+  birthtimeMs: SortOrderEnum
+  id: SortOrderEnum
+  parent: NodeSortInput
+  children: NodeSortInput
+  internal: InternalSortInput
+}
+
+enum FieldSelectorEnum {
+  SELECT
+}
+
+type File implements Node {
+  sourceInstanceName: String!
+  absolutePath: String!
+  relativePath: String!
+  extension: String!
+  size: Int!
+  prettySize: String!
+  modifiedTime(
+    """
+    Format the date using Moment.js' date tokens, e.g. `date(formatString: "YYYY
+    MMMM DD")`. See https://momentjs.com/docs/#/displaying/format/ for
+    documentation for different tokens.
+    """
+    formatString: String
+
+    """Returns a string generated with Moment.js' `fromNow` function"""
+    fromNow: Boolean
+
+    """
+    Returns the difference between this date and the current time. Defaults to
+    "milliseconds" but you can also pass in as the measurement "years",
+    "months", "weeks", "days", "hours", "minutes", and "seconds".
+    """
+    difference: String
+
+    """Configures the locale Moment.js will use to format the date."""
+    locale: String
+  ): Date!
+  accessTime(
+    """
+    Format the date using Moment.js' date tokens, e.g. `date(formatString: "YYYY
+    MMMM DD")`. See https://momentjs.com/docs/#/displaying/format/ for
+    documentation for different tokens.
+    """
+    formatString: String
+
+    """Returns a string generated with Moment.js' `fromNow` function"""
+    fromNow: Boolean
+
+    """
+    Returns the difference between this date and the current time. Defaults to
+    "milliseconds" but you can also pass in as the measurement "years",
+    "months", "weeks", "days", "hours", "minutes", and "seconds".
+    """
+    difference: String
+
+    """Configures the locale Moment.js will use to format the date."""
+    locale: String
+  ): Date!
+  changeTime(
+    """
+    Format the date using Moment.js' date tokens, e.g. `date(formatString: "YYYY
+    MMMM DD")`. See https://momentjs.com/docs/#/displaying/format/ for
+    documentation for different tokens.
+    """
+    formatString: String
+
+    """Returns a string generated with Moment.js' `fromNow` function"""
+    fromNow: Boolean
+
+    """
+    Returns the difference between this date and the current time. Defaults to
+    "milliseconds" but you can also pass in as the measurement "years",
+    "months", "weeks", "days", "hours", "minutes", and "seconds".
+    """
+    difference: String
+
+    """Configures the locale Moment.js will use to format the date."""
+    locale: String
+  ): Date!
+  birthTime(
+    """
+    Format the date using Moment.js' date tokens, e.g. `date(formatString: "YYYY
+    MMMM DD")`. See https://momentjs.com/docs/#/displaying/format/ for
+    documentation for different tokens.
+    """
+    formatString: String
+
+    """Returns a string generated with Moment.js' `fromNow` function"""
+    fromNow: Boolean
+
+    """
+    Returns the difference between this date and the current time. Defaults to
+    "milliseconds" but you can also pass in as the measurement "years",
+    "months", "weeks", "days", "hours", "minutes", and "seconds".
+    """
+    difference: String
+
+    """Configures the locale Moment.js will use to format the date."""
+    locale: String
+  ): Date!
+  root: String!
+  dir: String!
+  base: String!
+  ext: String!
+  name: String!
+  relativeDirectory: String!
+  dev: Int!
+  mode: Int!
+  nlink: Int!
+  uid: Int!
+  gid: Int!
+  rdev: Int!
+  ino: Float!
+  atimeMs: Float!
+  mtimeMs: Float!
+  ctimeMs: Float!
+  atime(
+    """
+    Format the date using Moment.js' date tokens, e.g. `date(formatString: "YYYY
+    MMMM DD")`. See https://momentjs.com/docs/#/displaying/format/ for
+    documentation for different tokens.
+    """
+    formatString: String
+
+    """Returns a string generated with Moment.js' `fromNow` function"""
+    fromNow: Boolean
+
+    """
+    Returns the difference between this date and the current time. Defaults to
+    "milliseconds" but you can also pass in as the measurement "years",
+    "months", "weeks", "days", "hours", "minutes", and "seconds".
+    """
+    difference: String
+
+    """Configures the locale Moment.js will use to format the date."""
+    locale: String
+  ): Date!
+  mtime(
+    """
+    Format the date using Moment.js' date tokens, e.g. `date(formatString: "YYYY
+    MMMM DD")`. See https://momentjs.com/docs/#/displaying/format/ for
+    documentation for different tokens.
+    """
+    formatString: String
+
+    """Returns a string generated with Moment.js' `fromNow` function"""
+    fromNow: Boolean
+
+    """
+    Returns the difference between this date and the current time. Defaults to
+    "milliseconds" but you can also pass in as the measurement "years",
+    "months", "weeks", "days", "hours", "minutes", and "seconds".
+    """
+    difference: String
+
+    """Configures the locale Moment.js will use to format the date."""
+    locale: String
+  ): Date!
+  ctime(
+    """
+    Format the date using Moment.js' date tokens, e.g. `date(formatString: "YYYY
+    MMMM DD")`. See https://momentjs.com/docs/#/displaying/format/ for
+    documentation for different tokens.
+    """
+    formatString: String
+
+    """Returns a string generated with Moment.js' `fromNow` function"""
+    fromNow: Boolean
+
+    """
+    Returns the difference between this date and the current time. Defaults to
+    "milliseconds" but you can also pass in as the measurement "years",
+    "months", "weeks", "days", "hours", "minutes", and "seconds".
+    """
+    difference: String
+
+    """Configures the locale Moment.js will use to format the date."""
+    locale: String
+  ): Date!
+  birthtime: Date @deprecated(reason: "Use `birthTime` instead")
+  birthtimeMs: Float @deprecated(reason: "Use `birthTime` instead")
+  id: ID!
+  parent: Node
+  children: [Node!]!
+  internal: Internal!
+}
+
+type FileConnection {
+  totalCount: Int!
+  edges: [FileEdge!]!
+  nodes: [File!]!
+  pageInfo: PageInfo!
+  distinct(field: FileFieldSelector!): [String!]!
+  max(field: FileFieldSelector!): Float
+  min(field: FileFieldSelector!): Float
+  sum(field: FileFieldSelector!): Float
+  group(skip: Int, limit: Int, field: FileFieldSelector!): [FileGroupConnection!]!
+}
+
+type FileEdge {
+  next: File
+  node: File!
+  previous: File
+}
+
+input FileFieldSelector {
+  sourceInstanceName: FieldSelectorEnum
+  absolutePath: FieldSelectorEnum
+  relativePath: FieldSelectorEnum
+  extension: FieldSelectorEnum
+  size: FieldSelectorEnum
+  prettySize: FieldSelectorEnum
+  modifiedTime: FieldSelectorEnum
+  accessTime: FieldSelectorEnum
+  changeTime: FieldSelectorEnum
+  birthTime: FieldSelectorEnum
+  root: FieldSelectorEnum
+  dir: FieldSelectorEnum
+  base: FieldSelectorEnum
+  ext: FieldSelectorEnum
+  name: FieldSelectorEnum
+  relativeDirectory: FieldSelectorEnum
+  dev: FieldSelectorEnum
+  mode: FieldSelectorEnum
+  nlink: FieldSelectorEnum
+  uid: FieldSelectorEnum
+  gid: FieldSelectorEnum
+  rdev: FieldSelectorEnum
+  ino: FieldSelectorEnum
+  atimeMs: FieldSelectorEnum
+  mtimeMs: FieldSelectorEnum
+  ctimeMs: FieldSelectorEnum
+  atime: FieldSelectorEnum
+  mtime: FieldSelectorEnum
+  ctime: FieldSelectorEnum
+  birthtime: FieldSelectorEnum
+  birthtimeMs: FieldSelectorEnum
+  id: FieldSelectorEnum
+  parent: NodeFieldSelector
+  children: NodeFieldSelector
+  internal: InternalFieldSelector
+}
+
+input FileFilterInput {
+  sourceInstanceName: StringQueryOperatorInput
+  absolutePath: StringQueryOperatorInput
+  relativePath: StringQueryOperatorInput
+  extension: StringQueryOperatorInput
+  size: IntQueryOperatorInput
+  prettySize: StringQueryOperatorInput
+  modifiedTime: DateQueryOperatorInput
+  accessTime: DateQueryOperatorInput
+  changeTime: DateQueryOperatorInput
+  birthTime: DateQueryOperatorInput
+  root: StringQueryOperatorInput
+  dir: StringQueryOperatorInput
+  base: StringQueryOperatorInput
+  ext: StringQueryOperatorInput
+  name: StringQueryOperatorInput
+  relativeDirectory: StringQueryOperatorInput
+  dev: IntQueryOperatorInput
+  mode: IntQueryOperatorInput
+  nlink: IntQueryOperatorInput
+  uid: IntQueryOperatorInput
+  gid: IntQueryOperatorInput
+  rdev: IntQueryOperatorInput
+  ino: FloatQueryOperatorInput
+  atimeMs: FloatQueryOperatorInput
+  mtimeMs: FloatQueryOperatorInput
+  ctimeMs: FloatQueryOperatorInput
+  atime: DateQueryOperatorInput
+  mtime: DateQueryOperatorInput
+  ctime: DateQueryOperatorInput
+  birthtime: DateQueryOperatorInput
+  birthtimeMs: FloatQueryOperatorInput
+  id: StringQueryOperatorInput
+  parent: NodeFilterInput
+  children: NodeFilterListInput
+  internal: InternalFilterInput
+}
+
+type FileGroupConnection {
+  totalCount: Int!
+  edges: [FileEdge!]!
+  nodes: [File!]!
+  pageInfo: PageInfo!
+  distinct(field: FileFieldSelector!): [String!]!
+  max(field: FileFieldSelector!): Float
+  min(field: FileFieldSelector!): Float
+  sum(field: FileFieldSelector!): Float
+  group(skip: Int, limit: Int, field: FileFieldSelector!): [FileGroupConnection!]!
+  field: String!
+  fieldValue: String
+}
+
+input FileSortInput {
+  sourceInstanceName: SortOrderEnum
+  absolutePath: SortOrderEnum
+  relativePath: SortOrderEnum
+  extension: SortOrderEnum
+  size: SortOrderEnum
+  prettySize: SortOrderEnum
+  modifiedTime: SortOrderEnum
+  accessTime: SortOrderEnum
+  changeTime: SortOrderEnum
+  birthTime: SortOrderEnum
+  root: SortOrderEnum
+  dir: SortOrderEnum
+  base: SortOrderEnum
+  ext: SortOrderEnum
+  name: SortOrderEnum
+  relativeDirectory: SortOrderEnum
+  dev: SortOrderEnum
+  mode: SortOrderEnum
+  nlink: SortOrderEnum
+  uid: SortOrderEnum
+  gid: SortOrderEnum
+  rdev: SortOrderEnum
+  ino: SortOrderEnum
+  atimeMs: SortOrderEnum
+  mtimeMs: SortOrderEnum
+  ctimeMs: SortOrderEnum
+  atime: SortOrderEnum
+  mtime: SortOrderEnum
+  ctime: SortOrderEnum
+  birthtime: SortOrderEnum
+  birthtimeMs: SortOrderEnum
+  id: SortOrderEnum
+  parent: NodeSortInput
+  children: NodeSortInput
+  internal: InternalSortInput
+}
+
+input FloatQueryOperatorInput {
+  eq: Float
+  ne: Float
+  gt: Float
+  gte: Float
+  lt: Float
+  lte: Float
+  in: [Float]
+  nin: [Float]
+}
+
+scalar GatsbyImageData
+
+input GatsbyImageDataQueryOperatorInput {
+  eq: GatsbyImageData
+  ne: GatsbyImageData
+  in: [GatsbyImageData]
+  nin: [GatsbyImageData]
+}
+
+enum GatsbyImageFormat {
+  NO_CHANGE
+  AUTO
+  JPG
+  PNG
+  WEBP
+  AVIF
+}
+
+enum GatsbyImageLayout {
+  FIXED
+  FULL_WIDTH
+  CONSTRAINED
+}
+
+enum GatsbyImagePlaceholder {
+  DOMINANT_COLOR
+  TRACED_SVG
+  BLURRED
+  NONE
+}
+
+type Internal {
+  content: String
+  contentDigest: String!
+  description: String
+  fieldOwners: [String]
+  ignoreType: Boolean
+  mediaType: String
+  owner: String!
+  type: String!
+  contentFilePath: String
+}
+
+input InternalFieldSelector {
+  content: FieldSelectorEnum
+  contentDigest: FieldSelectorEnum
+  description: FieldSelectorEnum
+  fieldOwners: FieldSelectorEnum
+  ignoreType: FieldSelectorEnum
+  mediaType: FieldSelectorEnum
+  owner: FieldSelectorEnum
+  type: FieldSelectorEnum
+  contentFilePath: FieldSelectorEnum
+}
+
+input InternalFilterInput {
+  content: StringQueryOperatorInput
+  contentDigest: StringQueryOperatorInput
+  description: StringQueryOperatorInput
+  fieldOwners: StringQueryOperatorInput
+  ignoreType: BooleanQueryOperatorInput
+  mediaType: StringQueryOperatorInput
+  owner: StringQueryOperatorInput
+  type: StringQueryOperatorInput
+  contentFilePath: StringQueryOperatorInput
+}
+
+input InternalSortInput {
+  content: SortOrderEnum
+  contentDigest: SortOrderEnum
+  description: SortOrderEnum
+  fieldOwners: SortOrderEnum
+  ignoreType: SortOrderEnum
+  mediaType: SortOrderEnum
+  owner: SortOrderEnum
+  type: SortOrderEnum
+  contentFilePath: SortOrderEnum
+}
+
+input IntQueryOperatorInput {
+  eq: Int
+  ne: Int
+  gt: Int
+  gte: Int
+  lt: Int
+  lte: Int
+  in: [Int]
+  nin: [Int]
+}
+
+"""
+The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar JSON
+
+input JSONQueryOperatorInput {
+  eq: JSON
+  ne: JSON
+  in: [JSON]
+  nin: [JSON]
+  regex: JSON
+  glob: JSON
+}
+
+"""Node Interface"""
+interface Node {
+  id: ID!
+  parent: Node
+  children: [Node!]!
+  internal: Internal!
+}
+
+input NodeFieldSelector {
+  id: FieldSelectorEnum
+  parent: NodeFieldSelector
+  children: NodeFieldSelector
+  internal: InternalFieldSelector
+}
+
+input NodeFilterInput {
+  id: StringQueryOperatorInput
+  parent: NodeFilterInput
+  children: NodeFilterListInput
+  internal: InternalFilterInput
+}
+
+input NodeFilterListInput {
+  elemMatch: NodeFilterInput
+}
+
+input NodeSortInput {
+  id: SortOrderEnum
+  parent: NodeSortInput
+  children: NodeSortInput
+  internal: InternalSortInput
+}
+
+type PageInfo {
+  currentPage: Int!
+  hasPreviousPage: Boolean!
+  hasNextPage: Boolean!
+  itemCount: Int!
+  pageCount: Int!
+  perPage: Int
+  totalCount: Int!
+}
+
+type Query {
+  file(sourceInstanceName: StringQueryOperatorInput, absolutePath: StringQueryOperatorInput, relativePath: StringQueryOperatorInput, extension: StringQueryOperatorInput, size: IntQueryOperatorInput, prettySize: StringQueryOperatorInput, modifiedTime: DateQueryOperatorInput, accessTime: DateQueryOperatorInput, changeTime: DateQueryOperatorInput, birthTime: DateQueryOperatorInput, root: StringQueryOperatorInput, dir: StringQueryOperatorInput, base: StringQueryOperatorInput, ext: StringQueryOperatorInput, name: StringQueryOperatorInput, relativeDirectory: StringQueryOperatorInput, dev: IntQueryOperatorInput, mode: IntQueryOperatorInput, nlink: IntQueryOperatorInput, uid: IntQueryOperatorInput, gid: IntQueryOperatorInput, rdev: IntQueryOperatorInput, ino: FloatQueryOperatorInput, atimeMs: FloatQueryOperatorInput, mtimeMs: FloatQueryOperatorInput, ctimeMs: FloatQueryOperatorInput, atime: DateQueryOperatorInput, mtime: DateQueryOperatorInput, ctime: DateQueryOperatorInput, birthtime: DateQueryOperatorInput, birthtimeMs: FloatQueryOperatorInput, id: StringQueryOperatorInput, parent: NodeFilterInput, children: NodeFilterListInput, internal: InternalFilterInput): File
+  allFile(filter: FileFilterInput, sort: [FileSortInput], skip: Int, limit: Int): FileConnection!
+  directory(sourceInstanceName: StringQueryOperatorInput, absolutePath: StringQueryOperatorInput, relativePath: StringQueryOperatorInput, extension: StringQueryOperatorInput, size: IntQueryOperatorInput, prettySize: StringQueryOperatorInput, modifiedTime: DateQueryOperatorInput, accessTime: DateQueryOperatorInput, changeTime: DateQueryOperatorInput, birthTime: DateQueryOperatorInput, root: StringQueryOperatorInput, dir: StringQueryOperatorInput, base: StringQueryOperatorInput, ext: StringQueryOperatorInput, name: StringQueryOperatorInput, relativeDirectory: StringQueryOperatorInput, dev: IntQueryOperatorInput, mode: IntQueryOperatorInput, nlink: IntQueryOperatorInput, uid: IntQueryOperatorInput, gid: IntQueryOperatorInput, rdev: IntQueryOperatorInput, ino: FloatQueryOperatorInput, atimeMs: FloatQueryOperatorInput, mtimeMs: FloatQueryOperatorInput, ctimeMs: FloatQueryOperatorInput, atime: DateQueryOperatorInput, mtime: DateQueryOperatorInput, ctime: DateQueryOperatorInput, birthtime: DateQueryOperatorInput, birthtimeMs: FloatQueryOperatorInput, id: StringQueryOperatorInput, parent: NodeFilterInput, children: NodeFilterListInput, internal: InternalFilterInput): Directory
+  allDirectory(filter: DirectoryFilterInput, sort: [DirectorySortInput], skip: Int, limit: Int): DirectoryConnection!
+  site(buildTime: DateQueryOperatorInput, siteMetadata: SiteSiteMetadataFilterInput, port: IntQueryOperatorInput, host: StringQueryOperatorInput, polyfill: BooleanQueryOperatorInput, pathPrefix: StringQueryOperatorInput, jsxRuntime: StringQueryOperatorInput, trailingSlash: StringQueryOperatorInput, graphqlTypegen: BooleanQueryOperatorInput, id: StringQueryOperatorInput, parent: NodeFilterInput, children: NodeFilterListInput, internal: InternalFilterInput): Site
+  allSite(filter: SiteFilterInput, sort: [SiteSortInput], skip: Int, limit: Int): SiteConnection!
+  siteFunction(functionRoute: StringQueryOperatorInput, pluginName: StringQueryOperatorInput, originalAbsoluteFilePath: StringQueryOperatorInput, originalRelativeFilePath: StringQueryOperatorInput, relativeCompiledFilePath: StringQueryOperatorInput, absoluteCompiledFilePath: StringQueryOperatorInput, matchPath: StringQueryOperatorInput, id: StringQueryOperatorInput, parent: NodeFilterInput, children: NodeFilterListInput, internal: InternalFilterInput): SiteFunction
+  allSiteFunction(filter: SiteFunctionFilterInput, sort: [SiteFunctionSortInput], skip: Int, limit: Int): SiteFunctionConnection!
+  sitePage(path: StringQueryOperatorInput, component: StringQueryOperatorInput, internalComponentName: StringQueryOperatorInput, componentChunkName: StringQueryOperatorInput, matchPath: StringQueryOperatorInput, pageContext: JSONQueryOperatorInput, pluginCreator: SitePluginFilterInput, id: StringQueryOperatorInput, parent: NodeFilterInput, children: NodeFilterListInput, internal: InternalFilterInput): SitePage
+  allSitePage(filter: SitePageFilterInput, sort: [SitePageSortInput], skip: Int, limit: Int): SitePageConnection!
+  sitePlugin(resolve: StringQueryOperatorInput, name: StringQueryOperatorInput, version: StringQueryOperatorInput, nodeAPIs: StringQueryOperatorInput, browserAPIs: StringQueryOperatorInput, ssrAPIs: StringQueryOperatorInput, pluginFilepath: StringQueryOperatorInput, pluginOptions: JSONQueryOperatorInput, packageJson: JSONQueryOperatorInput, id: StringQueryOperatorInput, parent: NodeFilterInput, children: NodeFilterListInput, internal: InternalFilterInput): SitePlugin
+  allSitePlugin(filter: SitePluginFilterInput, sort: [SitePluginSortInput], skip: Int, limit: Int): SitePluginConnection!
+  siteBuildMetadata(buildTime: DateQueryOperatorInput, id: StringQueryOperatorInput, parent: NodeFilterInput, children: NodeFilterListInput, internal: InternalFilterInput): SiteBuildMetadata
+  allSiteBuildMetadata(filter: SiteBuildMetadataFilterInput, sort: [SiteBuildMetadataSortInput], skip: Int, limit: Int): SiteBuildMetadataConnection!
+  sanityBook(_id: StringQueryOperatorInput, _type: StringQueryOperatorInput, _createdAt: DateQueryOperatorInput, _updatedAt: DateQueryOperatorInput, _rev: StringQueryOperatorInput, _key: StringQueryOperatorInput, title: StringQueryOperatorInput, cover: SanityImageFilterInput, author: SanityCrossDatasetReferenceFilterInput, genres: SanityGenreFilterListInput, publisher: SanityPublisherFilterInput, _rawCover: JSONQueryOperatorInput, _rawAuthor: JSONQueryOperatorInput, _rawGenres: JSONQueryOperatorInput, _rawPublisher: JSONQueryOperatorInput, id: StringQueryOperatorInput, parent: NodeFilterInput, children: NodeFilterListInput, internal: InternalFilterInput): SanityBook
+  allSanityBook(filter: SanityBookFilterInput, sort: [SanityBookSortInput], skip: Int, limit: Int): SanityBookConnection!
+  sanityGenre(_id: StringQueryOperatorInput, _type: StringQueryOperatorInput, _createdAt: DateQueryOperatorInput, _updatedAt: DateQueryOperatorInput, _rev: StringQueryOperatorInput, _key: StringQueryOperatorInput, title: StringQueryOperatorInput, id: StringQueryOperatorInput, parent: NodeFilterInput, children: NodeFilterListInput, internal: InternalFilterInput): SanityGenre
+  allSanityGenre(filter: SanityGenreFilterInput, sort: [SanityGenreSortInput], skip: Int, limit: Int): SanityGenreConnection!
+  sanityPublisher(_id: StringQueryOperatorInput, _type: StringQueryOperatorInput, _createdAt: DateQueryOperatorInput, _updatedAt: DateQueryOperatorInput, _rev: StringQueryOperatorInput, _key: StringQueryOperatorInput, name: StringQueryOperatorInput, id: StringQueryOperatorInput, parent: NodeFilterInput, children: NodeFilterListInput, internal: InternalFilterInput): SanityPublisher
+  allSanityPublisher(filter: SanityPublisherFilterInput, sort: [SanityPublisherSortInput], skip: Int, limit: Int): SanityPublisherConnection!
+  sanityFileAsset(_id: StringQueryOperatorInput, _type: StringQueryOperatorInput, _createdAt: DateQueryOperatorInput, _updatedAt: DateQueryOperatorInput, _rev: StringQueryOperatorInput, _key: StringQueryOperatorInput, originalFilename: StringQueryOperatorInput, label: StringQueryOperatorInput, title: StringQueryOperatorInput, description: StringQueryOperatorInput, altText: StringQueryOperatorInput, sha1hash: StringQueryOperatorInput, extension: StringQueryOperatorInput, mimeType: StringQueryOperatorInput, size: FloatQueryOperatorInput, assetId: StringQueryOperatorInput, path: StringQueryOperatorInput, url: StringQueryOperatorInput, source: SanityAssetSourceDataFilterInput, _rawSource: JSONQueryOperatorInput, id: StringQueryOperatorInput, parent: NodeFilterInput, children: NodeFilterListInput, internal: InternalFilterInput): SanityFileAsset
+  allSanityFileAsset(filter: SanityFileAssetFilterInput, sort: [SanityFileAssetSortInput], skip: Int, limit: Int): SanityFileAssetConnection!
+  sanityImageAsset(_id: StringQueryOperatorInput, _type: StringQueryOperatorInput, _createdAt: DateQueryOperatorInput, _updatedAt: DateQueryOperatorInput, _rev: StringQueryOperatorInput, _key: StringQueryOperatorInput, originalFilename: StringQueryOperatorInput, label: StringQueryOperatorInput, title: StringQueryOperatorInput, description: StringQueryOperatorInput, altText: StringQueryOperatorInput, sha1hash: StringQueryOperatorInput, extension: StringQueryOperatorInput, mimeType: StringQueryOperatorInput, size: FloatQueryOperatorInput, assetId: StringQueryOperatorInput, uploadId: StringQueryOperatorInput, path: StringQueryOperatorInput, url: StringQueryOperatorInput, metadata: SanityImageMetadataFilterInput, source: SanityAssetSourceDataFilterInput, _rawMetadata: JSONQueryOperatorInput, _rawSource: JSONQueryOperatorInput, gatsbyImageData: GatsbyImageDataQueryOperatorInput, id: StringQueryOperatorInput, parent: NodeFilterInput, children: NodeFilterListInput, internal: InternalFilterInput, filename: StringQueryOperatorInput, filesize: IntQueryOperatorInput, width: IntQueryOperatorInput, height: IntQueryOperatorInput, publicUrl: StringQueryOperatorInput, resize: RemoteFileResizeFilterInput, gatsbyImage: GatsbyImageDataQueryOperatorInput): SanityImageAsset
+  allSanityImageAsset(filter: SanityImageAssetFilterInput, sort: [SanityImageAssetSortInput], skip: Int, limit: Int): SanityImageAssetConnection!
+  sanityAuthor(_id: StringQueryOperatorInput, _type: StringQueryOperatorInput, _createdAt: DateQueryOperatorInput, _updatedAt: DateQueryOperatorInput, _rev: StringQueryOperatorInput, _key: StringQueryOperatorInput, name: StringQueryOperatorInput, profilePicture: SanityImageFilterInput, _rawProfilePicture: JSONQueryOperatorInput, id: StringQueryOperatorInput, parent: NodeFilterInput, children: NodeFilterListInput, internal: InternalFilterInput): SanityAuthor
+  allSanityAuthor(filter: SanityAuthorFilterInput, sort: [SanityAuthorSortInput], skip: Int, limit: Int): SanityAuthorConnection!
+}
+
+"""Remote Interface"""
+interface RemoteFile {
+  id: ID!
+  mimeType: String!
+  filename: String!
+  filesize: Int
+  width: Int
+  height: Int
+  publicUrl: String!
+  resize(
+    width: Int
+    height: Int
+    aspectRatio: Float
+    fit: RemoteFileFit = COVER
+
+    """
+    
+    The image formats to generate. Valid values are AUTO (meaning the same
+    format as the source image), JPG, PNG, WEBP and AVIF.
+    The default value is [AUTO, WEBP, AVIF], and you should rarely need to
+    change this. Take care if you specify JPG or PNG when you do
+    not know the formats of the source images, as this could lead to unwanted
+    results such as converting JPEGs to PNGs. Specifying
+    both PNG and JPG is not supported and will be ignored.
+    """
+    format: RemoteFileFormat = AUTO
+    cropFocus: [RemoteFileCropFocus]
+    quality: Int = 75
+  ): RemoteFileResize
+
+  """
+  Data used in the <GatsbyImage /> component. See https://gatsby.dev/img for more info.
+  """
+  gatsbyImage(
+    """
+    
+    The layout for the image.
+    FIXED: A static image sized, that does not resize according to the screen width
+    FULL_WIDTH: The image resizes to fit its container. Pass a "sizes" option if
+    it isn't going to be the full width of the screen.
+    CONSTRAINED: Resizes to fit its container, up to a maximum width, at which point it will remain fixed in size.
+    
+    """
+    layout: RemoteFileLayout = CONSTRAINED
+
+    """
+    
+    The display width of the generated image for layout = FIXED, and the display
+    width of the largest image for layout = CONSTRAINED.
+    The actual largest image resolution will be this value multiplied by the largest value in outputPixelDensities
+    Ignored if layout = FLUID.
+    
+    """
+    width: Int
+
+    """
+    
+    If set, the height of the generated image. If omitted, it is calculated from
+    the supplied width, matching the aspect ratio of the source image.
+    """
+    height: Int
+
+    """
+    
+    Format of generated placeholder image, displayed while the main image loads.
+    BLURRED: a blurred, low resolution image, encoded as a base64 data URI
+    DOMINANT_COLOR: a solid color, calculated from the dominant color of the image (default).
+    TRACED_SVG: deprecated. Will use DOMINANT_COLOR.
+    NONE: no placeholder. Set the argument "backgroundColor" to use a fixed background color.
+    """
+    placeholder: RemoteFilePlaceholder = DOMINANT_COLOR
+
+    """
+    
+    If set along with width or height, this will set the value of the other
+    dimension to match the provided aspect ratio, cropping the image if needed.
+    If neither width or height is provided, height will be set based on the intrinsic width of the source image.
+    
+    """
+    aspectRatio: Float
+
+    """
+    
+    The image formats to generate. Valid values are AUTO (meaning the same
+    format as the source image), JPG, PNG, WEBP and AVIF.
+    The default value is [AUTO, WEBP, AVIF], and you should rarely need to
+    change this. Take care if you specify JPG or PNG when you do
+    not know the formats of the source images, as this could lead to unwanted
+    results such as converting JPEGs to PNGs. Specifying
+    both PNG and JPG is not supported and will be ignored.
+    
+    """
+    formats: [RemoteFileFormat!] = [AUTO, WEBP, AVIF]
+
+    """
+    
+    A list of image pixel densities to generate for FIXED and CONSTRAINED
+    images. You should rarely need to change this. It will never generate images
+    larger than the source, and will always include a 1x image.
+    Default is [ 1, 2 ] for fixed images, meaning 1x, 2x, and [0.25, 0.5, 1, 2]
+    for fluid. In this case, an image with a fluid layout and width = 400 would
+    generate images at 100, 200, 400 and 800px wide.
+    
+    """
+    outputPixelDensities: [Float] = [0.25, 0.5, 1, 2]
+
+    """
+    
+    Specifies the image widths to generate. You should rarely need to change
+    this. For FIXED and CONSTRAINED images it is better to allow these to be
+    determined automatically,
+    based on the image size. For FULL_WIDTH images this can be used to override
+    the default, which is [750, 1080, 1366, 1920].
+    It will never generate any images larger than the source.
+    
+    """
+    breakpoints: [Int] = [750, 1080, 1366, 1920]
+
+    """
+    
+    The "sizes" property, passed to the img tag. This describes the display size of the image.
+    This does not affect the generated images, but is used by the browser to
+    decide which images to download. You can leave this blank for fixed images,
+    or if the responsive image
+    container will be the full width of the screen. In these cases we will generate an appropriate value.
+    
+    """
+    sizes: String
+
+    """
+    Background color applied to the wrapper, or when "letterboxing" an image to another aspect ratio.
+    """
+    backgroundColor: String
+    fit: RemoteFileFit = COVER
+    cropFocus: [RemoteFileCropFocus]
+    quality: Int = 75
+  ): GatsbyImageData
+}
+
+enum RemoteFileCropFocus {
+  CENTER
+  TOP
+  RIGHT
+  BOTTOM
+  LEFT
+  ENTROPY
+  EDGES
+  FACES
+}
+
+enum RemoteFileFit {
+  COVER
+  FILL
+  OUTSIDE
+  CONTAIN
+}
+
+enum RemoteFileFormat {
+  AUTO
+  JPG
+  PNG
+  WEBP
+  AVIF
+}
+
+enum RemoteFileLayout {
+  FIXED
+  FULL_WIDTH
+  CONSTRAINED
+}
+
+enum RemoteFilePlaceholder {
+  DOMINANT_COLOR
+  BLURRED
+  TRACED_SVG
+  NONE
+}
+
+type RemoteFileResize {
+  width: Int
+  height: Int
+  src: String
+}
+
+input RemoteFileResizeFieldSelector {
+  width: FieldSelectorEnum
+  height: FieldSelectorEnum
+  src: FieldSelectorEnum
+}
+
+input RemoteFileResizeFilterInput {
+  width: IntQueryOperatorInput
+  height: IntQueryOperatorInput
+  src: StringQueryOperatorInput
+}
+
+input RemoteFileResizeSortInput {
+  width: SortOrderEnum
+  height: SortOrderEnum
+  src: SortOrderEnum
+}
+
+type SanityAssetSourceData {
+  _key: String
+  _type: String
+  name: String
+  id: String
+  url: String
+}
+
+input SanityAssetSourceDataFieldSelector {
+  _key: FieldSelectorEnum
+  _type: FieldSelectorEnum
+  name: FieldSelectorEnum
+  id: FieldSelectorEnum
+  url: FieldSelectorEnum
+}
+
+input SanityAssetSourceDataFilterInput {
+  _key: StringQueryOperatorInput
+  _type: StringQueryOperatorInput
+  name: StringQueryOperatorInput
+  id: StringQueryOperatorInput
+  url: StringQueryOperatorInput
+}
+
+input SanityAssetSourceDataSortInput {
+  _key: SortOrderEnum
+  _type: SortOrderEnum
+  name: SortOrderEnum
+  id: SortOrderEnum
+  url: SortOrderEnum
+}
+
+type SanityAuthor implements SanityDocument & Node {
+  _id: String
+  _type: String
+  _createdAt(
+    """
+    Format the date using Moment.js' date tokens, e.g. `date(formatString: "YYYY
+    MMMM DD")`. See https://momentjs.com/docs/#/displaying/format/ for
+    documentation for different tokens.
+    """
+    formatString: String
+
+    """Returns a string generated with Moment.js' `fromNow` function"""
+    fromNow: Boolean
+
+    """
+    Returns the difference between this date and the current time. Defaults to
+    "milliseconds" but you can also pass in as the measurement "years",
+    "months", "weeks", "days", "hours", "minutes", and "seconds".
+    """
+    difference: String
+
+    """Configures the locale Moment.js will use to format the date."""
+    locale: String
+  ): Date
+  _updatedAt(
+    """
+    Format the date using Moment.js' date tokens, e.g. `date(formatString: "YYYY
+    MMMM DD")`. See https://momentjs.com/docs/#/displaying/format/ for
+    documentation for different tokens.
+    """
+    formatString: String
+
+    """Returns a string generated with Moment.js' `fromNow` function"""
+    fromNow: Boolean
+
+    """
+    Returns the difference between this date and the current time. Defaults to
+    "milliseconds" but you can also pass in as the measurement "years",
+    "months", "weeks", "days", "hours", "minutes", and "seconds".
+    """
+    difference: String
+
+    """Configures the locale Moment.js will use to format the date."""
+    locale: String
+  ): Date
+  _rev: String
+  _key: String
+  name: String
+  profilePicture: SanityImage
+  _rawProfilePicture(resolveReferences: SanityResolveReferencesConfiguration): JSON
+  id: ID!
+  parent: Node
+  children: [Node!]!
+  internal: Internal!
+}
+
+type SanityAuthorConnection {
+  totalCount: Int!
+  edges: [SanityAuthorEdge!]!
+  nodes: [SanityAuthor!]!
+  pageInfo: PageInfo!
+  distinct(field: SanityAuthorFieldSelector!): [String!]!
+  max(field: SanityAuthorFieldSelector!): Float
+  min(field: SanityAuthorFieldSelector!): Float
+  sum(field: SanityAuthorFieldSelector!): Float
+  group(skip: Int, limit: Int, field: SanityAuthorFieldSelector!): [SanityAuthorGroupConnection!]!
+}
+
+type SanityAuthorEdge {
+  next: SanityAuthor
+  node: SanityAuthor!
+  previous: SanityAuthor
+}
+
+input SanityAuthorFieldSelector {
+  _id: FieldSelectorEnum
+  _type: FieldSelectorEnum
+  _createdAt: FieldSelectorEnum
+  _updatedAt: FieldSelectorEnum
+  _rev: FieldSelectorEnum
+  _key: FieldSelectorEnum
+  name: FieldSelectorEnum
+  profilePicture: SanityImageFieldSelector
+  _rawProfilePicture: FieldSelectorEnum
+  id: FieldSelectorEnum
+  parent: NodeFieldSelector
+  children: NodeFieldSelector
+  internal: InternalFieldSelector
+}
+
+input SanityAuthorFilterInput {
+  _id: StringQueryOperatorInput
+  _type: StringQueryOperatorInput
+  _createdAt: DateQueryOperatorInput
+  _updatedAt: DateQueryOperatorInput
+  _rev: StringQueryOperatorInput
+  _key: StringQueryOperatorInput
+  name: StringQueryOperatorInput
+  profilePicture: SanityImageFilterInput
+  _rawProfilePicture: JSONQueryOperatorInput
+  id: StringQueryOperatorInput
+  parent: NodeFilterInput
+  children: NodeFilterListInput
+  internal: InternalFilterInput
+}
+
+type SanityAuthorGroupConnection {
+  totalCount: Int!
+  edges: [SanityAuthorEdge!]!
+  nodes: [SanityAuthor!]!
+  pageInfo: PageInfo!
+  distinct(field: SanityAuthorFieldSelector!): [String!]!
+  max(field: SanityAuthorFieldSelector!): Float
+  min(field: SanityAuthorFieldSelector!): Float
+  sum(field: SanityAuthorFieldSelector!): Float
+  group(skip: Int, limit: Int, field: SanityAuthorFieldSelector!): [SanityAuthorGroupConnection!]!
+  field: String!
+  fieldValue: String
+}
+
+input SanityAuthorSortInput {
+  _id: SortOrderEnum
+  _type: SortOrderEnum
+  _createdAt: SortOrderEnum
+  _updatedAt: SortOrderEnum
+  _rev: SortOrderEnum
+  _key: SortOrderEnum
+  name: SortOrderEnum
+  profilePicture: SanityImageSortInput
+  _rawProfilePicture: SortOrderEnum
+  id: SortOrderEnum
+  parent: NodeSortInput
+  children: NodeSortInput
+  internal: InternalSortInput
+}
+
+type SanityBlock {
+  _key: String
+  _type: String
+  children: [SanitySpan]
+  style: String
+  list: String
+  _rawChildren(resolveReferences: SanityResolveReferencesConfiguration): JSON
+}
+
+type SanityBook implements SanityDocument & Node {
+  _id: String
+  _type: String
+  _createdAt(
+    """
+    Format the date using Moment.js' date tokens, e.g. `date(formatString: "YYYY
+    MMMM DD")`. See https://momentjs.com/docs/#/displaying/format/ for
+    documentation for different tokens.
+    """
+    formatString: String
+
+    """Returns a string generated with Moment.js' `fromNow` function"""
+    fromNow: Boolean
+
+    """
+    Returns the difference between this date and the current time. Defaults to
+    "milliseconds" but you can also pass in as the measurement "years",
+    "months", "weeks", "days", "hours", "minutes", and "seconds".
+    """
+    difference: String
+
+    """Configures the locale Moment.js will use to format the date."""
+    locale: String
+  ): Date
+  _updatedAt(
+    """
+    Format the date using Moment.js' date tokens, e.g. `date(formatString: "YYYY
+    MMMM DD")`. See https://momentjs.com/docs/#/displaying/format/ for
+    documentation for different tokens.
+    """
+    formatString: String
+
+    """Returns a string generated with Moment.js' `fromNow` function"""
+    fromNow: Boolean
+
+    """
+    Returns the difference between this date and the current time. Defaults to
+    "milliseconds" but you can also pass in as the measurement "years",
+    "months", "weeks", "days", "hours", "minutes", and "seconds".
+    """
+    difference: String
+
+    """Configures the locale Moment.js will use to format the date."""
+    locale: String
+  ): Date
+  _rev: String
+  _key: String
+  title: String
+  cover: SanityImage
+  author: SanityCrossDatasetReference
+  genres: [SanityGenre]
+  publisher: SanityPublisher
+  _rawCover(resolveReferences: SanityResolveReferencesConfiguration): JSON
+  _rawAuthor(resolveReferences: SanityResolveReferencesConfiguration): JSON
+  _rawGenres(resolveReferences: SanityResolveReferencesConfiguration): JSON
+  _rawPublisher(resolveReferences: SanityResolveReferencesConfiguration): JSON
+  id: ID!
+  parent: Node
+  children: [Node!]!
+  internal: Internal!
+}
+
+type SanityBookConnection {
+  totalCount: Int!
+  edges: [SanityBookEdge!]!
+  nodes: [SanityBook!]!
+  pageInfo: PageInfo!
+  distinct(field: SanityBookFieldSelector!): [String!]!
+  max(field: SanityBookFieldSelector!): Float
+  min(field: SanityBookFieldSelector!): Float
+  sum(field: SanityBookFieldSelector!): Float
+  group(skip: Int, limit: Int, field: SanityBookFieldSelector!): [SanityBookGroupConnection!]!
+}
+
+type SanityBookEdge {
+  next: SanityBook
+  node: SanityBook!
+  previous: SanityBook
+}
+
+input SanityBookFieldSelector {
+  _id: FieldSelectorEnum
+  _type: FieldSelectorEnum
+  _createdAt: FieldSelectorEnum
+  _updatedAt: FieldSelectorEnum
+  _rev: FieldSelectorEnum
+  _key: FieldSelectorEnum
+  title: FieldSelectorEnum
+  cover: SanityImageFieldSelector
+  author: SanityCrossDatasetReferenceFieldSelector
+  genres: SanityGenreFieldSelector
+  publisher: SanityPublisherFieldSelector
+  _rawCover: FieldSelectorEnum
+  _rawAuthor: FieldSelectorEnum
+  _rawGenres: FieldSelectorEnum
+  _rawPublisher: FieldSelectorEnum
+  id: FieldSelectorEnum
+  parent: NodeFieldSelector
+  children: NodeFieldSelector
+  internal: InternalFieldSelector
+}
+
+input SanityBookFilterInput {
+  _id: StringQueryOperatorInput
+  _type: StringQueryOperatorInput
+  _createdAt: DateQueryOperatorInput
+  _updatedAt: DateQueryOperatorInput
+  _rev: StringQueryOperatorInput
+  _key: StringQueryOperatorInput
+  title: StringQueryOperatorInput
+  cover: SanityImageFilterInput
+  author: SanityCrossDatasetReferenceFilterInput
+  genres: SanityGenreFilterListInput
+  publisher: SanityPublisherFilterInput
+  _rawCover: JSONQueryOperatorInput
+  _rawAuthor: JSONQueryOperatorInput
+  _rawGenres: JSONQueryOperatorInput
+  _rawPublisher: JSONQueryOperatorInput
+  id: StringQueryOperatorInput
+  parent: NodeFilterInput
+  children: NodeFilterListInput
+  internal: InternalFilterInput
+}
+
+type SanityBookGroupConnection {
+  totalCount: Int!
+  edges: [SanityBookEdge!]!
+  nodes: [SanityBook!]!
+  pageInfo: PageInfo!
+  distinct(field: SanityBookFieldSelector!): [String!]!
+  max(field: SanityBookFieldSelector!): Float
+  min(field: SanityBookFieldSelector!): Float
+  sum(field: SanityBookFieldSelector!): Float
+  group(skip: Int, limit: Int, field: SanityBookFieldSelector!): [SanityBookGroupConnection!]!
+  field: String!
+  fieldValue: String
+}
+
+input SanityBookSortInput {
+  _id: SortOrderEnum
+  _type: SortOrderEnum
+  _createdAt: SortOrderEnum
+  _updatedAt: SortOrderEnum
+  _rev: SortOrderEnum
+  _key: SortOrderEnum
+  title: SortOrderEnum
+  cover: SanityImageSortInput
+  author: SanityCrossDatasetReferenceSortInput
+  genres: SanityGenreSortInput
+  publisher: SanityPublisherSortInput
+  _rawCover: SortOrderEnum
+  _rawAuthor: SortOrderEnum
+  _rawGenres: SortOrderEnum
+  _rawPublisher: SortOrderEnum
+  id: SortOrderEnum
+  parent: NodeSortInput
+  children: NodeSortInput
+  internal: InternalSortInput
+}
+
+type SanityCrossDatasetReference {
+  _key: String
+  _type: String
+  _ref: String
+  _weak: Boolean
+  _dataset: String
+  _projectId: String
+}
+
+input SanityCrossDatasetReferenceFieldSelector {
+  _key: FieldSelectorEnum
+  _type: FieldSelectorEnum
+  _ref: FieldSelectorEnum
+  _weak: FieldSelectorEnum
+  _dataset: FieldSelectorEnum
+  _projectId: FieldSelectorEnum
+}
+
+input SanityCrossDatasetReferenceFilterInput {
+  _key: StringQueryOperatorInput
+  _type: StringQueryOperatorInput
+  _ref: StringQueryOperatorInput
+  _weak: BooleanQueryOperatorInput
+  _dataset: StringQueryOperatorInput
+  _projectId: StringQueryOperatorInput
+}
+
+input SanityCrossDatasetReferenceSortInput {
+  _key: SortOrderEnum
+  _type: SortOrderEnum
+  _ref: SortOrderEnum
+  _weak: SortOrderEnum
+  _dataset: SortOrderEnum
+  _projectId: SortOrderEnum
+}
+
+"""A Sanity document"""
+interface SanityDocument {
+  _id: String
+  _type: String
+  _createdAt: Date
+  _updatedAt: Date
+  _rev: String
+}
+
+type SanityFile {
+  _key: String
+  _type: String
+  asset: SanityFileAsset
+  _rawAsset(resolveReferences: SanityResolveReferencesConfiguration): JSON
+}
+
+type SanityFileAsset implements SanityDocument & Node {
+  _id: String
+  _type: String
+  _createdAt(
+    """
+    Format the date using Moment.js' date tokens, e.g. `date(formatString: "YYYY
+    MMMM DD")`. See https://momentjs.com/docs/#/displaying/format/ for
+    documentation for different tokens.
+    """
+    formatString: String
+
+    """Returns a string generated with Moment.js' `fromNow` function"""
+    fromNow: Boolean
+
+    """
+    Returns the difference between this date and the current time. Defaults to
+    "milliseconds" but you can also pass in as the measurement "years",
+    "months", "weeks", "days", "hours", "minutes", and "seconds".
+    """
+    difference: String
+
+    """Configures the locale Moment.js will use to format the date."""
+    locale: String
+  ): Date
+  _updatedAt(
+    """
+    Format the date using Moment.js' date tokens, e.g. `date(formatString: "YYYY
+    MMMM DD")`. See https://momentjs.com/docs/#/displaying/format/ for
+    documentation for different tokens.
+    """
+    formatString: String
+
+    """Returns a string generated with Moment.js' `fromNow` function"""
+    fromNow: Boolean
+
+    """
+    Returns the difference between this date and the current time. Defaults to
+    "milliseconds" but you can also pass in as the measurement "years",
+    "months", "weeks", "days", "hours", "minutes", and "seconds".
+    """
+    difference: String
+
+    """Configures the locale Moment.js will use to format the date."""
+    locale: String
+  ): Date
+  _rev: String
+  _key: String
+  originalFilename: String
+  label: String
+  title: String
+  description: String
+  altText: String
+  sha1hash: String
+  extension: String
+  mimeType: String
+  size: Float
+  assetId: String
+  path: String
+  url: String
+  source: SanityAssetSourceData
+  _rawSource(resolveReferences: SanityResolveReferencesConfiguration): JSON
+  id: ID!
+  parent: Node
+  children: [Node!]!
+  internal: Internal!
+}
+
+type SanityFileAssetConnection {
+  totalCount: Int!
+  edges: [SanityFileAssetEdge!]!
+  nodes: [SanityFileAsset!]!
+  pageInfo: PageInfo!
+  distinct(field: SanityFileAssetFieldSelector!): [String!]!
+  max(field: SanityFileAssetFieldSelector!): Float
+  min(field: SanityFileAssetFieldSelector!): Float
+  sum(field: SanityFileAssetFieldSelector!): Float
+  group(skip: Int, limit: Int, field: SanityFileAssetFieldSelector!): [SanityFileAssetGroupConnection!]!
+}
+
+type SanityFileAssetEdge {
+  next: SanityFileAsset
+  node: SanityFileAsset!
+  previous: SanityFileAsset
+}
+
+input SanityFileAssetFieldSelector {
+  _id: FieldSelectorEnum
+  _type: FieldSelectorEnum
+  _createdAt: FieldSelectorEnum
+  _updatedAt: FieldSelectorEnum
+  _rev: FieldSelectorEnum
+  _key: FieldSelectorEnum
+  originalFilename: FieldSelectorEnum
+  label: FieldSelectorEnum
+  title: FieldSelectorEnum
+  description: FieldSelectorEnum
+  altText: FieldSelectorEnum
+  sha1hash: FieldSelectorEnum
+  extension: FieldSelectorEnum
+  mimeType: FieldSelectorEnum
+  size: FieldSelectorEnum
+  assetId: FieldSelectorEnum
+  path: FieldSelectorEnum
+  url: FieldSelectorEnum
+  source: SanityAssetSourceDataFieldSelector
+  _rawSource: FieldSelectorEnum
+  id: FieldSelectorEnum
+  parent: NodeFieldSelector
+  children: NodeFieldSelector
+  internal: InternalFieldSelector
+}
+
+input SanityFileAssetFilterInput {
+  _id: StringQueryOperatorInput
+  _type: StringQueryOperatorInput
+  _createdAt: DateQueryOperatorInput
+  _updatedAt: DateQueryOperatorInput
+  _rev: StringQueryOperatorInput
+  _key: StringQueryOperatorInput
+  originalFilename: StringQueryOperatorInput
+  label: StringQueryOperatorInput
+  title: StringQueryOperatorInput
+  description: StringQueryOperatorInput
+  altText: StringQueryOperatorInput
+  sha1hash: StringQueryOperatorInput
+  extension: StringQueryOperatorInput
+  mimeType: StringQueryOperatorInput
+  size: FloatQueryOperatorInput
+  assetId: StringQueryOperatorInput
+  path: StringQueryOperatorInput
+  url: StringQueryOperatorInput
+  source: SanityAssetSourceDataFilterInput
+  _rawSource: JSONQueryOperatorInput
+  id: StringQueryOperatorInput
+  parent: NodeFilterInput
+  children: NodeFilterListInput
+  internal: InternalFilterInput
+}
+
+type SanityFileAssetGroupConnection {
+  totalCount: Int!
+  edges: [SanityFileAssetEdge!]!
+  nodes: [SanityFileAsset!]!
+  pageInfo: PageInfo!
+  distinct(field: SanityFileAssetFieldSelector!): [String!]!
+  max(field: SanityFileAssetFieldSelector!): Float
+  min(field: SanityFileAssetFieldSelector!): Float
+  sum(field: SanityFileAssetFieldSelector!): Float
+  group(skip: Int, limit: Int, field: SanityFileAssetFieldSelector!): [SanityFileAssetGroupConnection!]!
+  field: String!
+  fieldValue: String
+}
+
+input SanityFileAssetSortInput {
+  _id: SortOrderEnum
+  _type: SortOrderEnum
+  _createdAt: SortOrderEnum
+  _updatedAt: SortOrderEnum
+  _rev: SortOrderEnum
+  _key: SortOrderEnum
+  originalFilename: SortOrderEnum
+  label: SortOrderEnum
+  title: SortOrderEnum
+  description: SortOrderEnum
+  altText: SortOrderEnum
+  sha1hash: SortOrderEnum
+  extension: SortOrderEnum
+  mimeType: SortOrderEnum
+  size: SortOrderEnum
+  assetId: SortOrderEnum
+  path: SortOrderEnum
+  url: SortOrderEnum
+  source: SanityAssetSourceDataSortInput
+  _rawSource: SortOrderEnum
+  id: SortOrderEnum
+  parent: NodeSortInput
+  children: NodeSortInput
+  internal: InternalSortInput
+}
+
+enum SanityGatsbyImagePlaceholder {
+  DOMINANT_COLOR
+  BLURRED
+  NONE
+}
+
+type SanityGenre implements SanityDocument & Node {
+  _id: String
+  _type: String
+  _createdAt(
+    """
+    Format the date using Moment.js' date tokens, e.g. `date(formatString: "YYYY
+    MMMM DD")`. See https://momentjs.com/docs/#/displaying/format/ for
+    documentation for different tokens.
+    """
+    formatString: String
+
+    """Returns a string generated with Moment.js' `fromNow` function"""
+    fromNow: Boolean
+
+    """
+    Returns the difference between this date and the current time. Defaults to
+    "milliseconds" but you can also pass in as the measurement "years",
+    "months", "weeks", "days", "hours", "minutes", and "seconds".
+    """
+    difference: String
+
+    """Configures the locale Moment.js will use to format the date."""
+    locale: String
+  ): Date
+  _updatedAt(
+    """
+    Format the date using Moment.js' date tokens, e.g. `date(formatString: "YYYY
+    MMMM DD")`. See https://momentjs.com/docs/#/displaying/format/ for
+    documentation for different tokens.
+    """
+    formatString: String
+
+    """Returns a string generated with Moment.js' `fromNow` function"""
+    fromNow: Boolean
+
+    """
+    Returns the difference between this date and the current time. Defaults to
+    "milliseconds" but you can also pass in as the measurement "years",
+    "months", "weeks", "days", "hours", "minutes", and "seconds".
+    """
+    difference: String
+
+    """Configures the locale Moment.js will use to format the date."""
+    locale: String
+  ): Date
+  _rev: String
+  _key: String
+  title: String
+  id: ID!
+  parent: Node
+  children: [Node!]!
+  internal: Internal!
+}
+
+type SanityGenreConnection {
+  totalCount: Int!
+  edges: [SanityGenreEdge!]!
+  nodes: [SanityGenre!]!
+  pageInfo: PageInfo!
+  distinct(field: SanityGenreFieldSelector!): [String!]!
+  max(field: SanityGenreFieldSelector!): Float
+  min(field: SanityGenreFieldSelector!): Float
+  sum(field: SanityGenreFieldSelector!): Float
+  group(skip: Int, limit: Int, field: SanityGenreFieldSelector!): [SanityGenreGroupConnection!]!
+}
+
+type SanityGenreEdge {
+  next: SanityGenre
+  node: SanityGenre!
+  previous: SanityGenre
+}
+
+input SanityGenreFieldSelector {
+  _id: FieldSelectorEnum
+  _type: FieldSelectorEnum
+  _createdAt: FieldSelectorEnum
+  _updatedAt: FieldSelectorEnum
+  _rev: FieldSelectorEnum
+  _key: FieldSelectorEnum
+  title: FieldSelectorEnum
+  id: FieldSelectorEnum
+  parent: NodeFieldSelector
+  children: NodeFieldSelector
+  internal: InternalFieldSelector
+}
+
+input SanityGenreFilterInput {
+  _id: StringQueryOperatorInput
+  _type: StringQueryOperatorInput
+  _createdAt: DateQueryOperatorInput
+  _updatedAt: DateQueryOperatorInput
+  _rev: StringQueryOperatorInput
+  _key: StringQueryOperatorInput
+  title: StringQueryOperatorInput
+  id: StringQueryOperatorInput
+  parent: NodeFilterInput
+  children: NodeFilterListInput
+  internal: InternalFilterInput
+}
+
+input SanityGenreFilterListInput {
+  elemMatch: SanityGenreFilterInput
+}
+
+type SanityGenreGroupConnection {
+  totalCount: Int!
+  edges: [SanityGenreEdge!]!
+  nodes: [SanityGenre!]!
+  pageInfo: PageInfo!
+  distinct(field: SanityGenreFieldSelector!): [String!]!
+  max(field: SanityGenreFieldSelector!): Float
+  min(field: SanityGenreFieldSelector!): Float
+  sum(field: SanityGenreFieldSelector!): Float
+  group(skip: Int, limit: Int, field: SanityGenreFieldSelector!): [SanityGenreGroupConnection!]!
+  field: String!
+  fieldValue: String
+}
+
+input SanityGenreSortInput {
+  _id: SortOrderEnum
+  _type: SortOrderEnum
+  _createdAt: SortOrderEnum
+  _updatedAt: SortOrderEnum
+  _rev: SortOrderEnum
+  _key: SortOrderEnum
+  title: SortOrderEnum
+  id: SortOrderEnum
+  parent: NodeSortInput
+  children: NodeSortInput
+  internal: InternalSortInput
+}
+
+type SanityGeopoint {
+  _key: String
+  _type: String
+  lat: Float
+  lng: Float
+  alt: Float
+}
+
+input SanityGeopointFieldSelector {
+  _key: FieldSelectorEnum
+  _type: FieldSelectorEnum
+  lat: FieldSelectorEnum
+  lng: FieldSelectorEnum
+  alt: FieldSelectorEnum
+}
+
+input SanityGeopointFilterInput {
+  _key: StringQueryOperatorInput
+  _type: StringQueryOperatorInput
+  lat: FloatQueryOperatorInput
+  lng: FloatQueryOperatorInput
+  alt: FloatQueryOperatorInput
+}
+
+input SanityGeopointSortInput {
+  _key: SortOrderEnum
+  _type: SortOrderEnum
+  lat: SortOrderEnum
+  lng: SortOrderEnum
+  alt: SortOrderEnum
+}
+
+type SanityImage {
+  _key: String
+  _type: String
+  asset: SanityImageAsset
+  hotspot: SanityImageHotspot
+  crop: SanityImageCrop
+  _rawAsset(resolveReferences: SanityResolveReferencesConfiguration): JSON
+  _rawHotspot(resolveReferences: SanityResolveReferencesConfiguration): JSON
+  _rawCrop(resolveReferences: SanityResolveReferencesConfiguration): JSON
+}
+
+type SanityImageAsset implements SanityDocument & Node & RemoteFile {
+  _id: String
+  _type: String
+  _createdAt(
+    """
+    Format the date using Moment.js' date tokens, e.g. `date(formatString: "YYYY
+    MMMM DD")`. See https://momentjs.com/docs/#/displaying/format/ for
+    documentation for different tokens.
+    """
+    formatString: String
+
+    """Returns a string generated with Moment.js' `fromNow` function"""
+    fromNow: Boolean
+
+    """
+    Returns the difference between this date and the current time. Defaults to
+    "milliseconds" but you can also pass in as the measurement "years",
+    "months", "weeks", "days", "hours", "minutes", and "seconds".
+    """
+    difference: String
+
+    """Configures the locale Moment.js will use to format the date."""
+    locale: String
+  ): Date
+  _updatedAt(
+    """
+    Format the date using Moment.js' date tokens, e.g. `date(formatString: "YYYY
+    MMMM DD")`. See https://momentjs.com/docs/#/displaying/format/ for
+    documentation for different tokens.
+    """
+    formatString: String
+
+    """Returns a string generated with Moment.js' `fromNow` function"""
+    fromNow: Boolean
+
+    """
+    Returns the difference between this date and the current time. Defaults to
+    "milliseconds" but you can also pass in as the measurement "years",
+    "months", "weeks", "days", "hours", "minutes", and "seconds".
+    """
+    difference: String
+
+    """Configures the locale Moment.js will use to format the date."""
+    locale: String
+  ): Date
+  _rev: String
+  _key: String
+  originalFilename: String
+  label: String
+  title: String
+  description: String
+  altText: String
+  sha1hash: String
+  extension: String
+  mimeType: String!
+  size: Float
+  assetId: String
+  uploadId: String
+  path: String
+  url: String
+  metadata: SanityImageMetadata
+  source: SanityAssetSourceData
+  _rawMetadata(resolveReferences: SanityResolveReferencesConfiguration): JSON
+  _rawSource(resolveReferences: SanityResolveReferencesConfiguration): JSON
+  gatsbyImageData(
+    """
+    The layout for the image.
+    FIXED: A static image sized, that does not resize according to the screen width
+    FULL_WIDTH: The image resizes to fit its container. Pass a "sizes" option if
+    it isn't going to be the full width of the screen.
+    CONSTRAINED: Resizes to fit its container, up to a maximum width, at which point it will remain fixed in size.
+    """
+    layout: GatsbyImageLayout
+
+    """
+    The display width of the generated image for layout = FIXED, and the display
+    width of the largest image for layout = CONSTRAINED.
+    The actual largest image resolution will be this value multiplied by the largest value in outputPixelDensities
+    Ignored if layout = FLUID.
+    """
+    width: Int
+
+    """
+    If set, the height of the generated image. If omitted, it is calculated from
+    the supplied width, matching the aspect ratio of the source image.
+    """
+    height: Int
+
+    """
+    If set along with width or height, this will set the value of the other
+    dimension to match the provided aspect ratio, cropping the image if needed.
+    If neither width or height is provided, height will be set based on the intrinsic width of the source image.
+    """
+    aspectRatio: Float
+
+    """
+    Format of generated placeholder image, displayed while the main image loads.
+    BLURRED: a blurred, low resolution image, encoded as a base64 data URI (default)
+    DOMINANT_COLOR: a solid color, calculated from the dominant color of the image.
+    NONE: no placeholder.
+    """
+    placeholder: SanityGatsbyImagePlaceholder = DOMINANT_COLOR
+
+    """
+    The image formats to generate. Valid values are AUTO (meaning the same
+    format as the source image), JPG, PNG, WEBP and AVIF.
+    The default value is [AUTO, WEBP], and you should rarely need to change
+    this. Take care if you specify JPG or PNG when you do
+    not know the formats of the source images, as this could lead to unwanted
+    results such as converting JPEGs to PNGs. Specifying
+    both PNG and JPG is not supported and will be ignored.
+    """
+    formats: [GatsbyImageFormat] = [NO_CHANGE, WEBP]
+
+    """
+    A list of image pixel densities to generate for FIXED and CONSTRAINED
+    images. You should rarely need to change this. It will never generate images
+    larger than the source, and will always include a 1x image.
+    Default is [ 1, 2 ] for fixed images, meaning 1x, 2x, 3x, and [0.25, 0.5, 1,
+    2] for fluid. In this case, an image with a fluid layout and width = 400
+    would generate images at 100, 200, 400 and 800px wide.
+    """
+    outputPixelDensities: [Float]
+
+    """
+    Specifies the image widths to generate. You should rarely need to change
+    this. For FIXED and CONSTRAINED images it is better to allow these to be
+    determined automatically,
+    based on the image size. For FULL_WIDTH images this can be used to override
+    the default, which is [750, 1080, 1366, 1920].
+    It will never generate any images larger than the source.
+    """
+    breakpoints: [Int]
+
+    """
+    The "sizes" property, passed to the img tag. This describes the display size of the image.
+    This does not affect the generated images, but is used by the browser to
+    decide which images to download. You can leave this blank for fixed images,
+    or if the responsive image
+    container will be the full width of the screen. In these cases we will generate an appropriate value.
+    """
+    sizes: String
+
+    """
+    Background color applied to the wrapper, or when "letterboxing" an image to another aspect ratio.
+    """
+    backgroundColor: String
+    fit: SanityImageFit = FILL
+  ): GatsbyImageData!
+  id: ID!
+  parent: Node
+  children: [Node!]!
+  internal: Internal!
+  filename: String!
+  filesize: Int
+  width: Int
+  height: Int
+  publicUrl: String!
+  resize(
+    width: Int
+    height: Int
+    aspectRatio: Float
+    fit: RemoteFileFit = COVER
+
+    """
+    
+    The image formats to generate. Valid values are AUTO (meaning the same
+    format as the source image), JPG, PNG, WEBP and AVIF.
+    The default value is [AUTO, WEBP, AVIF], and you should rarely need to
+    change this. Take care if you specify JPG or PNG when you do
+    not know the formats of the source images, as this could lead to unwanted
+    results such as converting JPEGs to PNGs. Specifying
+    both PNG and JPG is not supported and will be ignored.
+    """
+    format: RemoteFileFormat = AUTO
+    cropFocus: [RemoteFileCropFocus]
+    quality: Int = 75
+  ): RemoteFileResize
+
+  """
+  Data used in the <GatsbyImage /> component. See https://gatsby.dev/img for more info.
+  """
+  gatsbyImage(
+    """
+    
+    The layout for the image.
+    FIXED: A static image sized, that does not resize according to the screen width
+    FULL_WIDTH: The image resizes to fit its container. Pass a "sizes" option if
+    it isn't going to be the full width of the screen.
+    CONSTRAINED: Resizes to fit its container, up to a maximum width, at which point it will remain fixed in size.
+    
+    """
+    layout: RemoteFileLayout = CONSTRAINED
+
+    """
+    
+    The display width of the generated image for layout = FIXED, and the display
+    width of the largest image for layout = CONSTRAINED.
+    The actual largest image resolution will be this value multiplied by the largest value in outputPixelDensities
+    Ignored if layout = FLUID.
+    
+    """
+    width: Int
+
+    """
+    
+    If set, the height of the generated image. If omitted, it is calculated from
+    the supplied width, matching the aspect ratio of the source image.
+    """
+    height: Int
+
+    """
+    
+    Format of generated placeholder image, displayed while the main image loads.
+    BLURRED: a blurred, low resolution image, encoded as a base64 data URI
+    DOMINANT_COLOR: a solid color, calculated from the dominant color of the image (default).
+    TRACED_SVG: deprecated. Will use DOMINANT_COLOR.
+    NONE: no placeholder. Set the argument "backgroundColor" to use a fixed background color.
+    """
+    placeholder: RemoteFilePlaceholder = DOMINANT_COLOR
+
+    """
+    
+    If set along with width or height, this will set the value of the other
+    dimension to match the provided aspect ratio, cropping the image if needed.
+    If neither width or height is provided, height will be set based on the intrinsic width of the source image.
+    
+    """
+    aspectRatio: Float
+
+    """
+    
+    The image formats to generate. Valid values are AUTO (meaning the same
+    format as the source image), JPG, PNG, WEBP and AVIF.
+    The default value is [AUTO, WEBP, AVIF], and you should rarely need to
+    change this. Take care if you specify JPG or PNG when you do
+    not know the formats of the source images, as this could lead to unwanted
+    results such as converting JPEGs to PNGs. Specifying
+    both PNG and JPG is not supported and will be ignored.
+    
+    """
+    formats: [RemoteFileFormat!] = [AUTO, WEBP, AVIF]
+
+    """
+    
+    A list of image pixel densities to generate for FIXED and CONSTRAINED
+    images. You should rarely need to change this. It will never generate images
+    larger than the source, and will always include a 1x image.
+    Default is [ 1, 2 ] for fixed images, meaning 1x, 2x, and [0.25, 0.5, 1, 2]
+    for fluid. In this case, an image with a fluid layout and width = 400 would
+    generate images at 100, 200, 400 and 800px wide.
+    
+    """
+    outputPixelDensities: [Float] = [0.25, 0.5, 1, 2]
+
+    """
+    
+    Specifies the image widths to generate. You should rarely need to change
+    this. For FIXED and CONSTRAINED images it is better to allow these to be
+    determined automatically,
+    based on the image size. For FULL_WIDTH images this can be used to override
+    the default, which is [750, 1080, 1366, 1920].
+    It will never generate any images larger than the source.
+    
+    """
+    breakpoints: [Int] = [750, 1080, 1366, 1920]
+
+    """
+    
+    The "sizes" property, passed to the img tag. This describes the display size of the image.
+    This does not affect the generated images, but is used by the browser to
+    decide which images to download. You can leave this blank for fixed images,
+    or if the responsive image
+    container will be the full width of the screen. In these cases we will generate an appropriate value.
+    
+    """
+    sizes: String
+
+    """
+    Background color applied to the wrapper, or when "letterboxing" an image to another aspect ratio.
+    """
+    backgroundColor: String
+    fit: RemoteFileFit = COVER
+    cropFocus: [RemoteFileCropFocus]
+    quality: Int = 75
+  ): GatsbyImageData
+}
+
+type SanityImageAssetConnection {
+  totalCount: Int!
+  edges: [SanityImageAssetEdge!]!
+  nodes: [SanityImageAsset!]!
+  pageInfo: PageInfo!
+  distinct(field: SanityImageAssetFieldSelector!): [String!]!
+  max(field: SanityImageAssetFieldSelector!): Float
+  min(field: SanityImageAssetFieldSelector!): Float
+  sum(field: SanityImageAssetFieldSelector!): Float
+  group(skip: Int, limit: Int, field: SanityImageAssetFieldSelector!): [SanityImageAssetGroupConnection!]!
+}
+
+type SanityImageAssetEdge {
+  next: SanityImageAsset
+  node: SanityImageAsset!
+  previous: SanityImageAsset
+}
+
+input SanityImageAssetFieldSelector {
+  _id: FieldSelectorEnum
+  _type: FieldSelectorEnum
+  _createdAt: FieldSelectorEnum
+  _updatedAt: FieldSelectorEnum
+  _rev: FieldSelectorEnum
+  _key: FieldSelectorEnum
+  originalFilename: FieldSelectorEnum
+  label: FieldSelectorEnum
+  title: FieldSelectorEnum
+  description: FieldSelectorEnum
+  altText: FieldSelectorEnum
+  sha1hash: FieldSelectorEnum
+  extension: FieldSelectorEnum
+  mimeType: FieldSelectorEnum
+  size: FieldSelectorEnum
+  assetId: FieldSelectorEnum
+  uploadId: FieldSelectorEnum
+  path: FieldSelectorEnum
+  url: FieldSelectorEnum
+  metadata: SanityImageMetadataFieldSelector
+  source: SanityAssetSourceDataFieldSelector
+  _rawMetadata: FieldSelectorEnum
+  _rawSource: FieldSelectorEnum
+  gatsbyImageData: FieldSelectorEnum
+  id: FieldSelectorEnum
+  parent: NodeFieldSelector
+  children: NodeFieldSelector
+  internal: InternalFieldSelector
+  filename: FieldSelectorEnum
+  filesize: FieldSelectorEnum
+  width: FieldSelectorEnum
+  height: FieldSelectorEnum
+  publicUrl: FieldSelectorEnum
+  resize: RemoteFileResizeFieldSelector
+  gatsbyImage: FieldSelectorEnum
+}
+
+input SanityImageAssetFilterInput {
+  _id: StringQueryOperatorInput
+  _type: StringQueryOperatorInput
+  _createdAt: DateQueryOperatorInput
+  _updatedAt: DateQueryOperatorInput
+  _rev: StringQueryOperatorInput
+  _key: StringQueryOperatorInput
+  originalFilename: StringQueryOperatorInput
+  label: StringQueryOperatorInput
+  title: StringQueryOperatorInput
+  description: StringQueryOperatorInput
+  altText: StringQueryOperatorInput
+  sha1hash: StringQueryOperatorInput
+  extension: StringQueryOperatorInput
+  mimeType: StringQueryOperatorInput
+  size: FloatQueryOperatorInput
+  assetId: StringQueryOperatorInput
+  uploadId: StringQueryOperatorInput
+  path: StringQueryOperatorInput
+  url: StringQueryOperatorInput
+  metadata: SanityImageMetadataFilterInput
+  source: SanityAssetSourceDataFilterInput
+  _rawMetadata: JSONQueryOperatorInput
+  _rawSource: JSONQueryOperatorInput
+  gatsbyImageData: GatsbyImageDataQueryOperatorInput
+  id: StringQueryOperatorInput
+  parent: NodeFilterInput
+  children: NodeFilterListInput
+  internal: InternalFilterInput
+  filename: StringQueryOperatorInput
+  filesize: IntQueryOperatorInput
+  width: IntQueryOperatorInput
+  height: IntQueryOperatorInput
+  publicUrl: StringQueryOperatorInput
+  resize: RemoteFileResizeFilterInput
+  gatsbyImage: GatsbyImageDataQueryOperatorInput
+}
+
+type SanityImageAssetGroupConnection {
+  totalCount: Int!
+  edges: [SanityImageAssetEdge!]!
+  nodes: [SanityImageAsset!]!
+  pageInfo: PageInfo!
+  distinct(field: SanityImageAssetFieldSelector!): [String!]!
+  max(field: SanityImageAssetFieldSelector!): Float
+  min(field: SanityImageAssetFieldSelector!): Float
+  sum(field: SanityImageAssetFieldSelector!): Float
+  group(skip: Int, limit: Int, field: SanityImageAssetFieldSelector!): [SanityImageAssetGroupConnection!]!
+  field: String!
+  fieldValue: String
+}
+
+input SanityImageAssetSortInput {
+  _id: SortOrderEnum
+  _type: SortOrderEnum
+  _createdAt: SortOrderEnum
+  _updatedAt: SortOrderEnum
+  _rev: SortOrderEnum
+  _key: SortOrderEnum
+  originalFilename: SortOrderEnum
+  label: SortOrderEnum
+  title: SortOrderEnum
+  description: SortOrderEnum
+  altText: SortOrderEnum
+  sha1hash: SortOrderEnum
+  extension: SortOrderEnum
+  mimeType: SortOrderEnum
+  size: SortOrderEnum
+  assetId: SortOrderEnum
+  uploadId: SortOrderEnum
+  path: SortOrderEnum
+  url: SortOrderEnum
+  metadata: SanityImageMetadataSortInput
+  source: SanityAssetSourceDataSortInput
+  _rawMetadata: SortOrderEnum
+  _rawSource: SortOrderEnum
+  gatsbyImageData: SortOrderEnum
+  id: SortOrderEnum
+  parent: NodeSortInput
+  children: NodeSortInput
+  internal: InternalSortInput
+  filename: SortOrderEnum
+  filesize: SortOrderEnum
+  width: SortOrderEnum
+  height: SortOrderEnum
+  publicUrl: SortOrderEnum
+  resize: RemoteFileResizeSortInput
+  gatsbyImage: SortOrderEnum
+}
+
+type SanityImageCrop {
+  _key: String
+  _type: String
+  top: Float
+  bottom: Float
+  left: Float
+  right: Float
+}
+
+input SanityImageCropFieldSelector {
+  _key: FieldSelectorEnum
+  _type: FieldSelectorEnum
+  top: FieldSelectorEnum
+  bottom: FieldSelectorEnum
+  left: FieldSelectorEnum
+  right: FieldSelectorEnum
+}
+
+input SanityImageCropFilterInput {
+  _key: StringQueryOperatorInput
+  _type: StringQueryOperatorInput
+  top: FloatQueryOperatorInput
+  bottom: FloatQueryOperatorInput
+  left: FloatQueryOperatorInput
+  right: FloatQueryOperatorInput
+}
+
+input SanityImageCropSortInput {
+  _key: SortOrderEnum
+  _type: SortOrderEnum
+  top: SortOrderEnum
+  bottom: SortOrderEnum
+  left: SortOrderEnum
+  right: SortOrderEnum
+}
+
+type SanityImageDimensions {
+  _key: String
+  _type: String
+  height: Float
+  width: Float
+  aspectRatio: Float
+}
+
+input SanityImageDimensionsFieldSelector {
+  _key: FieldSelectorEnum
+  _type: FieldSelectorEnum
+  height: FieldSelectorEnum
+  width: FieldSelectorEnum
+  aspectRatio: FieldSelectorEnum
+}
+
+input SanityImageDimensionsFilterInput {
+  _key: StringQueryOperatorInput
+  _type: StringQueryOperatorInput
+  height: FloatQueryOperatorInput
+  width: FloatQueryOperatorInput
+  aspectRatio: FloatQueryOperatorInput
+}
+
+input SanityImageDimensionsSortInput {
+  _key: SortOrderEnum
+  _type: SortOrderEnum
+  height: SortOrderEnum
+  width: SortOrderEnum
+  aspectRatio: SortOrderEnum
+}
+
+input SanityImageFieldSelector {
+  _key: FieldSelectorEnum
+  _type: FieldSelectorEnum
+  asset: SanityImageAssetFieldSelector
+  hotspot: SanityImageHotspotFieldSelector
+  crop: SanityImageCropFieldSelector
+  _rawAsset: FieldSelectorEnum
+  _rawHotspot: FieldSelectorEnum
+  _rawCrop: FieldSelectorEnum
+}
+
+input SanityImageFilterInput {
+  _key: StringQueryOperatorInput
+  _type: StringQueryOperatorInput
+  asset: SanityImageAssetFilterInput
+  hotspot: SanityImageHotspotFilterInput
+  crop: SanityImageCropFilterInput
+  _rawAsset: JSONQueryOperatorInput
+  _rawHotspot: JSONQueryOperatorInput
+  _rawCrop: JSONQueryOperatorInput
+}
+
+enum SanityImageFit {
+  CLIP
+  CROP
+  FILL
+  FILLMAX
+  MAX
+  SCALE
+  MIN
+}
+
+type SanityImageHotspot {
+  _key: String
+  _type: String
+  x: Float
+  y: Float
+  height: Float
+  width: Float
+}
+
+input SanityImageHotspotFieldSelector {
+  _key: FieldSelectorEnum
+  _type: FieldSelectorEnum
+  x: FieldSelectorEnum
+  y: FieldSelectorEnum
+  height: FieldSelectorEnum
+  width: FieldSelectorEnum
+}
+
+input SanityImageHotspotFilterInput {
+  _key: StringQueryOperatorInput
+  _type: StringQueryOperatorInput
+  x: FloatQueryOperatorInput
+  y: FloatQueryOperatorInput
+  height: FloatQueryOperatorInput
+  width: FloatQueryOperatorInput
+}
+
+input SanityImageHotspotSortInput {
+  _key: SortOrderEnum
+  _type: SortOrderEnum
+  x: SortOrderEnum
+  y: SortOrderEnum
+  height: SortOrderEnum
+  width: SortOrderEnum
+}
+
+type SanityImageMetadata {
+  _key: String
+  _type: String
+  location: SanityGeopoint
+  dimensions: SanityImageDimensions
+  palette: SanityImagePalette
+  lqip: String
+  blurHash: String
+  hasAlpha: Boolean
+  isOpaque: Boolean
+  _rawLocation(resolveReferences: SanityResolveReferencesConfiguration): JSON
+  _rawDimensions(resolveReferences: SanityResolveReferencesConfiguration): JSON
+  _rawPalette(resolveReferences: SanityResolveReferencesConfiguration): JSON
+}
+
+input SanityImageMetadataFieldSelector {
+  _key: FieldSelectorEnum
+  _type: FieldSelectorEnum
+  location: SanityGeopointFieldSelector
+  dimensions: SanityImageDimensionsFieldSelector
+  palette: SanityImagePaletteFieldSelector
+  lqip: FieldSelectorEnum
+  blurHash: FieldSelectorEnum
+  hasAlpha: FieldSelectorEnum
+  isOpaque: FieldSelectorEnum
+  _rawLocation: FieldSelectorEnum
+  _rawDimensions: FieldSelectorEnum
+  _rawPalette: FieldSelectorEnum
+}
+
+input SanityImageMetadataFilterInput {
+  _key: StringQueryOperatorInput
+  _type: StringQueryOperatorInput
+  location: SanityGeopointFilterInput
+  dimensions: SanityImageDimensionsFilterInput
+  palette: SanityImagePaletteFilterInput
+  lqip: StringQueryOperatorInput
+  blurHash: StringQueryOperatorInput
+  hasAlpha: BooleanQueryOperatorInput
+  isOpaque: BooleanQueryOperatorInput
+  _rawLocation: JSONQueryOperatorInput
+  _rawDimensions: JSONQueryOperatorInput
+  _rawPalette: JSONQueryOperatorInput
+}
+
+input SanityImageMetadataSortInput {
+  _key: SortOrderEnum
+  _type: SortOrderEnum
+  location: SanityGeopointSortInput
+  dimensions: SanityImageDimensionsSortInput
+  palette: SanityImagePaletteSortInput
+  lqip: SortOrderEnum
+  blurHash: SortOrderEnum
+  hasAlpha: SortOrderEnum
+  isOpaque: SortOrderEnum
+  _rawLocation: SortOrderEnum
+  _rawDimensions: SortOrderEnum
+  _rawPalette: SortOrderEnum
+}
+
+type SanityImagePalette {
+  _key: String
+  _type: String
+  darkMuted: SanityImagePaletteSwatch
+  lightVibrant: SanityImagePaletteSwatch
+  darkVibrant: SanityImagePaletteSwatch
+  vibrant: SanityImagePaletteSwatch
+  dominant: SanityImagePaletteSwatch
+  lightMuted: SanityImagePaletteSwatch
+  muted: SanityImagePaletteSwatch
+  _rawDarkMuted(resolveReferences: SanityResolveReferencesConfiguration): JSON
+  _rawLightVibrant(resolveReferences: SanityResolveReferencesConfiguration): JSON
+  _rawDarkVibrant(resolveReferences: SanityResolveReferencesConfiguration): JSON
+  _rawVibrant(resolveReferences: SanityResolveReferencesConfiguration): JSON
+  _rawDominant(resolveReferences: SanityResolveReferencesConfiguration): JSON
+  _rawLightMuted(resolveReferences: SanityResolveReferencesConfiguration): JSON
+  _rawMuted(resolveReferences: SanityResolveReferencesConfiguration): JSON
+}
+
+input SanityImagePaletteFieldSelector {
+  _key: FieldSelectorEnum
+  _type: FieldSelectorEnum
+  darkMuted: SanityImagePaletteSwatchFieldSelector
+  lightVibrant: SanityImagePaletteSwatchFieldSelector
+  darkVibrant: SanityImagePaletteSwatchFieldSelector
+  vibrant: SanityImagePaletteSwatchFieldSelector
+  dominant: SanityImagePaletteSwatchFieldSelector
+  lightMuted: SanityImagePaletteSwatchFieldSelector
+  muted: SanityImagePaletteSwatchFieldSelector
+  _rawDarkMuted: FieldSelectorEnum
+  _rawLightVibrant: FieldSelectorEnum
+  _rawDarkVibrant: FieldSelectorEnum
+  _rawVibrant: FieldSelectorEnum
+  _rawDominant: FieldSelectorEnum
+  _rawLightMuted: FieldSelectorEnum
+  _rawMuted: FieldSelectorEnum
+}
+
+input SanityImagePaletteFilterInput {
+  _key: StringQueryOperatorInput
+  _type: StringQueryOperatorInput
+  darkMuted: SanityImagePaletteSwatchFilterInput
+  lightVibrant: SanityImagePaletteSwatchFilterInput
+  darkVibrant: SanityImagePaletteSwatchFilterInput
+  vibrant: SanityImagePaletteSwatchFilterInput
+  dominant: SanityImagePaletteSwatchFilterInput
+  lightMuted: SanityImagePaletteSwatchFilterInput
+  muted: SanityImagePaletteSwatchFilterInput
+  _rawDarkMuted: JSONQueryOperatorInput
+  _rawLightVibrant: JSONQueryOperatorInput
+  _rawDarkVibrant: JSONQueryOperatorInput
+  _rawVibrant: JSONQueryOperatorInput
+  _rawDominant: JSONQueryOperatorInput
+  _rawLightMuted: JSONQueryOperatorInput
+  _rawMuted: JSONQueryOperatorInput
+}
+
+input SanityImagePaletteSortInput {
+  _key: SortOrderEnum
+  _type: SortOrderEnum
+  darkMuted: SanityImagePaletteSwatchSortInput
+  lightVibrant: SanityImagePaletteSwatchSortInput
+  darkVibrant: SanityImagePaletteSwatchSortInput
+  vibrant: SanityImagePaletteSwatchSortInput
+  dominant: SanityImagePaletteSwatchSortInput
+  lightMuted: SanityImagePaletteSwatchSortInput
+  muted: SanityImagePaletteSwatchSortInput
+  _rawDarkMuted: SortOrderEnum
+  _rawLightVibrant: SortOrderEnum
+  _rawDarkVibrant: SortOrderEnum
+  _rawVibrant: SortOrderEnum
+  _rawDominant: SortOrderEnum
+  _rawLightMuted: SortOrderEnum
+  _rawMuted: SortOrderEnum
+}
+
+type SanityImagePaletteSwatch {
+  _key: String
+  _type: String
+  background: String
+  foreground: String
+  population: Float
+  title: String
+}
+
+input SanityImagePaletteSwatchFieldSelector {
+  _key: FieldSelectorEnum
+  _type: FieldSelectorEnum
+  background: FieldSelectorEnum
+  foreground: FieldSelectorEnum
+  population: FieldSelectorEnum
+  title: FieldSelectorEnum
+}
+
+input SanityImagePaletteSwatchFilterInput {
+  _key: StringQueryOperatorInput
+  _type: StringQueryOperatorInput
+  background: StringQueryOperatorInput
+  foreground: StringQueryOperatorInput
+  population: FloatQueryOperatorInput
+  title: StringQueryOperatorInput
+}
+
+input SanityImagePaletteSwatchSortInput {
+  _key: SortOrderEnum
+  _type: SortOrderEnum
+  background: SortOrderEnum
+  foreground: SortOrderEnum
+  population: SortOrderEnum
+  title: SortOrderEnum
+}
+
+input SanityImageSortInput {
+  _key: SortOrderEnum
+  _type: SortOrderEnum
+  asset: SanityImageAssetSortInput
+  hotspot: SanityImageHotspotSortInput
+  crop: SanityImageCropSortInput
+  _rawAsset: SortOrderEnum
+  _rawHotspot: SortOrderEnum
+  _rawCrop: SortOrderEnum
+}
+
+type SanityPublisher implements SanityDocument & Node {
+  _id: String
+  _type: String
+  _createdAt(
+    """
+    Format the date using Moment.js' date tokens, e.g. `date(formatString: "YYYY
+    MMMM DD")`. See https://momentjs.com/docs/#/displaying/format/ for
+    documentation for different tokens.
+    """
+    formatString: String
+
+    """Returns a string generated with Moment.js' `fromNow` function"""
+    fromNow: Boolean
+
+    """
+    Returns the difference between this date and the current time. Defaults to
+    "milliseconds" but you can also pass in as the measurement "years",
+    "months", "weeks", "days", "hours", "minutes", and "seconds".
+    """
+    difference: String
+
+    """Configures the locale Moment.js will use to format the date."""
+    locale: String
+  ): Date
+  _updatedAt(
+    """
+    Format the date using Moment.js' date tokens, e.g. `date(formatString: "YYYY
+    MMMM DD")`. See https://momentjs.com/docs/#/displaying/format/ for
+    documentation for different tokens.
+    """
+    formatString: String
+
+    """Returns a string generated with Moment.js' `fromNow` function"""
+    fromNow: Boolean
+
+    """
+    Returns the difference between this date and the current time. Defaults to
+    "milliseconds" but you can also pass in as the measurement "years",
+    "months", "weeks", "days", "hours", "minutes", and "seconds".
+    """
+    difference: String
+
+    """Configures the locale Moment.js will use to format the date."""
+    locale: String
+  ): Date
+  _rev: String
+  _key: String
+  name: String
+  id: ID!
+  parent: Node
+  children: [Node!]!
+  internal: Internal!
+}
+
+type SanityPublisherConnection {
+  totalCount: Int!
+  edges: [SanityPublisherEdge!]!
+  nodes: [SanityPublisher!]!
+  pageInfo: PageInfo!
+  distinct(field: SanityPublisherFieldSelector!): [String!]!
+  max(field: SanityPublisherFieldSelector!): Float
+  min(field: SanityPublisherFieldSelector!): Float
+  sum(field: SanityPublisherFieldSelector!): Float
+  group(skip: Int, limit: Int, field: SanityPublisherFieldSelector!): [SanityPublisherGroupConnection!]!
+}
+
+type SanityPublisherEdge {
+  next: SanityPublisher
+  node: SanityPublisher!
+  previous: SanityPublisher
+}
+
+input SanityPublisherFieldSelector {
+  _id: FieldSelectorEnum
+  _type: FieldSelectorEnum
+  _createdAt: FieldSelectorEnum
+  _updatedAt: FieldSelectorEnum
+  _rev: FieldSelectorEnum
+  _key: FieldSelectorEnum
+  name: FieldSelectorEnum
+  id: FieldSelectorEnum
+  parent: NodeFieldSelector
+  children: NodeFieldSelector
+  internal: InternalFieldSelector
+}
+
+input SanityPublisherFilterInput {
+  _id: StringQueryOperatorInput
+  _type: StringQueryOperatorInput
+  _createdAt: DateQueryOperatorInput
+  _updatedAt: DateQueryOperatorInput
+  _rev: StringQueryOperatorInput
+  _key: StringQueryOperatorInput
+  name: StringQueryOperatorInput
+  id: StringQueryOperatorInput
+  parent: NodeFilterInput
+  children: NodeFilterListInput
+  internal: InternalFilterInput
+}
+
+type SanityPublisherGroupConnection {
+  totalCount: Int!
+  edges: [SanityPublisherEdge!]!
+  nodes: [SanityPublisher!]!
+  pageInfo: PageInfo!
+  distinct(field: SanityPublisherFieldSelector!): [String!]!
+  max(field: SanityPublisherFieldSelector!): Float
+  min(field: SanityPublisherFieldSelector!): Float
+  sum(field: SanityPublisherFieldSelector!): Float
+  group(skip: Int, limit: Int, field: SanityPublisherFieldSelector!): [SanityPublisherGroupConnection!]!
+  field: String!
+  fieldValue: String
+}
+
+input SanityPublisherSortInput {
+  _id: SortOrderEnum
+  _type: SortOrderEnum
+  _createdAt: SortOrderEnum
+  _updatedAt: SortOrderEnum
+  _rev: SortOrderEnum
+  _key: SortOrderEnum
+  name: SortOrderEnum
+  id: SortOrderEnum
+  parent: NodeSortInput
+  children: NodeSortInput
+  internal: InternalSortInput
+}
+
+input SanityResolveReferencesConfiguration {
+  """Max depth to resolve references to"""
+  maxDepth: Int!
+}
+
+type SanitySlug {
+  _key: String
+  _type: String
+  current: String
+  source: String
+}
+
+type SanitySpan {
+  _key: String
+  _type: String
+  marks: [String]
+  text: String
+}
+
+type Site implements Node {
+  buildTime(
+    """
+    Format the date using Moment.js' date tokens, e.g. `date(formatString: "YYYY
+    MMMM DD")`. See https://momentjs.com/docs/#/displaying/format/ for
+    documentation for different tokens.
+    """
+    formatString: String
+
+    """Returns a string generated with Moment.js' `fromNow` function"""
+    fromNow: Boolean
+
+    """
+    Returns the difference between this date and the current time. Defaults to
+    "milliseconds" but you can also pass in as the measurement "years",
+    "months", "weeks", "days", "hours", "minutes", and "seconds".
+    """
+    difference: String
+
+    """Configures the locale Moment.js will use to format the date."""
+    locale: String
+  ): Date
+  siteMetadata: SiteSiteMetadata
+  port: Int
+  host: String
+  polyfill: Boolean
+  pathPrefix: String
+  jsxRuntime: String
+  trailingSlash: String
+  graphqlTypegen: Boolean
+  id: ID!
+  parent: Node
+  children: [Node!]!
+  internal: Internal!
+}
+
+type SiteBuildMetadata implements Node {
+  buildTime(
+    """
+    Format the date using Moment.js' date tokens, e.g. `date(formatString: "YYYY
+    MMMM DD")`. See https://momentjs.com/docs/#/displaying/format/ for
+    documentation for different tokens.
+    """
+    formatString: String
+
+    """Returns a string generated with Moment.js' `fromNow` function"""
+    fromNow: Boolean
+
+    """
+    Returns the difference between this date and the current time. Defaults to
+    "milliseconds" but you can also pass in as the measurement "years",
+    "months", "weeks", "days", "hours", "minutes", and "seconds".
+    """
+    difference: String
+
+    """Configures the locale Moment.js will use to format the date."""
+    locale: String
+  ): Date
+  id: ID!
+  parent: Node
+  children: [Node!]!
+  internal: Internal!
+}
+
+type SiteBuildMetadataConnection {
+  totalCount: Int!
+  edges: [SiteBuildMetadataEdge!]!
+  nodes: [SiteBuildMetadata!]!
+  pageInfo: PageInfo!
+  distinct(field: SiteBuildMetadataFieldSelector!): [String!]!
+  max(field: SiteBuildMetadataFieldSelector!): Float
+  min(field: SiteBuildMetadataFieldSelector!): Float
+  sum(field: SiteBuildMetadataFieldSelector!): Float
+  group(skip: Int, limit: Int, field: SiteBuildMetadataFieldSelector!): [SiteBuildMetadataGroupConnection!]!
+}
+
+type SiteBuildMetadataEdge {
+  next: SiteBuildMetadata
+  node: SiteBuildMetadata!
+  previous: SiteBuildMetadata
+}
+
+input SiteBuildMetadataFieldSelector {
+  buildTime: FieldSelectorEnum
+  id: FieldSelectorEnum
+  parent: NodeFieldSelector
+  children: NodeFieldSelector
+  internal: InternalFieldSelector
+}
+
+input SiteBuildMetadataFilterInput {
+  buildTime: DateQueryOperatorInput
+  id: StringQueryOperatorInput
+  parent: NodeFilterInput
+  children: NodeFilterListInput
+  internal: InternalFilterInput
+}
+
+type SiteBuildMetadataGroupConnection {
+  totalCount: Int!
+  edges: [SiteBuildMetadataEdge!]!
+  nodes: [SiteBuildMetadata!]!
+  pageInfo: PageInfo!
+  distinct(field: SiteBuildMetadataFieldSelector!): [String!]!
+  max(field: SiteBuildMetadataFieldSelector!): Float
+  min(field: SiteBuildMetadataFieldSelector!): Float
+  sum(field: SiteBuildMetadataFieldSelector!): Float
+  group(skip: Int, limit: Int, field: SiteBuildMetadataFieldSelector!): [SiteBuildMetadataGroupConnection!]!
+  field: String!
+  fieldValue: String
+}
+
+input SiteBuildMetadataSortInput {
+  buildTime: SortOrderEnum
+  id: SortOrderEnum
+  parent: NodeSortInput
+  children: NodeSortInput
+  internal: InternalSortInput
+}
+
+type SiteConnection {
+  totalCount: Int!
+  edges: [SiteEdge!]!
+  nodes: [Site!]!
+  pageInfo: PageInfo!
+  distinct(field: SiteFieldSelector!): [String!]!
+  max(field: SiteFieldSelector!): Float
+  min(field: SiteFieldSelector!): Float
+  sum(field: SiteFieldSelector!): Float
+  group(skip: Int, limit: Int, field: SiteFieldSelector!): [SiteGroupConnection!]!
+}
+
+type SiteEdge {
+  next: Site
+  node: Site!
+  previous: Site
+}
+
+input SiteFieldSelector {
+  buildTime: FieldSelectorEnum
+  siteMetadata: SiteSiteMetadataFieldSelector
+  port: FieldSelectorEnum
+  host: FieldSelectorEnum
+  polyfill: FieldSelectorEnum
+  pathPrefix: FieldSelectorEnum
+  jsxRuntime: FieldSelectorEnum
+  trailingSlash: FieldSelectorEnum
+  graphqlTypegen: FieldSelectorEnum
+  id: FieldSelectorEnum
+  parent: NodeFieldSelector
+  children: NodeFieldSelector
+  internal: InternalFieldSelector
+}
+
+input SiteFilterInput {
+  buildTime: DateQueryOperatorInput
+  siteMetadata: SiteSiteMetadataFilterInput
+  port: IntQueryOperatorInput
+  host: StringQueryOperatorInput
+  polyfill: BooleanQueryOperatorInput
+  pathPrefix: StringQueryOperatorInput
+  jsxRuntime: StringQueryOperatorInput
+  trailingSlash: StringQueryOperatorInput
+  graphqlTypegen: BooleanQueryOperatorInput
+  id: StringQueryOperatorInput
+  parent: NodeFilterInput
+  children: NodeFilterListInput
+  internal: InternalFilterInput
+}
+
+type SiteFunction implements Node {
+  functionRoute: String!
+  pluginName: String!
+  originalAbsoluteFilePath: String!
+  originalRelativeFilePath: String!
+  relativeCompiledFilePath: String!
+  absoluteCompiledFilePath: String!
+  matchPath: String
+  id: ID!
+  parent: Node
+  children: [Node!]!
+  internal: Internal!
+}
+
+type SiteFunctionConnection {
+  totalCount: Int!
+  edges: [SiteFunctionEdge!]!
+  nodes: [SiteFunction!]!
+  pageInfo: PageInfo!
+  distinct(field: SiteFunctionFieldSelector!): [String!]!
+  max(field: SiteFunctionFieldSelector!): Float
+  min(field: SiteFunctionFieldSelector!): Float
+  sum(field: SiteFunctionFieldSelector!): Float
+  group(skip: Int, limit: Int, field: SiteFunctionFieldSelector!): [SiteFunctionGroupConnection!]!
+}
+
+type SiteFunctionEdge {
+  next: SiteFunction
+  node: SiteFunction!
+  previous: SiteFunction
+}
+
+input SiteFunctionFieldSelector {
+  functionRoute: FieldSelectorEnum
+  pluginName: FieldSelectorEnum
+  originalAbsoluteFilePath: FieldSelectorEnum
+  originalRelativeFilePath: FieldSelectorEnum
+  relativeCompiledFilePath: FieldSelectorEnum
+  absoluteCompiledFilePath: FieldSelectorEnum
+  matchPath: FieldSelectorEnum
+  id: FieldSelectorEnum
+  parent: NodeFieldSelector
+  children: NodeFieldSelector
+  internal: InternalFieldSelector
+}
+
+input SiteFunctionFilterInput {
+  functionRoute: StringQueryOperatorInput
+  pluginName: StringQueryOperatorInput
+  originalAbsoluteFilePath: StringQueryOperatorInput
+  originalRelativeFilePath: StringQueryOperatorInput
+  relativeCompiledFilePath: StringQueryOperatorInput
+  absoluteCompiledFilePath: StringQueryOperatorInput
+  matchPath: StringQueryOperatorInput
+  id: StringQueryOperatorInput
+  parent: NodeFilterInput
+  children: NodeFilterListInput
+  internal: InternalFilterInput
+}
+
+type SiteFunctionGroupConnection {
+  totalCount: Int!
+  edges: [SiteFunctionEdge!]!
+  nodes: [SiteFunction!]!
+  pageInfo: PageInfo!
+  distinct(field: SiteFunctionFieldSelector!): [String!]!
+  max(field: SiteFunctionFieldSelector!): Float
+  min(field: SiteFunctionFieldSelector!): Float
+  sum(field: SiteFunctionFieldSelector!): Float
+  group(skip: Int, limit: Int, field: SiteFunctionFieldSelector!): [SiteFunctionGroupConnection!]!
+  field: String!
+  fieldValue: String
+}
+
+input SiteFunctionSortInput {
+  functionRoute: SortOrderEnum
+  pluginName: SortOrderEnum
+  originalAbsoluteFilePath: SortOrderEnum
+  originalRelativeFilePath: SortOrderEnum
+  relativeCompiledFilePath: SortOrderEnum
+  absoluteCompiledFilePath: SortOrderEnum
+  matchPath: SortOrderEnum
+  id: SortOrderEnum
+  parent: NodeSortInput
+  children: NodeSortInput
+  internal: InternalSortInput
+}
+
+type SiteGroupConnection {
+  totalCount: Int!
+  edges: [SiteEdge!]!
+  nodes: [Site!]!
+  pageInfo: PageInfo!
+  distinct(field: SiteFieldSelector!): [String!]!
+  max(field: SiteFieldSelector!): Float
+  min(field: SiteFieldSelector!): Float
+  sum(field: SiteFieldSelector!): Float
+  group(skip: Int, limit: Int, field: SiteFieldSelector!): [SiteGroupConnection!]!
+  field: String!
+  fieldValue: String
+}
+
+type SitePage implements Node {
+  path: String!
+  component: String!
+  internalComponentName: String!
+  componentChunkName: String!
+  matchPath: String
+  pageContext: JSON
+  pluginCreator: SitePlugin
+  id: ID!
+  parent: Node
+  children: [Node!]!
+  internal: Internal!
+}
+
+type SitePageConnection {
+  totalCount: Int!
+  edges: [SitePageEdge!]!
+  nodes: [SitePage!]!
+  pageInfo: PageInfo!
+  distinct(field: SitePageFieldSelector!): [String!]!
+  max(field: SitePageFieldSelector!): Float
+  min(field: SitePageFieldSelector!): Float
+  sum(field: SitePageFieldSelector!): Float
+  group(skip: Int, limit: Int, field: SitePageFieldSelector!): [SitePageGroupConnection!]!
+}
+
+type SitePageEdge {
+  next: SitePage
+  node: SitePage!
+  previous: SitePage
+}
+
+input SitePageFieldSelector {
+  path: FieldSelectorEnum
+  component: FieldSelectorEnum
+  internalComponentName: FieldSelectorEnum
+  componentChunkName: FieldSelectorEnum
+  matchPath: FieldSelectorEnum
+  pageContext: FieldSelectorEnum
+  pluginCreator: SitePluginFieldSelector
+  id: FieldSelectorEnum
+  parent: NodeFieldSelector
+  children: NodeFieldSelector
+  internal: InternalFieldSelector
+}
+
+input SitePageFilterInput {
+  path: StringQueryOperatorInput
+  component: StringQueryOperatorInput
+  internalComponentName: StringQueryOperatorInput
+  componentChunkName: StringQueryOperatorInput
+  matchPath: StringQueryOperatorInput
+  pageContext: JSONQueryOperatorInput
+  pluginCreator: SitePluginFilterInput
+  id: StringQueryOperatorInput
+  parent: NodeFilterInput
+  children: NodeFilterListInput
+  internal: InternalFilterInput
+}
+
+type SitePageGroupConnection {
+  totalCount: Int!
+  edges: [SitePageEdge!]!
+  nodes: [SitePage!]!
+  pageInfo: PageInfo!
+  distinct(field: SitePageFieldSelector!): [String!]!
+  max(field: SitePageFieldSelector!): Float
+  min(field: SitePageFieldSelector!): Float
+  sum(field: SitePageFieldSelector!): Float
+  group(skip: Int, limit: Int, field: SitePageFieldSelector!): [SitePageGroupConnection!]!
+  field: String!
+  fieldValue: String
+}
+
+input SitePageSortInput {
+  path: SortOrderEnum
+  component: SortOrderEnum
+  internalComponentName: SortOrderEnum
+  componentChunkName: SortOrderEnum
+  matchPath: SortOrderEnum
+  pageContext: SortOrderEnum
+  pluginCreator: SitePluginSortInput
+  id: SortOrderEnum
+  parent: NodeSortInput
+  children: NodeSortInput
+  internal: InternalSortInput
+}
+
+type SitePlugin implements Node {
+  resolve: String
+  name: String
+  version: String
+  nodeAPIs: [String]
+  browserAPIs: [String]
+  ssrAPIs: [String]
+  pluginFilepath: String
+  pluginOptions: JSON
+  packageJson: JSON
+  id: ID!
+  parent: Node
+  children: [Node!]!
+  internal: Internal!
+}
+
+type SitePluginConnection {
+  totalCount: Int!
+  edges: [SitePluginEdge!]!
+  nodes: [SitePlugin!]!
+  pageInfo: PageInfo!
+  distinct(field: SitePluginFieldSelector!): [String!]!
+  max(field: SitePluginFieldSelector!): Float
+  min(field: SitePluginFieldSelector!): Float
+  sum(field: SitePluginFieldSelector!): Float
+  group(skip: Int, limit: Int, field: SitePluginFieldSelector!): [SitePluginGroupConnection!]!
+}
+
+type SitePluginEdge {
+  next: SitePlugin
+  node: SitePlugin!
+  previous: SitePlugin
+}
+
+input SitePluginFieldSelector {
+  resolve: FieldSelectorEnum
+  name: FieldSelectorEnum
+  version: FieldSelectorEnum
+  nodeAPIs: FieldSelectorEnum
+  browserAPIs: FieldSelectorEnum
+  ssrAPIs: FieldSelectorEnum
+  pluginFilepath: FieldSelectorEnum
+  pluginOptions: FieldSelectorEnum
+  packageJson: FieldSelectorEnum
+  id: FieldSelectorEnum
+  parent: NodeFieldSelector
+  children: NodeFieldSelector
+  internal: InternalFieldSelector
+}
+
+input SitePluginFilterInput {
+  resolve: StringQueryOperatorInput
+  name: StringQueryOperatorInput
+  version: StringQueryOperatorInput
+  nodeAPIs: StringQueryOperatorInput
+  browserAPIs: StringQueryOperatorInput
+  ssrAPIs: StringQueryOperatorInput
+  pluginFilepath: StringQueryOperatorInput
+  pluginOptions: JSONQueryOperatorInput
+  packageJson: JSONQueryOperatorInput
+  id: StringQueryOperatorInput
+  parent: NodeFilterInput
+  children: NodeFilterListInput
+  internal: InternalFilterInput
+}
+
+type SitePluginGroupConnection {
+  totalCount: Int!
+  edges: [SitePluginEdge!]!
+  nodes: [SitePlugin!]!
+  pageInfo: PageInfo!
+  distinct(field: SitePluginFieldSelector!): [String!]!
+  max(field: SitePluginFieldSelector!): Float
+  min(field: SitePluginFieldSelector!): Float
+  sum(field: SitePluginFieldSelector!): Float
+  group(skip: Int, limit: Int, field: SitePluginFieldSelector!): [SitePluginGroupConnection!]!
+  field: String!
+  fieldValue: String
+}
+
+input SitePluginSortInput {
+  resolve: SortOrderEnum
+  name: SortOrderEnum
+  version: SortOrderEnum
+  nodeAPIs: SortOrderEnum
+  browserAPIs: SortOrderEnum
+  ssrAPIs: SortOrderEnum
+  pluginFilepath: SortOrderEnum
+  pluginOptions: SortOrderEnum
+  packageJson: SortOrderEnum
+  id: SortOrderEnum
+  parent: NodeSortInput
+  children: NodeSortInput
+  internal: InternalSortInput
+}
+
+type SiteSiteMetadata {
+  title: String
+  description: String
+}
+
+input SiteSiteMetadataFieldSelector {
+  title: FieldSelectorEnum
+  description: FieldSelectorEnum
+}
+
+input SiteSiteMetadataFilterInput {
+  title: StringQueryOperatorInput
+  description: StringQueryOperatorInput
+}
+
+input SiteSiteMetadataSortInput {
+  title: SortOrderEnum
+  description: SortOrderEnum
+}
+
+input SiteSortInput {
+  buildTime: SortOrderEnum
+  siteMetadata: SiteSiteMetadataSortInput
+  port: SortOrderEnum
+  host: SortOrderEnum
+  polyfill: SortOrderEnum
+  pathPrefix: SortOrderEnum
+  jsxRuntime: SortOrderEnum
+  trailingSlash: SortOrderEnum
+  graphqlTypegen: SortOrderEnum
+  id: SortOrderEnum
+  parent: NodeSortInput
+  children: NodeSortInput
+  internal: InternalSortInput
+}
+
+enum SortOrderEnum {
+  ASC
+  DESC
+}
+
+input StringQueryOperatorInput {
+  eq: String
+  ne: String
+  in: [String]
+  nin: [String]
+  regex: String
+  glob: String
+}
+
