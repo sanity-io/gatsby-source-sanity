@@ -11,6 +11,12 @@ directive @jsonAlias(
 """Field references one or more documents"""
 directive @reference on FIELD_DEFINITION
 
+directive @cdr(
+  projectId: String!
+  dataset: String!
+  typeName: String!
+) on OBJECT | FIELD_DEFINITION
+
 type AuthorReference {
   _key: String
   _type: String
@@ -66,8 +72,8 @@ type Book implements Document {
   _key: String
   title: String
   cover: Image
-  author: CrossDatasetReference
-  extraAuthor: AuthorReference
+  author: CrossDatasetReference @cdr(projectId: "jn1oq55b", dataset: "shared", typeName: "Author")
+  extraAuthor: AuthorReference @cdr(projectId: "jn1oq55b", dataset: "shared", typeName: "Author")
   coauthors: [AuthorReference]
   mixedArray: [AuthorReferenceOrBookOrBookMetadata]
   genres: [Genre]
