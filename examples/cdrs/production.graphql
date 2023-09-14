@@ -17,7 +17,7 @@ directive @cdr(
   typeName: String!
 ) on OBJECT | FIELD_DEFINITION
 
-type AuthorReference {
+type AuthorReference @cdr(projectId: "jn1oq55b", dataset: "shared", typeName: "Author") {
   _key: String
   _type: String
   _ref: String
