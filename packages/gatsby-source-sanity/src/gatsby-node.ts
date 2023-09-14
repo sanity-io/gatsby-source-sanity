@@ -43,6 +43,8 @@ import {
 import {rewriteGraphQLSchema} from './util/rewriteGraphQLSchema'
 import validateConfig, {PluginConfig} from './util/validateConfig'
 import {ProcessingOptions} from './util/normalize'
+import { readFileSync } from 'fs'
+import { mapCrossDatasetReferences } from './util/mapCrossDatasetReferences'
 
 let coreSupportsOnPluginInit: 'unstable' | 'stable' | undefined
 
@@ -91,9 +93,17 @@ const initializePlugin = async (
   }
 
   try {
-    reporter.info('[sanity] Fetching remote GraphQL schema')
-    const client = getClient(config)
-    const api = await getRemoteGraphQLSchema(client, config)
+    let api:string = ''
+    if (config._mocks) {
+      reporter.warn('[sanity] Using mocked GraphQL schema')
+      api = readFileSync(config._mocks.schemaPath, 'utf8')
+    } else {
+      reporter.info('[sanity] Fetching remote GraphQL schema')
+      const client = getClient(config)
+      api = await getRemoteGraphQLSchema(client, config)
+    }
+
+    api = mapCrossDatasetReferences(api)
 
     reporter.info('[sanity] Transforming to Gatsby-compatible GraphQL SDL')
     const graphqlSdl = await rewriteGraphQLSchema(api, {config, reporter})

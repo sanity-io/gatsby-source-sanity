@@ -12,6 +12,9 @@ export interface PluginConfig extends PluginOptions {
   watchMode?: boolean
   watchModeBuffer?: number
   typePrefix?: string
+  _mocks: {
+    schemaPath: string
+  }
 }
 
 export default function validateConfig(
