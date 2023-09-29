@@ -63,6 +63,31 @@ test('resolves inline cross dataset field reference', async () => {
   expect(node.author.name).toBe('Neal Stephenson')
 })
 
+test('resolves inline cross dataset field reference that has multiple "to" types', async () => {
+  const res = await fetchGraphQL(`
+        query {
+          allSanityBook {
+            edges {
+              node {
+                authorOrEditorInline {
+                  ... on SanityAuthor {
+                    name
+                  }
+                  ... on SanityEditor {
+                    name
+                  }
+                }
+              }
+            }
+          }
+        }
+      `)
+
+  expect(res.errors).toBeUndefined()
+  const node = res.data.allSanityBook.edges[0].node
+  expect(node.authorOrEditorInline.name).toBe('Mrs Book Editor')
+})
+
 test('resolves named cross dataset field reference', async () => {
   const res = await fetchGraphQL(`
         query {
@@ -81,6 +106,31 @@ test('resolves named cross dataset field reference', async () => {
   expect(res.errors).toBeUndefined()
   const node = res.data.allSanityBook.edges[0].node
   expect(node.extraAuthor.name).toBe('Neal Stephenson')
+})
+
+test('resolves named cross dataset field reference with multiple "to" types', async () => {
+  const res = await fetchGraphQL(`
+        query {
+          allSanityBook {
+            edges {
+              node {
+                authorOrEditor {
+                  ... on SanityAuthor {
+                    name
+                  }
+                  ... on SanityEditor {
+                    name
+                  }
+                }
+              }
+            }
+          }
+        }
+      `)
+
+  expect(res.errors).toBeUndefined()
+  const node = res.data.allSanityBook.edges[0].node
+  expect(node.authorOrEditor.name).toBe('Neal Stephenson')
 })
 
 test('it resolves arrays of references', async () => {
