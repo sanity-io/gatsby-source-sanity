@@ -175,6 +175,43 @@ input DocumentSorting {
   _rev: SortOrder
 }
 
+type Editor implements Document {
+  """Document ID"""
+  _id: ID
+  """Document type"""
+  _type: String
+  """Date the document was created"""
+  _createdAt: DateTime
+  """Date the document was last modified"""
+  _updatedAt: DateTime
+  """Current document revision"""
+  _rev: String
+  _key: String
+  name: String
+}
+
+input EditorFilter {
+  """Apply filters on document level"""
+  _: Sanity_DocumentFilter
+  _id: IDFilter
+  _type: StringFilter
+  _createdAt: DatetimeFilter
+  _updatedAt: DatetimeFilter
+  _rev: StringFilter
+  _key: StringFilter
+  name: StringFilter
+}
+
+input EditorSorting {
+  _id: SortOrder
+  _type: SortOrder
+  _createdAt: SortOrder
+  _updatedAt: SortOrder
+  _rev: SortOrder
+  _key: SortOrder
+  name: SortOrder
+}
+
 type File {
   _key: String
   _type: String
@@ -285,6 +322,10 @@ input IntFilter {
 }
 
 type RootQuery {
+  Editor(
+    """Editor document ID"""
+    id: ID!
+  ): Editor
   Author(
     """Author document ID"""
     id: ID!
@@ -301,6 +342,14 @@ type RootQuery {
     """Document document ID"""
     id: ID!
   ): Document
+  allEditor(
+    where: EditorFilter
+    sort: [EditorSorting!]
+    """Max documents to return"""
+    limit: Int
+    """Offset at which to start returning documents from"""
+    offset: Int
+  ): [Editor!]!
   allAuthor(
     where: AuthorFilter
     sort: [AuthorSorting!]

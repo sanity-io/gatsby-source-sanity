@@ -41,6 +41,17 @@ export default defineConfig([
           to: [{type: 'author', preview: {select: {title: 'name'}}}],
         }),
         defineType({
+          name: 'authorOrEditorReference',
+          title: 'Author or Editor',
+          type: 'crossDatasetReference' as const,
+          dataset: 'shared',
+          studioUrl: ({id, type}) => `/authors/desk/${type};${id}`,
+          to: [
+            {type: 'author', preview: {select: {title: 'name'}}},
+            {type: 'editor', preview: {select: {title: 'name'}}}
+          ],
+        }),
+        defineType({
           name: 'book',
           title: 'Book',
           type: 'document' as const,
@@ -63,6 +74,23 @@ export default defineConfig([
               dataset: 'shared',
               studioUrl: ({id, type}) => `/authors/desk/${type};${id}`,
               to: [{type: 'author', preview: {select: {title: 'name'}}}],
+            },
+            {
+              name: 'authorOrEditorInline',
+              title: 'Author or Editor',
+              description: 'as inline definition',
+              type: 'crossDatasetReference' as const,
+              dataset: 'shared',
+              studioUrl: ({id, type}) => `/authors/desk/${type};${id}`,
+              to: [
+                {type: 'author', preview: {select: {title: 'name'}}},
+                {type: 'editor', preview: {select: {title: 'name'}}}
+              ],
+            },
+            {
+              name: 'authorOrEditor',
+              description: 'as named type authorOrEditorReference',
+              type: 'authorOrEditorReference',
             },
             {
               name: 'extraAuthor',
@@ -176,6 +204,17 @@ export default defineConfig([
 
     schema: {
       types: [
+        defineType({
+          name: 'editor',
+          type: 'document' as const,
+          fields: [
+            {
+              name: 'name',
+              title: 'Name',
+              type: 'string',
+            }
+          ],
+        }),
         defineType({
           name: 'author',
           title: 'Author',
