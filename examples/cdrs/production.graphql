@@ -14,10 +14,37 @@ directive @reference on FIELD_DEFINITION
 directive @cdr(
   projectId: String!
   dataset: String!
-  typeName: String!
+  typeNames: [String]!
 ) on OBJECT | FIELD_DEFINITION
 
-type AuthorReference @cdr(projectId: "jn1oq55b", dataset: "shared", typeName: "Author") {
+type AuthorOrEditorReference @cdr(projectId: "jn1oq55b", dataset: "shared", typeNames: ["Author", "Editor"]) {
+  _key: String
+  _type: String
+  _ref: String
+  _weak: Boolean
+  _dataset: String
+  _projectId: String
+}
+
+input AuthorOrEditorReferenceFilter {
+  _key: StringFilter
+  _type: StringFilter
+  _ref: StringFilter
+  _weak: BooleanFilter
+  _dataset: StringFilter
+  _projectId: StringFilter
+}
+
+input AuthorOrEditorReferenceSorting {
+  _key: SortOrder
+  _type: SortOrder
+  _ref: SortOrder
+  _weak: SortOrder
+  _dataset: SortOrder
+  _projectId: SortOrder
+}
+
+type AuthorReference @cdr(projectId: "jn1oq55b", dataset: "shared", typeNames: ["Author"]) {
   _key: String
   _type: String
   _ref: String
@@ -72,8 +99,10 @@ type Book implements Document {
   _key: String
   title: String
   cover: Image
-  author: CrossDatasetReference @cdr(projectId: "jn1oq55b", dataset: "shared", typeName: "Author")
-  extraAuthor: AuthorReference @cdr(projectId: "jn1oq55b", dataset: "shared", typeName: "Author")
+  author: CrossDatasetReference @cdr(projectId: "jn1oq55b", dataset: "shared", typeNames: ["Author"])
+  authorOrEditorInline: CrossDatasetReference @cdr(projectId: "jn1oq55b", dataset: "shared", typeNames: ["Author", "Editor"])
+  authorOrEditor: AuthorOrEditorReference @cdr(projectId: "jn1oq55b", dataset: "shared", typeNames: ["Author", "Editor"])
+  extraAuthor: AuthorReference @cdr(projectId: "jn1oq55b", dataset: "shared", typeNames: ["Author"])
   coauthors: [AuthorReference]
   mixedArray: [AuthorReferenceOrBookOrBookMetadata]
   genres: [Genre]
@@ -94,6 +123,8 @@ input BookFilter {
   title: StringFilter
   cover: ImageFilter
   author: CrossDatasetReferenceFilter
+  authorOrEditorInline: CrossDatasetReferenceFilter
+  authorOrEditor: AuthorOrEditorReferenceFilter
   extraAuthor: AuthorReferenceFilter
   publisher: PublisherFilter
   extraPublisher: PublisherFilter
@@ -127,6 +158,8 @@ input BookSorting {
   title: SortOrder
   cover: ImageSorting
   author: CrossDatasetReferenceSorting
+  authorOrEditorInline: CrossDatasetReferenceSorting
+  authorOrEditor: AuthorOrEditorReferenceSorting
   extraAuthor: AuthorReferenceSorting
 }
 
