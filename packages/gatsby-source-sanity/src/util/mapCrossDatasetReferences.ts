@@ -8,6 +8,8 @@ import {
   type UnionTypeDefinitionNode,
 } from 'graphql'
 
+const CDR_DIRECTIVE = 'crossDatasetReference'
+
 // Function to extract array of string value from a ValueNode
 const getStringArrayArgumentValuesFromDirective = (directive: DirectiveNode, argument: string) => {
   const values: string[] = []
@@ -33,7 +35,7 @@ const referenceDirectiveNode: DirectiveNode = {
   },
 }
 
-const typeNameForMappping = (typeNames: string[]) => {
+const typeNameForMapping = (typeNames: string[]) => {
   return typeNames.join('Or')
 }
 
@@ -49,7 +51,7 @@ export function mapCrossDatasetReferences(api: string) {
     enter(node) {},
     [Kind.OBJECT_TYPE_DEFINITION](node) {
       if (node.name.value) {
-        const cdrDirective = node.directives?.find((d) => d.name.value === 'cdr')
+        const cdrDirective = node.directives?.find((d) => d.name.value === CDR_DIRECTIVE)
         if (cdrDirective) {
           // This is a type that has a cdr directive on it
           //let typeName = getStringArgumentValueFromDirective(cdrDirective, 'typeName')
@@ -71,7 +73,7 @@ export function mapCrossDatasetReferences(api: string) {
         kind: Kind.UNION_TYPE_DEFINITION,
         name: {
           kind: Kind.NAME,
-          value: typeNameForMappping(cdrMapping[key]),
+          value: typeNameForMapping(cdrMapping[key]),
         },
         types: cdrMapping[key].map((key) => {
           return {
@@ -89,14 +91,14 @@ export function mapCrossDatasetReferences(api: string) {
   // Add our new Union types
   const newAST = {
     ...astNode,
-    definitions: [...astNode.definitions, ...unionDefinitions]
+    definitions: [...astNode.definitions, ...unionDefinitions],
   }
 
   // Second pass: Rewrite the schema to replace CDR types with the appropriate
   // target type and add @reference directive where appropriate
   const modifiedTypes = visit(newAST, {
     [Kind.FIELD_DEFINITION](fieldNode) {
-      const cdrDirective = fieldNode.directives?.find((d) => d.name.value === 'cdr')
+      const cdrDirective = fieldNode.directives?.find((d) => d.name.value === CDR_DIRECTIVE)
       let mappedTypeNames: string[] | undefined = undefined
 
       if (fieldNode.type.kind === Kind.NAMED_TYPE) {
@@ -127,7 +129,7 @@ export function mapCrossDatasetReferences(api: string) {
         // Replace the cdr directive with a reference directive and replace
         // the type name with the actual target type
         let directives: DirectiveNode[] = (fieldNode.directives || []).filter(
-          (d) => d.name.value !== 'cdr',
+          (d) => d.name.value !== CDR_DIRECTIVE,
         )
         if (cdrDirective) {
           // If there was a cdr directive, replace it with a reference directive
@@ -142,7 +144,7 @@ export function mapCrossDatasetReferences(api: string) {
               ...fieldNode.type,
               name: {
                 ...fieldNode.type.name,
-                value: typeNameForMappping(mappedTypeNames),
+                value: typeNameForMapping(mappedTypeNames),
               },
             },
           }
@@ -157,7 +159,7 @@ export function mapCrossDatasetReferences(api: string) {
                 kind: Kind.NAMED_TYPE,
                 name: {
                   kind: Kind.NAME,
-                  value: typeNameForMappping(mappedTypeNames),
+                  value: typeNameForMapping(mappedTypeNames),
                 },
               },
             },

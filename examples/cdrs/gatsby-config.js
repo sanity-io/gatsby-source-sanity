@@ -4,9 +4,11 @@
  * See: https://www.gatsbyjs.com/docs/reference/config-files/gatsby-config/
  */
 
-const path = require('path')
-const pluginPath = path.resolve(__dirname, '../../packages/gatsby-source-sanity')
-const productionSchemaPath = path.resolve(__dirname, './production.graphql')
+const path = require("path")
+const pluginPath = path.resolve(
+  __dirname,
+  "../../packages/gatsby-source-sanity"
+)
 
 /**
  * @type {import('gatsby').GatsbyConfig}
@@ -22,20 +24,18 @@ module.exports = {
     {
       resolve: pluginPath,
       options: {
-        _mocks: {
-          // We mock the gql schema to include future @cdr directives
-          schemaPath: productionSchemaPath,
-        },
-        projectId: 'jn1oq55b',
-        dataset: 'production',
-      }
+        apiHost: "https://api.sanity.work",
+        projectId: "rz9j51w2",
+        dataset: "production",
+      },
     },
     {
       resolve: pluginPath,
       options: {
-        projectId: 'jn1oq55b',
-        dataset: 'shared',
-      }
+        apiHost: "https://api.sanity.work",
+        projectId: "rz9j51w2",
+        dataset: "shared",
+      },
     },
     `gatsby-plugin-image`,
   ],
