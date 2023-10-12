@@ -43,8 +43,8 @@ import {
 import {rewriteGraphQLSchema} from './util/rewriteGraphQLSchema'
 import validateConfig, {PluginConfig} from './util/validateConfig'
 import {ProcessingOptions} from './util/normalize'
-import { readFileSync } from 'fs'
-import { mapCrossDatasetReferences } from './util/mapCrossDatasetReferences'
+import {readFileSync} from 'fs'
+import {mapCrossDatasetReferences} from './util/mapCrossDatasetReferences'
 
 let coreSupportsOnPluginInit: 'unstable' | 'stable' | undefined
 
@@ -93,7 +93,7 @@ const initializePlugin = async (
   }
 
   try {
-    let api:string = ''
+    let api: string = ''
     if (config._mocks) {
       reporter.warn('[sanity] Using mocked GraphQL schema')
       api = readFileSync(config._mocks.schemaPath, 'utf8')
@@ -336,7 +336,7 @@ export const sourceNodes: GatsbyNode['sourceNodes'] = async (
         lastBuildTime,
         client,
         syncWithGatsby,
-        config
+        config,
       })
       if (!deltaHandled) {
         reporter.warn(
@@ -437,8 +437,9 @@ export const setFieldsOnGraphQLNodeType: GatsbyNode['setFieldsOnGraphQLNodeType'
 }
 
 function getClient(config: PluginConfig) {
-  const {projectId, dataset, token} = config
+  const {projectId, dataset, apiHost, token} = config
   return sanityClient({
+    apiHost,
     projectId,
     dataset,
     token,

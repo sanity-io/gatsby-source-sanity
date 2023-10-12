@@ -3,6 +3,7 @@ import {prefixId} from './documentIds'
 import {ERROR_CODES} from './errors'
 
 export interface PluginConfig extends PluginOptions {
+  apiHost?: string
   projectId: string
   dataset: string
   token?: string

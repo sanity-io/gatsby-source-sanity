@@ -7,8 +7,9 @@ export default defineConfig([
     name: 'books',
     basePath: '/books',
 
-    projectId: 'jn1oq55b',
+    projectId: 'rz9j51w2',
     dataset: 'production',
+    apiHost: 'https://api.sanity.work',
 
     plugins: [deskTool(), visionTool()],
 
@@ -30,7 +31,7 @@ export default defineConfig([
           name: 'publisherReference',
           title: 'Publisher',
           type: 'reference' as const,
-          to: [{type: 'publisher'}]
+          to: [{type: 'publisher'}],
         }),
         defineType({
           name: 'authorReference',
@@ -48,7 +49,7 @@ export default defineConfig([
           studioUrl: ({id, type}) => `/authors/desk/${type};${id}`,
           to: [
             {type: 'author', preview: {select: {title: 'name'}}},
-            {type: 'editor', preview: {select: {title: 'name'}}}
+            {type: 'editor', preview: {select: {title: 'name'}}},
           ],
         }),
         defineType({
@@ -84,7 +85,7 @@ export default defineConfig([
               studioUrl: ({id, type}) => `/authors/desk/${type};${id}`,
               to: [
                 {type: 'author', preview: {select: {title: 'name'}}},
-                {type: 'editor', preview: {select: {title: 'name'}}}
+                {type: 'editor', preview: {select: {title: 'name'}}},
               ],
             },
             {
@@ -197,8 +198,9 @@ export default defineConfig([
     name: 'authors',
     basePath: '/authors',
 
-    projectId: 'jn1oq55b',
+    projectId: 'rz9j51w2',
     dataset: 'shared',
+    apiHost: 'https://api.sanity.work',
 
     plugins: [deskTool(), visionTool()],
 
@@ -212,7 +214,7 @@ export default defineConfig([
               name: 'name',
               title: 'Name',
               type: 'string',
-            }
+            },
           ],
         }),
         defineType({
