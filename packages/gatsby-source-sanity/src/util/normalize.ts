@@ -82,6 +82,10 @@ export function getTypeName(type: string, typePrefix: string | undefined) {
     return type
   }
 
+  if (typePrefix && type.startsWith(typePrefix)) {
+    return type
+  }
+
   const typeName = startCase(type)
   if (scalarTypeNames.includes(typeName)) {
     return typeName
