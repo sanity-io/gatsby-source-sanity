@@ -89,7 +89,7 @@ jobs:
           cache: npm
       - run: npm ci
         # Branches that will release new versions are defined in .releaserc.json
-      - run: npx semantic-release
+      - run: npm run release
         # Don't allow interrupting the release step if the job is cancelled, as it can lead to an inconsistent state
         # e.g. git tags were pushed but it exited before `npm publish`
         if: always()
@@ -97,7 +97,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
         # Re-run semantic release with rich logs if it failed to publish for easier debugging
-      - run: npx semantic-release --dry-run --debug
+      - run: npm run release -- --dry-run --debug
         if: failure()
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
