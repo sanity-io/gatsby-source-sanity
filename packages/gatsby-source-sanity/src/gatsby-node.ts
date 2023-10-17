@@ -31,7 +31,6 @@ import {
   SANITY_ERROR_CODE_MESSAGES,
 } from './util/errors'
 import {getGraphQLResolverMap} from './util/getGraphQLResolverMap'
-import {getLastBuildTime, registerBuildTime} from './util/getPluginStatus'
 import getSyncWithGatsby from './util/getSyncWithGatsby'
 import handleDeltaChanges from './util/handleDeltaChanges'
 import {handleWebhookEvent} from './util/handleWebhookEvent'
@@ -44,6 +43,8 @@ import {
 import {rewriteGraphQLSchema} from './util/rewriteGraphQLSchema'
 import validateConfig, {PluginConfig} from './util/validateConfig'
 import {ProcessingOptions} from './util/normalize'
+import {readFileSync} from 'fs'
+import {mapCrossDatasetReferences} from './util/mapCrossDatasetReferences'
 
 let coreSupportsOnPluginInit: 'unstable' | 'stable' | undefined
 
@@ -92,9 +93,17 @@ const initializePlugin = async (
   }
 
   try {
-    reporter.info('[sanity] Fetching remote GraphQL schema')
-    const client = getClient(config)
-    const api = await getRemoteGraphQLSchema(client, config)
+    let api: string = ''
+    if (config._mocks) {
+      reporter.warn('[sanity] Using mocked GraphQL schema')
+      api = readFileSync(config._mocks.schemaPath, 'utf8')
+    } else {
+      reporter.info('[sanity] Fetching remote GraphQL schema')
+      const client = getClient(config)
+      api = await getRemoteGraphQLSchema(client, config)
+    }
+
+    api = mapCrossDatasetReferences(api)
 
     reporter.info('[sanity] Transforming to Gatsby-compatible GraphQL SDL')
     const graphqlSdl = await rewriteGraphQLSchema(api, {config, reporter})
@@ -275,7 +284,7 @@ export const sourceNodes: GatsbyNode['sourceNodes'] = async (
   })
 
   // If we have a warm build, let's fetch only those which changed since the last build
-  const lastBuildTime = getLastBuildTime(args)
+  const lastBuildTime = await args.cache.get(getCacheKey(config, CACHE_KEYS.LAST_BUILD))
   let deltaHandled = false
   if (lastBuildTime) {
     try {
@@ -327,6 +336,7 @@ export const sourceNodes: GatsbyNode['sourceNodes'] = async (
         lastBuildTime,
         client,
         syncWithGatsby,
+        config,
       })
       if (!deltaHandled) {
         reporter.warn(
@@ -410,7 +420,7 @@ export const sourceNodes: GatsbyNode['sourceNodes'] = async (
   }
 
   // register the current build time for accessing it in handleDeltaChanges for future builds
-  registerBuildTime(args)
+  await args.cache.set(getCacheKey(config, CACHE_KEYS.LAST_BUILD), new Date().toISOString())
 }
 
 export const setFieldsOnGraphQLNodeType: GatsbyNode['setFieldsOnGraphQLNodeType'] = async (
@@ -427,8 +437,9 @@ export const setFieldsOnGraphQLNodeType: GatsbyNode['setFieldsOnGraphQLNodeType'
 }
 
 function getClient(config: PluginConfig) {
-  const {projectId, dataset, token} = config
+  const {projectId, dataset, apiHost, token} = config
   return sanityClient({
+    apiHost,
     projectId,
     dataset,
     token,

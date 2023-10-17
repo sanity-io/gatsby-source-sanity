@@ -1,0 +1,992 @@
+schema {
+  query: RootQuery
+}
+
+"""Field is a "raw" JSON alias for a different field"""
+directive @jsonAlias(
+  """Source field name"""
+  for: String!
+) on FIELD_DEFINITION
+
+"""Field references one or more documents"""
+directive @reference on FIELD_DEFINITION
+
+type AuthorReference {
+  _key: String
+  _type: String
+  _ref: String
+  _weak: Boolean
+  _dataset: String
+  _projectId: String
+}
+
+input AuthorReferenceFilter {
+  _key: StringFilter
+  _type: StringFilter
+  _ref: StringFilter
+  _weak: BooleanFilter
+  _dataset: StringFilter
+  _projectId: StringFilter
+}
+
+union AuthorReferenceOrBlockOrBookMetadata = AuthorReference | Block | BookMetadata
+
+union AuthorReferenceOrBookOrBookMetadata = AuthorReference | Book | BookMetadata
+
+union AuthorReferenceOrPublisherOrSpan = AuthorReference | Publisher | Span
+
+input AuthorReferenceSorting {
+  _key: SortOrder
+  _type: SortOrder
+  _ref: SortOrder
+  _weak: SortOrder
+  _dataset: SortOrder
+  _projectId: SortOrder
+}
+
+type Block {
+  _key: String
+  _type: String
+  children: [Span]
+  style: String
+  list: String
+}
+
+type Book implements Document {
+  """Document ID"""
+  _id: ID
+
+  """Document type"""
+  _type: String
+
+  """Date the document was created"""
+  _createdAt: DateTime
+
+  """Date the document was last modified"""
+  _updatedAt: DateTime
+
+  """Current document revision"""
+  _rev: String
+  _key: String
+  title: String
+  cover: Image
+  author: CrossDatasetReference
+  extraAuthor: AuthorReference
+  coauthors: [AuthorReference]
+  mixedArray: [AuthorReferenceOrBookOrBookMetadata]
+  genres: [Genre]
+  publisher: Publisher
+  extraPublisher: Publisher
+  blurbRaw: JSON
+}
+
+input BookFilter {
+  """Apply filters on document level"""
+  _: Sanity_DocumentFilter
+  _id: IDFilter
+  _type: StringFilter
+  _createdAt: DatetimeFilter
+  _updatedAt: DatetimeFilter
+  _rev: StringFilter
+  _key: StringFilter
+  title: StringFilter
+  cover: ImageFilter
+  author: CrossDatasetReferenceFilter
+  extraAuthor: AuthorReferenceFilter
+  publisher: PublisherFilter
+  extraPublisher: PublisherFilter
+}
+
+type BookMetadata {
+  _key: String
+  _type: String
+  isbn: String
+}
+
+input BookMetadataFilter {
+  _key: StringFilter
+  _type: StringFilter
+  isbn: StringFilter
+}
+
+input BookMetadataSorting {
+  _key: SortOrder
+  _type: SortOrder
+  isbn: SortOrder
+}
+
+input BookSorting {
+  _id: SortOrder
+  _type: SortOrder
+  _createdAt: SortOrder
+  _updatedAt: SortOrder
+  _rev: SortOrder
+  _key: SortOrder
+  title: SortOrder
+  cover: ImageSorting
+  author: CrossDatasetReferenceSorting
+  extraAuthor: AuthorReferenceSorting
+}
+
+input BooleanFilter {
+  """Checks if the value is equal to the given input."""
+  eq: Boolean
+
+  """Checks if the value is not equal to the given input."""
+  neq: Boolean
+
+  """Checks if the value is defined."""
+  is_defined: Boolean
+}
+
+type CrossDatasetReference {
+  _key: String
+  _type: String
+  _ref: String
+  _weak: Boolean
+  _dataset: String
+  _projectId: String
+}
+
+input CrossDatasetReferenceFilter {
+  _key: StringFilter
+  _type: StringFilter
+  _ref: StringFilter
+  _weak: BooleanFilter
+  _dataset: StringFilter
+  _projectId: StringFilter
+}
+
+input CrossDatasetReferenceSorting {
+  _key: SortOrder
+  _type: SortOrder
+  _ref: SortOrder
+  _weak: SortOrder
+  _dataset: SortOrder
+  _projectId: SortOrder
+}
+
+"""
+A date string, such as 2007-12-03, compliant with the `full-date` format
+outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for
+representation of dates and times using the Gregorian calendar.
+"""
+scalar Date
+
+input DateFilter {
+  """Checks if the value is equal to the given input."""
+  eq: Date
+
+  """Checks if the value is not equal to the given input."""
+  neq: Date
+
+  """Checks if the value is greater than the given input."""
+  gt: Date
+
+  """Checks if the value is greater than or equal to the given input."""
+  gte: Date
+
+  """Checks if the value is lesser than the given input."""
+  lt: Date
+
+  """Checks if the value is lesser than or equal to the given input."""
+  lte: Date
+
+  """Checks if the value is defined."""
+  is_defined: Boolean
+}
+
+"""
+A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the
+`date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO
+8601 standard for representation of dates and times using the Gregorian calendar.
+"""
+scalar DateTime
+
+input DatetimeFilter {
+  """Checks if the value is equal to the given input."""
+  eq: DateTime
+
+  """Checks if the value is not equal to the given input."""
+  neq: DateTime
+
+  """Checks if the value is greater than the given input."""
+  gt: DateTime
+
+  """Checks if the value is greater than or equal to the given input."""
+  gte: DateTime
+
+  """Checks if the value is lesser than the given input."""
+  lt: DateTime
+
+  """Checks if the value is lesser than or equal to the given input."""
+  lte: DateTime
+
+  """Checks if the value is defined."""
+  is_defined: Boolean
+}
+
+"""A Sanity document"""
+interface Document {
+  """Document ID"""
+  _id: ID
+
+  """Document type"""
+  _type: String
+
+  """Date the document was created"""
+  _createdAt: DateTime
+
+  """Date the document was last modified"""
+  _updatedAt: DateTime
+
+  """Current document revision"""
+  _rev: String
+}
+
+input DocumentFilter {
+  """Apply filters on document level"""
+  _: Sanity_DocumentFilter
+  _id: IDFilter
+  _type: StringFilter
+  _createdAt: DatetimeFilter
+  _updatedAt: DatetimeFilter
+  _rev: StringFilter
+}
+
+input DocumentSorting {
+  _id: SortOrder
+  _type: SortOrder
+  _createdAt: SortOrder
+  _updatedAt: SortOrder
+  _rev: SortOrder
+}
+
+type File {
+  _key: String
+  _type: String
+  asset: SanityFileAsset
+}
+
+input FileFilter {
+  _key: StringFilter
+  _type: StringFilter
+  asset: SanityFileAssetFilter
+}
+
+input FileSorting {
+  _key: SortOrder
+  _type: SortOrder
+}
+
+input FloatFilter {
+  """Checks if the value is equal to the given input."""
+  eq: Float
+
+  """Checks if the value is not equal to the given input."""
+  neq: Float
+
+  """Checks if the value is greater than the given input."""
+  gt: Float
+
+  """Checks if the value is greater than or equal to the given input."""
+  gte: Float
+
+  """Checks if the value is lesser than the given input."""
+  lt: Float
+
+  """Checks if the value is lesser than or equal to the given input."""
+  lte: Float
+
+  """Checks if the value is defined."""
+  is_defined: Boolean
+}
+
+type Genre implements Document {
+  """Document ID"""
+  _id: ID
+
+  """Document type"""
+  _type: String
+
+  """Date the document was created"""
+  _createdAt: DateTime
+
+  """Date the document was last modified"""
+  _updatedAt: DateTime
+
+  """Current document revision"""
+  _rev: String
+  _key: String
+  title: String
+}
+
+input GenreFilter {
+  """Apply filters on document level"""
+  _: Sanity_DocumentFilter
+  _id: IDFilter
+  _type: StringFilter
+  _createdAt: DatetimeFilter
+  _updatedAt: DatetimeFilter
+  _rev: StringFilter
+  _key: StringFilter
+  title: StringFilter
+}
+
+input GenreSorting {
+  _id: SortOrder
+  _type: SortOrder
+  _createdAt: SortOrder
+  _updatedAt: SortOrder
+  _rev: SortOrder
+  _key: SortOrder
+  title: SortOrder
+}
+
+type Geopoint {
+  _key: String
+  _type: String
+  lat: Float
+  lng: Float
+  alt: Float
+}
+
+input GeopointFilter {
+  _key: StringFilter
+  _type: StringFilter
+  lat: FloatFilter
+  lng: FloatFilter
+  alt: FloatFilter
+}
+
+input GeopointSorting {
+  _key: SortOrder
+  _type: SortOrder
+  lat: SortOrder
+  lng: SortOrder
+  alt: SortOrder
+}
+
+input IDFilter {
+  """Checks if the value is equal to the given input."""
+  eq: ID
+
+  """Checks if the value is not equal to the given input."""
+  neq: ID
+
+  """Checks if the value matches the given word/words."""
+  matches: ID
+  in: [ID!]
+  nin: [ID!]
+}
+
+type Image {
+  _key: String
+  _type: String
+  asset: SanityImageAsset
+  hotspot: SanityImageHotspot
+  crop: SanityImageCrop
+}
+
+input ImageFilter {
+  _key: StringFilter
+  _type: StringFilter
+  asset: SanityImageAssetFilter
+  hotspot: SanityImageHotspotFilter
+  crop: SanityImageCropFilter
+}
+
+input ImageSorting {
+  _key: SortOrder
+  _type: SortOrder
+  hotspot: SanityImageHotspotSorting
+  crop: SanityImageCropSorting
+}
+
+input IntFilter {
+  """Checks if the value is equal to the given input."""
+  eq: Int
+
+  """Checks if the value is not equal to the given input."""
+  neq: Int
+
+  """Checks if the value is greater than the given input."""
+  gt: Int
+
+  """Checks if the value is greater than or equal to the given input."""
+  gte: Int
+
+  """Checks if the value is lesser than the given input."""
+  lt: Int
+
+  """Checks if the value is lesser than or equal to the given input."""
+  lte: Int
+
+  """Checks if the value is defined."""
+  is_defined: Boolean
+}
+
+"""
+The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar JSON
+
+type Publisher implements Document {
+  """Document ID"""
+  _id: ID
+
+  """Document type"""
+  _type: String
+
+  """Date the document was created"""
+  _createdAt: DateTime
+
+  """Date the document was last modified"""
+  _updatedAt: DateTime
+
+  """Current document revision"""
+  _rev: String
+  _key: String
+  name: String
+}
+
+input PublisherFilter {
+  """Apply filters on document level"""
+  _: Sanity_DocumentFilter
+  _id: IDFilter
+  _type: StringFilter
+  _createdAt: DatetimeFilter
+  _updatedAt: DatetimeFilter
+  _rev: StringFilter
+  _key: StringFilter
+  name: StringFilter
+}
+
+input PublisherSorting {
+  _id: SortOrder
+  _type: SortOrder
+  _createdAt: SortOrder
+  _updatedAt: SortOrder
+  _rev: SortOrder
+  _key: SortOrder
+  name: SortOrder
+}
+
+type RootQuery {
+  Book(
+    """Book document ID"""
+    id: ID!
+  ): Book
+  Genre(
+    """Genre document ID"""
+    id: ID!
+  ): Genre
+  Publisher(
+    """Publisher document ID"""
+    id: ID!
+  ): Publisher
+  SanityImageAsset(
+    """SanityImageAsset document ID"""
+    id: ID!
+  ): SanityImageAsset
+  SanityFileAsset(
+    """SanityFileAsset document ID"""
+    id: ID!
+  ): SanityFileAsset
+  Document(
+    """Document document ID"""
+    id: ID!
+  ): Document
+  allBook(
+    where: BookFilter
+    sort: [BookSorting!]
+
+    """Max documents to return"""
+    limit: Int
+
+    """Offset at which to start returning documents from"""
+    offset: Int
+  ): [Book!]!
+  allGenre(
+    where: GenreFilter
+    sort: [GenreSorting!]
+
+    """Max documents to return"""
+    limit: Int
+
+    """Offset at which to start returning documents from"""
+    offset: Int
+  ): [Genre!]!
+  allPublisher(
+    where: PublisherFilter
+    sort: [PublisherSorting!]
+
+    """Max documents to return"""
+    limit: Int
+
+    """Offset at which to start returning documents from"""
+    offset: Int
+  ): [Publisher!]!
+  allSanityImageAsset(
+    where: SanityImageAssetFilter
+    sort: [SanityImageAssetSorting!]
+
+    """Max documents to return"""
+    limit: Int
+
+    """Offset at which to start returning documents from"""
+    offset: Int
+  ): [SanityImageAsset!]!
+  allSanityFileAsset(
+    where: SanityFileAssetFilter
+    sort: [SanityFileAssetSorting!]
+
+    """Max documents to return"""
+    limit: Int
+
+    """Offset at which to start returning documents from"""
+    offset: Int
+  ): [SanityFileAsset!]!
+  allDocument(
+    where: DocumentFilter
+    sort: [DocumentSorting!]
+
+    """Max documents to return"""
+    limit: Int
+
+    """Offset at which to start returning documents from"""
+    offset: Int
+  ): [Document!]!
+}
+
+input Sanity_DocumentFilter {
+  """All documents referencing the given document ID."""
+  references: ID
+
+  """All documents that are drafts."""
+  is_draft: Boolean
+}
+
+type SanityAssetSourceData {
+  _key: String
+  _type: String
+
+  """A canonical name for the source this asset is originating from"""
+  name: String
+
+  """
+  The unique ID for the asset within the originating source so you can programatically find back to it
+  """
+  id: String
+
+  """
+  A URL to find more information about this asset in the originating source
+  """
+  url: String
+}
+
+input SanityAssetSourceDataFilter {
+  _key: StringFilter
+  _type: StringFilter
+  name: StringFilter
+  id: StringFilter
+  url: StringFilter
+}
+
+input SanityAssetSourceDataSorting {
+  _key: SortOrder
+  _type: SortOrder
+  name: SortOrder
+  id: SortOrder
+  url: SortOrder
+}
+
+type SanityFileAsset implements Document {
+  """Document ID"""
+  _id: ID
+
+  """Document type"""
+  _type: String
+
+  """Date the document was created"""
+  _createdAt: DateTime
+
+  """Date the document was last modified"""
+  _updatedAt: DateTime
+
+  """Current document revision"""
+  _rev: String
+  _key: String
+  originalFilename: String
+  label: String
+  title: String
+  description: String
+  altText: String
+  sha1hash: String
+  extension: String
+  mimeType: String
+  size: Float
+  assetId: String
+  path: String
+  url: String
+  source: SanityAssetSourceData
+}
+
+input SanityFileAssetFilter {
+  """Apply filters on document level"""
+  _: Sanity_DocumentFilter
+  _id: IDFilter
+  _type: StringFilter
+  _createdAt: DatetimeFilter
+  _updatedAt: DatetimeFilter
+  _rev: StringFilter
+  _key: StringFilter
+  originalFilename: StringFilter
+  label: StringFilter
+  title: StringFilter
+  description: StringFilter
+  altText: StringFilter
+  sha1hash: StringFilter
+  extension: StringFilter
+  mimeType: StringFilter
+  size: FloatFilter
+  assetId: StringFilter
+  path: StringFilter
+  url: StringFilter
+  source: SanityAssetSourceDataFilter
+}
+
+input SanityFileAssetSorting {
+  _id: SortOrder
+  _type: SortOrder
+  _createdAt: SortOrder
+  _updatedAt: SortOrder
+  _rev: SortOrder
+  _key: SortOrder
+  originalFilename: SortOrder
+  label: SortOrder
+  title: SortOrder
+  description: SortOrder
+  altText: SortOrder
+  sha1hash: SortOrder
+  extension: SortOrder
+  mimeType: SortOrder
+  size: SortOrder
+  assetId: SortOrder
+  path: SortOrder
+  url: SortOrder
+  source: SanityAssetSourceDataSorting
+}
+
+type SanityImageAsset implements Document {
+  """Document ID"""
+  _id: ID
+
+  """Document type"""
+  _type: String
+
+  """Date the document was created"""
+  _createdAt: DateTime
+
+  """Date the document was last modified"""
+  _updatedAt: DateTime
+
+  """Current document revision"""
+  _rev: String
+  _key: String
+  originalFilename: String
+  label: String
+  title: String
+  description: String
+  altText: String
+  sha1hash: String
+  extension: String
+  mimeType: String
+  size: Float
+  assetId: String
+  uploadId: String
+  path: String
+  url: String
+  metadata: SanityImageMetadata
+  source: SanityAssetSourceData
+}
+
+input SanityImageAssetFilter {
+  """Apply filters on document level"""
+  _: Sanity_DocumentFilter
+  _id: IDFilter
+  _type: StringFilter
+  _createdAt: DatetimeFilter
+  _updatedAt: DatetimeFilter
+  _rev: StringFilter
+  _key: StringFilter
+  originalFilename: StringFilter
+  label: StringFilter
+  title: StringFilter
+  description: StringFilter
+  altText: StringFilter
+  sha1hash: StringFilter
+  extension: StringFilter
+  mimeType: StringFilter
+  size: FloatFilter
+  assetId: StringFilter
+  uploadId: StringFilter
+  path: StringFilter
+  url: StringFilter
+  metadata: SanityImageMetadataFilter
+  source: SanityAssetSourceDataFilter
+}
+
+input SanityImageAssetSorting {
+  _id: SortOrder
+  _type: SortOrder
+  _createdAt: SortOrder
+  _updatedAt: SortOrder
+  _rev: SortOrder
+  _key: SortOrder
+  originalFilename: SortOrder
+  label: SortOrder
+  title: SortOrder
+  description: SortOrder
+  altText: SortOrder
+  sha1hash: SortOrder
+  extension: SortOrder
+  mimeType: SortOrder
+  size: SortOrder
+  assetId: SortOrder
+  uploadId: SortOrder
+  path: SortOrder
+  url: SortOrder
+  metadata: SanityImageMetadataSorting
+  source: SanityAssetSourceDataSorting
+}
+
+type SanityImageCrop {
+  _key: String
+  _type: String
+  top: Float
+  bottom: Float
+  left: Float
+  right: Float
+}
+
+input SanityImageCropFilter {
+  _key: StringFilter
+  _type: StringFilter
+  top: FloatFilter
+  bottom: FloatFilter
+  left: FloatFilter
+  right: FloatFilter
+}
+
+input SanityImageCropSorting {
+  _key: SortOrder
+  _type: SortOrder
+  top: SortOrder
+  bottom: SortOrder
+  left: SortOrder
+  right: SortOrder
+}
+
+type SanityImageDimensions {
+  _key: String
+  _type: String
+  height: Float
+  width: Float
+  aspectRatio: Float
+}
+
+input SanityImageDimensionsFilter {
+  _key: StringFilter
+  _type: StringFilter
+  height: FloatFilter
+  width: FloatFilter
+  aspectRatio: FloatFilter
+}
+
+input SanityImageDimensionsSorting {
+  _key: SortOrder
+  _type: SortOrder
+  height: SortOrder
+  width: SortOrder
+  aspectRatio: SortOrder
+}
+
+type SanityImageHotspot {
+  _key: String
+  _type: String
+  x: Float
+  y: Float
+  height: Float
+  width: Float
+}
+
+input SanityImageHotspotFilter {
+  _key: StringFilter
+  _type: StringFilter
+  x: FloatFilter
+  y: FloatFilter
+  height: FloatFilter
+  width: FloatFilter
+}
+
+input SanityImageHotspotSorting {
+  _key: SortOrder
+  _type: SortOrder
+  x: SortOrder
+  y: SortOrder
+  height: SortOrder
+  width: SortOrder
+}
+
+type SanityImageMetadata {
+  _key: String
+  _type: String
+  location: Geopoint
+  dimensions: SanityImageDimensions
+  palette: SanityImagePalette
+  lqip: String
+  blurHash: String
+  hasAlpha: Boolean
+  isOpaque: Boolean
+}
+
+input SanityImageMetadataFilter {
+  _key: StringFilter
+  _type: StringFilter
+  location: GeopointFilter
+  dimensions: SanityImageDimensionsFilter
+  palette: SanityImagePaletteFilter
+  lqip: StringFilter
+  blurHash: StringFilter
+  hasAlpha: BooleanFilter
+  isOpaque: BooleanFilter
+}
+
+input SanityImageMetadataSorting {
+  _key: SortOrder
+  _type: SortOrder
+  location: GeopointSorting
+  dimensions: SanityImageDimensionsSorting
+  palette: SanityImagePaletteSorting
+  lqip: SortOrder
+  blurHash: SortOrder
+  hasAlpha: SortOrder
+  isOpaque: SortOrder
+}
+
+type SanityImagePalette {
+  _key: String
+  _type: String
+  darkMuted: SanityImagePaletteSwatch
+  lightVibrant: SanityImagePaletteSwatch
+  darkVibrant: SanityImagePaletteSwatch
+  vibrant: SanityImagePaletteSwatch
+  dominant: SanityImagePaletteSwatch
+  lightMuted: SanityImagePaletteSwatch
+  muted: SanityImagePaletteSwatch
+}
+
+input SanityImagePaletteFilter {
+  _key: StringFilter
+  _type: StringFilter
+  darkMuted: SanityImagePaletteSwatchFilter
+  lightVibrant: SanityImagePaletteSwatchFilter
+  darkVibrant: SanityImagePaletteSwatchFilter
+  vibrant: SanityImagePaletteSwatchFilter
+  dominant: SanityImagePaletteSwatchFilter
+  lightMuted: SanityImagePaletteSwatchFilter
+  muted: SanityImagePaletteSwatchFilter
+}
+
+input SanityImagePaletteSorting {
+  _key: SortOrder
+  _type: SortOrder
+  darkMuted: SanityImagePaletteSwatchSorting
+  lightVibrant: SanityImagePaletteSwatchSorting
+  darkVibrant: SanityImagePaletteSwatchSorting
+  vibrant: SanityImagePaletteSwatchSorting
+  dominant: SanityImagePaletteSwatchSorting
+  lightMuted: SanityImagePaletteSwatchSorting
+  muted: SanityImagePaletteSwatchSorting
+}
+
+type SanityImagePaletteSwatch {
+  _key: String
+  _type: String
+  background: String
+  foreground: String
+  population: Float
+  title: String
+}
+
+input SanityImagePaletteSwatchFilter {
+  _key: StringFilter
+  _type: StringFilter
+  background: StringFilter
+  foreground: StringFilter
+  population: FloatFilter
+  title: StringFilter
+}
+
+input SanityImagePaletteSwatchSorting {
+  _key: SortOrder
+  _type: SortOrder
+  background: SortOrder
+  foreground: SortOrder
+  population: SortOrder
+  title: SortOrder
+}
+
+type Slug {
+  _key: String
+  _type: String
+  current: String
+  source: String
+}
+
+input SlugFilter {
+  _key: StringFilter
+  _type: StringFilter
+  current: StringFilter
+  source: StringFilter
+}
+
+input SlugSorting {
+  _key: SortOrder
+  _type: SortOrder
+  current: SortOrder
+  source: SortOrder
+}
+
+enum SortOrder {
+  """Sorts on the value in ascending order."""
+  ASC
+
+  """Sorts on the value in descending order."""
+  DESC
+}
+
+type Span {
+  _key: String
+  _type: String
+  marks: [String]
+  text: String
+}
+
+input StringFilter {
+  """Checks if the value is equal to the given input."""
+  eq: String
+
+  """Checks if the value is not equal to the given input."""
+  neq: String
+
+  """Checks if the value matches the given word/words."""
+  matches: String
+  in: [String!]
+  nin: [String!]
+
+  """Checks if the value is defined."""
+  is_defined: Boolean
+}
+
