@@ -5,6 +5,16 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.9.0](https://github.com/sanity-io/gatsby-source-sanity/compare/v7.8.1...v7.9.0) (2023-10-17)
+
+### Features
+
+- support shared content ([#269](https://github.com/sanity-io/gatsby-source-sanity/issues/269)) ([b77309f](https://github.com/sanity-io/gatsby-source-sanity/commit/b77309f03288bc29882066f2811fcc8869fc7e35))
+
+### Bug Fixes
+
+- only apply prefix once ([#255](https://github.com/sanity-io/gatsby-source-sanity/issues/255)) ([bd64f80](https://github.com/sanity-io/gatsby-source-sanity/commit/bd64f8042f14e48a28d4b30bc415cdeb03e1c9d5))
+
 ## [7.8.1](https://github.com/sanity-io/gatsby-source-sanity/compare/v7.8.0...v7.8.1) (2023-08-02)
 
 ### Bug Fixes
