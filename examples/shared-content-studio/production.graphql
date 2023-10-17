@@ -2,13 +2,19 @@ schema {
   query: RootQuery
 }
 
-"""Field is a "raw" JSON alias for a different field"""
+"""
+Field is a "raw" JSON alias for a different field
+"""
 directive @jsonAlias(
-  """Source field name"""
+  """
+  Source field name
+  """
   for: String!
 ) on FIELD_DEFINITION
 
-"""Field references one or more documents"""
+"""
+Field references one or more documents
+"""
 directive @reference on FIELD_DEFINITION
 
 type AuthorReference {
@@ -53,19 +59,29 @@ type Block {
 }
 
 type Book implements Document {
-  """Document ID"""
+  """
+  Document ID
+  """
   _id: ID
 
-  """Document type"""
+  """
+  Document type
+  """
   _type: String
 
-  """Date the document was created"""
+  """
+  Date the document was created
+  """
   _createdAt: DateTime
 
-  """Date the document was last modified"""
+  """
+  Date the document was last modified
+  """
   _updatedAt: DateTime
 
-  """Current document revision"""
+  """
+  Current document revision
+  """
   _rev: String
   _key: String
   title: String
@@ -81,7 +97,9 @@ type Book implements Document {
 }
 
 input BookFilter {
-  """Apply filters on document level"""
+  """
+  Apply filters on document level
+  """
   _: Sanity_DocumentFilter
   _id: IDFilter
   _type: StringFilter
@@ -129,13 +147,19 @@ input BookSorting {
 }
 
 input BooleanFilter {
-  """Checks if the value is equal to the given input."""
+  """
+  Checks if the value is equal to the given input.
+  """
   eq: Boolean
 
-  """Checks if the value is not equal to the given input."""
+  """
+  Checks if the value is not equal to the given input.
+  """
   neq: Boolean
 
-  """Checks if the value is defined."""
+  """
+  Checks if the value is defined.
+  """
   is_defined: Boolean
 }
 
@@ -174,25 +198,39 @@ representation of dates and times using the Gregorian calendar.
 scalar Date
 
 input DateFilter {
-  """Checks if the value is equal to the given input."""
+  """
+  Checks if the value is equal to the given input.
+  """
   eq: Date
 
-  """Checks if the value is not equal to the given input."""
+  """
+  Checks if the value is not equal to the given input.
+  """
   neq: Date
 
-  """Checks if the value is greater than the given input."""
+  """
+  Checks if the value is greater than the given input.
+  """
   gt: Date
 
-  """Checks if the value is greater than or equal to the given input."""
+  """
+  Checks if the value is greater than or equal to the given input.
+  """
   gte: Date
 
-  """Checks if the value is lesser than the given input."""
+  """
+  Checks if the value is lesser than the given input.
+  """
   lt: Date
 
-  """Checks if the value is lesser than or equal to the given input."""
+  """
+  Checks if the value is lesser than or equal to the given input.
+  """
   lte: Date
 
-  """Checks if the value is defined."""
+  """
+  Checks if the value is defined.
+  """
   is_defined: Boolean
 }
 
@@ -204,48 +242,76 @@ A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the
 scalar DateTime
 
 input DatetimeFilter {
-  """Checks if the value is equal to the given input."""
+  """
+  Checks if the value is equal to the given input.
+  """
   eq: DateTime
 
-  """Checks if the value is not equal to the given input."""
+  """
+  Checks if the value is not equal to the given input.
+  """
   neq: DateTime
 
-  """Checks if the value is greater than the given input."""
+  """
+  Checks if the value is greater than the given input.
+  """
   gt: DateTime
 
-  """Checks if the value is greater than or equal to the given input."""
+  """
+  Checks if the value is greater than or equal to the given input.
+  """
   gte: DateTime
 
-  """Checks if the value is lesser than the given input."""
+  """
+  Checks if the value is lesser than the given input.
+  """
   lt: DateTime
 
-  """Checks if the value is lesser than or equal to the given input."""
+  """
+  Checks if the value is lesser than or equal to the given input.
+  """
   lte: DateTime
 
-  """Checks if the value is defined."""
+  """
+  Checks if the value is defined.
+  """
   is_defined: Boolean
 }
 
-"""A Sanity document"""
+"""
+A Sanity document
+"""
 interface Document {
-  """Document ID"""
+  """
+  Document ID
+  """
   _id: ID
 
-  """Document type"""
+  """
+  Document type
+  """
   _type: String
 
-  """Date the document was created"""
+  """
+  Date the document was created
+  """
   _createdAt: DateTime
 
-  """Date the document was last modified"""
+  """
+  Date the document was last modified
+  """
   _updatedAt: DateTime
 
-  """Current document revision"""
+  """
+  Current document revision
+  """
   _rev: String
 }
 
 input DocumentFilter {
-  """Apply filters on document level"""
+  """
+  Apply filters on document level
+  """
   _: Sanity_DocumentFilter
   _id: IDFilter
   _type: StringFilter
@@ -280,49 +346,75 @@ input FileSorting {
 }
 
 input FloatFilter {
-  """Checks if the value is equal to the given input."""
+  """
+  Checks if the value is equal to the given input.
+  """
   eq: Float
 
-  """Checks if the value is not equal to the given input."""
+  """
+  Checks if the value is not equal to the given input.
+  """
   neq: Float
 
-  """Checks if the value is greater than the given input."""
+  """
+  Checks if the value is greater than the given input.
+  """
   gt: Float
 
-  """Checks if the value is greater than or equal to the given input."""
+  """
+  Checks if the value is greater than or equal to the given input.
+  """
   gte: Float
 
-  """Checks if the value is lesser than the given input."""
+  """
+  Checks if the value is lesser than the given input.
+  """
   lt: Float
 
-  """Checks if the value is lesser than or equal to the given input."""
+  """
+  Checks if the value is lesser than or equal to the given input.
+  """
   lte: Float
 
-  """Checks if the value is defined."""
+  """
+  Checks if the value is defined.
+  """
   is_defined: Boolean
 }
 
 type Genre implements Document {
-  """Document ID"""
+  """
+  Document ID
+  """
   _id: ID
 
-  """Document type"""
+  """
+  Document type
+  """
   _type: String
 
-  """Date the document was created"""
+  """
+  Date the document was created
+  """
   _createdAt: DateTime
 
-  """Date the document was last modified"""
+  """
+  Date the document was last modified
+  """
   _updatedAt: DateTime
 
-  """Current document revision"""
+  """
+  Current document revision
+  """
   _rev: String
   _key: String
   title: String
 }
 
 input GenreFilter {
-  """Apply filters on document level"""
+  """
+  Apply filters on document level
+  """
   _: Sanity_DocumentFilter
   _id: IDFilter
   _type: StringFilter
@@ -368,13 +460,19 @@ input GeopointSorting {
 }
 
 input IDFilter {
-  """Checks if the value is equal to the given input."""
+  """
+  Checks if the value is equal to the given input.
+  """
   eq: ID
 
-  """Checks if the value is not equal to the given input."""
+  """
+  Checks if the value is not equal to the given input.
+  """
   neq: ID
 
-  """Checks if the value matches the given word/words."""
+  """
+  Checks if the value matches the given word/words.
+  """
   matches: ID
   in: [ID!]
   nin: [ID!]
@@ -404,25 +502,39 @@ input ImageSorting {
 }
 
 input IntFilter {
-  """Checks if the value is equal to the given input."""
+  """
+  Checks if the value is equal to the given input.
+  """
   eq: Int
 
-  """Checks if the value is not equal to the given input."""
+  """
+  Checks if the value is not equal to the given input.
+  """
   neq: Int
 
-  """Checks if the value is greater than the given input."""
+  """
+  Checks if the value is greater than the given input.
+  """
   gt: Int
 
-  """Checks if the value is greater than or equal to the given input."""
+  """
+  Checks if the value is greater than or equal to the given input.
+  """
   gte: Int
 
-  """Checks if the value is lesser than the given input."""
+  """
+  Checks if the value is lesser than the given input.
+  """
   lt: Int
 
-  """Checks if the value is lesser than or equal to the given input."""
+  """
+  Checks if the value is lesser than or equal to the given input.
+  """
   lte: Int
 
-  """Checks if the value is defined."""
+  """
+  Checks if the value is defined.
+  """
   is_defined: Boolean
 }
 
@@ -432,26 +544,38 @@ The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://
 scalar JSON
 
 type Publisher implements Document {
-  """Document ID"""
+  """
+  Document ID
+  """
   _id: ID
 
-  """Document type"""
+  """
+  Document type
+  """
   _type: String
 
-  """Date the document was created"""
+  """
+  Date the document was created
+  """
   _createdAt: DateTime
 
-  """Date the document was last modified"""
+  """
+  Date the document was last modified
+  """
   _updatedAt: DateTime
 
-  """Current document revision"""
+  """
+  Current document revision
+  """
   _rev: String
   _key: String
   name: String
 }
 
 input PublisherFilter {
-  """Apply filters on document level"""
+  """
+  Apply filters on document level
+  """
   _: Sanity_DocumentFilter
   _id: IDFilter
   _type: StringFilter
@@ -474,96 +598,136 @@ input PublisherSorting {
 
 type RootQuery {
   Book(
-    """Book document ID"""
+    """
+    Book document ID
+    """
     id: ID!
   ): Book
   Genre(
-    """Genre document ID"""
+    """
+    Genre document ID
+    """
     id: ID!
   ): Genre
   Publisher(
-    """Publisher document ID"""
+    """
+    Publisher document ID
+    """
     id: ID!
   ): Publisher
   SanityImageAsset(
-    """SanityImageAsset document ID"""
+    """
+    SanityImageAsset document ID
+    """
     id: ID!
   ): SanityImageAsset
   SanityFileAsset(
-    """SanityFileAsset document ID"""
+    """
+    SanityFileAsset document ID
+    """
     id: ID!
   ): SanityFileAsset
   Document(
-    """Document document ID"""
+    """
+    Document document ID
+    """
     id: ID!
   ): Document
   allBook(
     where: BookFilter
     sort: [BookSorting!]
 
-    """Max documents to return"""
+    """
+    Max documents to return
+    """
     limit: Int
 
-    """Offset at which to start returning documents from"""
+    """
+    Offset at which to start returning documents from
+    """
     offset: Int
   ): [Book!]!
   allGenre(
     where: GenreFilter
     sort: [GenreSorting!]
 
-    """Max documents to return"""
+    """
+    Max documents to return
+    """
     limit: Int
 
-    """Offset at which to start returning documents from"""
+    """
+    Offset at which to start returning documents from
+    """
     offset: Int
   ): [Genre!]!
   allPublisher(
     where: PublisherFilter
     sort: [PublisherSorting!]
 
-    """Max documents to return"""
+    """
+    Max documents to return
+    """
     limit: Int
 
-    """Offset at which to start returning documents from"""
+    """
+    Offset at which to start returning documents from
+    """
     offset: Int
   ): [Publisher!]!
   allSanityImageAsset(
     where: SanityImageAssetFilter
     sort: [SanityImageAssetSorting!]
 
-    """Max documents to return"""
+    """
+    Max documents to return
+    """
     limit: Int
 
-    """Offset at which to start returning documents from"""
+    """
+    Offset at which to start returning documents from
+    """
     offset: Int
   ): [SanityImageAsset!]!
   allSanityFileAsset(
     where: SanityFileAssetFilter
     sort: [SanityFileAssetSorting!]
 
-    """Max documents to return"""
+    """
+    Max documents to return
+    """
     limit: Int
 
-    """Offset at which to start returning documents from"""
+    """
+    Offset at which to start returning documents from
+    """
     offset: Int
   ): [SanityFileAsset!]!
   allDocument(
     where: DocumentFilter
     sort: [DocumentSorting!]
 
-    """Max documents to return"""
+    """
+    Max documents to return
+    """
     limit: Int
 
-    """Offset at which to start returning documents from"""
+    """
+    Offset at which to start returning documents from
+    """
     offset: Int
   ): [Document!]!
 }
 
 input Sanity_DocumentFilter {
-  """All documents referencing the given document ID."""
+  """
+  All documents referencing the given document ID.
+  """
   references: ID
 
-  """All documents that are drafts."""
+  """
+  All documents that are drafts.
+  """
   is_draft: Boolean
 }
 
@@ -571,7 +735,9 @@ type SanityAssetSourceData {
   _key: String
   _type: String
 
-  """A canonical name for the source this asset is originating from"""
+  """
+  A canonical name for the source this asset is originating from
+  """
   name: String
 
   """
@@ -602,19 +768,29 @@ input SanityAssetSourceDataSorting {
 }
 
 type SanityFileAsset implements Document {
-  """Document ID"""
+  """
+  Document ID
+  """
   _id: ID
 
-  """Document type"""
+  """
+  Document type
+  """
   _type: String
 
-  """Date the document was created"""
+  """
+  Date the document was created
+  """
   _createdAt: DateTime
 
-  """Date the document was last modified"""
+  """
+  Date the document was last modified
+  """
   _updatedAt: DateTime
 
-  """Current document revision"""
+  """
+  Current document revision
+  """
   _rev: String
   _key: String
   originalFilename: String
@@ -633,7 +809,9 @@ type SanityFileAsset implements Document {
 }
 
 input SanityFileAssetFilter {
-  """Apply filters on document level"""
+  """
+  Apply filters on document level
+  """
   _: Sanity_DocumentFilter
   _id: IDFilter
   _type: StringFilter
@@ -679,19 +857,29 @@ input SanityFileAssetSorting {
 }
 
 type SanityImageAsset implements Document {
-  """Document ID"""
+  """
+  Document ID
+  """
   _id: ID
 
-  """Document type"""
+  """
+  Document type
+  """
   _type: String
 
-  """Date the document was created"""
+  """
+  Date the document was created
+  """
   _createdAt: DateTime
 
-  """Date the document was last modified"""
+  """
+  Date the document was last modified
+  """
   _updatedAt: DateTime
 
-  """Current document revision"""
+  """
+  Current document revision
+  """
   _rev: String
   _key: String
   originalFilename: String
@@ -712,7 +900,9 @@ type SanityImageAsset implements Document {
 }
 
 input SanityImageAssetFilter {
-  """Apply filters on document level"""
+  """
+  Apply filters on document level
+  """
   _: Sanity_DocumentFilter
   _id: IDFilter
   _type: StringFilter
@@ -960,10 +1150,14 @@ input SlugSorting {
 }
 
 enum SortOrder {
-  """Sorts on the value in ascending order."""
+  """
+  Sorts on the value in ascending order.
+  """
   ASC
 
-  """Sorts on the value in descending order."""
+  """
+  Sorts on the value in descending order.
+  """
   DESC
 }
 
@@ -975,18 +1169,25 @@ type Span {
 }
 
 input StringFilter {
-  """Checks if the value is equal to the given input."""
+  """
+  Checks if the value is equal to the given input.
+  """
   eq: String
 
-  """Checks if the value is not equal to the given input."""
+  """
+  Checks if the value is not equal to the given input.
+  """
   neq: String
 
-  """Checks if the value matches the given word/words."""
+  """
+  Checks if the value matches the given word/words.
+  """
   matches: String
   in: [String!]
   nin: [String!]
 
-  """Checks if the value is defined."""
+  """
+  Checks if the value is defined.
+  """
   is_defined: Boolean
 }
-

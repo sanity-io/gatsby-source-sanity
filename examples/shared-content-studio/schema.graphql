@@ -1,24 +1,45 @@
-"""Add date formatting options."""
-directive @dateformat(formatString: String, locale: String, fromNow: Boolean, difference: String) on FIELD_DEFINITION
+"""
+Add date formatting options.
+"""
+directive @dateformat(
+  formatString: String
+  locale: String
+  fromNow: Boolean
+  difference: String
+) on FIELD_DEFINITION
 
-"""Link to node by foreign-key relation."""
+"""
+Link to node by foreign-key relation.
+"""
 directive @link(by: String! = "id", from: String, on: String) on FIELD_DEFINITION
 
-"""Link to File node by relative path."""
+"""
+Link to File node by relative path.
+"""
 directive @fileByRelativePath(from: String) on FIELD_DEFINITION
 
-"""Proxy resolver from another field."""
+"""
+Proxy resolver from another field.
+"""
 directive @proxy(from: String!, fromNode: Boolean! = false) on FIELD_DEFINITION
 
-"""Infer field types from field values."""
+"""
+Infer field types from field values.
+"""
 directive @infer on OBJECT
 
-"""Do not infer field types from field values."""
+"""
+Do not infer field types from field values.
+"""
 directive @dontInfer on OBJECT
 
-"""Define the mime-types handled by this type."""
+"""
+Define the mime-types handled by this type.
+"""
 directive @mimeTypes(
-  """The mime-types handled by this type."""
+  """
+  The mime-types handled by this type.
+  """
   types: [String!]! = []
 ) on OBJECT
 
@@ -84,7 +105,9 @@ type Directory implements Node {
     """
     formatString: String
 
-    """Returns a string generated with Moment.js' `fromNow` function"""
+    """
+    Returns a string generated with Moment.js' `fromNow` function
+    """
     fromNow: Boolean
 
     """
@@ -94,7 +117,9 @@ type Directory implements Node {
     """
     difference: String
 
-    """Configures the locale Moment.js will use to format the date."""
+    """
+    Configures the locale Moment.js will use to format the date.
+    """
     locale: String
   ): Date!
   accessTime(
@@ -105,7 +130,9 @@ type Directory implements Node {
     """
     formatString: String
 
-    """Returns a string generated with Moment.js' `fromNow` function"""
+    """
+    Returns a string generated with Moment.js' `fromNow` function
+    """
     fromNow: Boolean
 
     """
@@ -115,7 +142,9 @@ type Directory implements Node {
     """
     difference: String
 
-    """Configures the locale Moment.js will use to format the date."""
+    """
+    Configures the locale Moment.js will use to format the date.
+    """
     locale: String
   ): Date!
   changeTime(
@@ -126,7 +155,9 @@ type Directory implements Node {
     """
     formatString: String
 
-    """Returns a string generated with Moment.js' `fromNow` function"""
+    """
+    Returns a string generated with Moment.js' `fromNow` function
+    """
     fromNow: Boolean
 
     """
@@ -136,7 +167,9 @@ type Directory implements Node {
     """
     difference: String
 
-    """Configures the locale Moment.js will use to format the date."""
+    """
+    Configures the locale Moment.js will use to format the date.
+    """
     locale: String
   ): Date!
   birthTime(
@@ -147,7 +180,9 @@ type Directory implements Node {
     """
     formatString: String
 
-    """Returns a string generated with Moment.js' `fromNow` function"""
+    """
+    Returns a string generated with Moment.js' `fromNow` function
+    """
     fromNow: Boolean
 
     """
@@ -157,7 +192,9 @@ type Directory implements Node {
     """
     difference: String
 
-    """Configures the locale Moment.js will use to format the date."""
+    """
+    Configures the locale Moment.js will use to format the date.
+    """
     locale: String
   ): Date!
   root: String!
@@ -184,7 +221,9 @@ type Directory implements Node {
     """
     formatString: String
 
-    """Returns a string generated with Moment.js' `fromNow` function"""
+    """
+    Returns a string generated with Moment.js' `fromNow` function
+    """
     fromNow: Boolean
 
     """
@@ -194,7 +233,9 @@ type Directory implements Node {
     """
     difference: String
 
-    """Configures the locale Moment.js will use to format the date."""
+    """
+    Configures the locale Moment.js will use to format the date.
+    """
     locale: String
   ): Date!
   mtime(
@@ -205,7 +246,9 @@ type Directory implements Node {
     """
     formatString: String
 
-    """Returns a string generated with Moment.js' `fromNow` function"""
+    """
+    Returns a string generated with Moment.js' `fromNow` function
+    """
     fromNow: Boolean
 
     """
@@ -215,7 +258,9 @@ type Directory implements Node {
     """
     difference: String
 
-    """Configures the locale Moment.js will use to format the date."""
+    """
+    Configures the locale Moment.js will use to format the date.
+    """
     locale: String
   ): Date!
   ctime(
@@ -226,7 +271,9 @@ type Directory implements Node {
     """
     formatString: String
 
-    """Returns a string generated with Moment.js' `fromNow` function"""
+    """
+    Returns a string generated with Moment.js' `fromNow` function
+    """
     fromNow: Boolean
 
     """
@@ -236,7 +283,9 @@ type Directory implements Node {
     """
     difference: String
 
-    """Configures the locale Moment.js will use to format the date."""
+    """
+    Configures the locale Moment.js will use to format the date.
+    """
     locale: String
   ): Date!
   birthtime: Date @deprecated(reason: "Use `birthTime` instead")
@@ -412,7 +461,9 @@ type File implements Node {
     """
     formatString: String
 
-    """Returns a string generated with Moment.js' `fromNow` function"""
+    """
+    Returns a string generated with Moment.js' `fromNow` function
+    """
     fromNow: Boolean
 
     """
@@ -422,7 +473,9 @@ type File implements Node {
     """
     difference: String
 
-    """Configures the locale Moment.js will use to format the date."""
+    """
+    Configures the locale Moment.js will use to format the date.
+    """
     locale: String
   ): Date!
   accessTime(
@@ -433,7 +486,9 @@ type File implements Node {
     """
     formatString: String
 
-    """Returns a string generated with Moment.js' `fromNow` function"""
+    """
+    Returns a string generated with Moment.js' `fromNow` function
+    """
     fromNow: Boolean
 
     """
@@ -443,7 +498,9 @@ type File implements Node {
     """
     difference: String
 
-    """Configures the locale Moment.js will use to format the date."""
+    """
+    Configures the locale Moment.js will use to format the date.
+    """
     locale: String
   ): Date!
   changeTime(
@@ -454,7 +511,9 @@ type File implements Node {
     """
     formatString: String
 
-    """Returns a string generated with Moment.js' `fromNow` function"""
+    """
+    Returns a string generated with Moment.js' `fromNow` function
+    """
     fromNow: Boolean
 
     """
@@ -464,7 +523,9 @@ type File implements Node {
     """
     difference: String
 
-    """Configures the locale Moment.js will use to format the date."""
+    """
+    Configures the locale Moment.js will use to format the date.
+    """
     locale: String
   ): Date!
   birthTime(
@@ -475,7 +536,9 @@ type File implements Node {
     """
     formatString: String
 
-    """Returns a string generated with Moment.js' `fromNow` function"""
+    """
+    Returns a string generated with Moment.js' `fromNow` function
+    """
     fromNow: Boolean
 
     """
@@ -485,7 +548,9 @@ type File implements Node {
     """
     difference: String
 
-    """Configures the locale Moment.js will use to format the date."""
+    """
+    Configures the locale Moment.js will use to format the date.
+    """
     locale: String
   ): Date!
   root: String!
@@ -512,7 +577,9 @@ type File implements Node {
     """
     formatString: String
 
-    """Returns a string generated with Moment.js' `fromNow` function"""
+    """
+    Returns a string generated with Moment.js' `fromNow` function
+    """
     fromNow: Boolean
 
     """
@@ -522,7 +589,9 @@ type File implements Node {
     """
     difference: String
 
-    """Configures the locale Moment.js will use to format the date."""
+    """
+    Configures the locale Moment.js will use to format the date.
+    """
     locale: String
   ): Date!
   mtime(
@@ -533,7 +602,9 @@ type File implements Node {
     """
     formatString: String
 
-    """Returns a string generated with Moment.js' `fromNow` function"""
+    """
+    Returns a string generated with Moment.js' `fromNow` function
+    """
     fromNow: Boolean
 
     """
@@ -543,7 +614,9 @@ type File implements Node {
     """
     difference: String
 
-    """Configures the locale Moment.js will use to format the date."""
+    """
+    Configures the locale Moment.js will use to format the date.
+    """
     locale: String
   ): Date!
   ctime(
@@ -554,7 +627,9 @@ type File implements Node {
     """
     formatString: String
 
-    """Returns a string generated with Moment.js' `fromNow` function"""
+    """
+    Returns a string generated with Moment.js' `fromNow` function
+    """
     fromNow: Boolean
 
     """
@@ -564,7 +639,9 @@ type File implements Node {
     """
     difference: String
 
-    """Configures the locale Moment.js will use to format the date."""
+    """
+    Configures the locale Moment.js will use to format the date.
+    """
     locale: String
   ): Date!
   birthtime: Date @deprecated(reason: "Use `birthTime` instead")
@@ -836,7 +913,9 @@ input JSONQueryOperatorInput {
   glob: JSON
 }
 
-"""Node Interface"""
+"""
+Node Interface
+"""
 interface Node {
   id: ID!
   parent: Node
@@ -880,35 +959,341 @@ type PageInfo {
 }
 
 type Query {
-  file(sourceInstanceName: StringQueryOperatorInput, absolutePath: StringQueryOperatorInput, relativePath: StringQueryOperatorInput, extension: StringQueryOperatorInput, size: IntQueryOperatorInput, prettySize: StringQueryOperatorInput, modifiedTime: DateQueryOperatorInput, accessTime: DateQueryOperatorInput, changeTime: DateQueryOperatorInput, birthTime: DateQueryOperatorInput, root: StringQueryOperatorInput, dir: StringQueryOperatorInput, base: StringQueryOperatorInput, ext: StringQueryOperatorInput, name: StringQueryOperatorInput, relativeDirectory: StringQueryOperatorInput, dev: IntQueryOperatorInput, mode: IntQueryOperatorInput, nlink: IntQueryOperatorInput, uid: IntQueryOperatorInput, gid: IntQueryOperatorInput, rdev: IntQueryOperatorInput, ino: FloatQueryOperatorInput, atimeMs: FloatQueryOperatorInput, mtimeMs: FloatQueryOperatorInput, ctimeMs: FloatQueryOperatorInput, atime: DateQueryOperatorInput, mtime: DateQueryOperatorInput, ctime: DateQueryOperatorInput, birthtime: DateQueryOperatorInput, birthtimeMs: FloatQueryOperatorInput, id: StringQueryOperatorInput, parent: NodeFilterInput, children: NodeFilterListInput, internal: InternalFilterInput): File
+  file(
+    sourceInstanceName: StringQueryOperatorInput
+    absolutePath: StringQueryOperatorInput
+    relativePath: StringQueryOperatorInput
+    extension: StringQueryOperatorInput
+    size: IntQueryOperatorInput
+    prettySize: StringQueryOperatorInput
+    modifiedTime: DateQueryOperatorInput
+    accessTime: DateQueryOperatorInput
+    changeTime: DateQueryOperatorInput
+    birthTime: DateQueryOperatorInput
+    root: StringQueryOperatorInput
+    dir: StringQueryOperatorInput
+    base: StringQueryOperatorInput
+    ext: StringQueryOperatorInput
+    name: StringQueryOperatorInput
+    relativeDirectory: StringQueryOperatorInput
+    dev: IntQueryOperatorInput
+    mode: IntQueryOperatorInput
+    nlink: IntQueryOperatorInput
+    uid: IntQueryOperatorInput
+    gid: IntQueryOperatorInput
+    rdev: IntQueryOperatorInput
+    ino: FloatQueryOperatorInput
+    atimeMs: FloatQueryOperatorInput
+    mtimeMs: FloatQueryOperatorInput
+    ctimeMs: FloatQueryOperatorInput
+    atime: DateQueryOperatorInput
+    mtime: DateQueryOperatorInput
+    ctime: DateQueryOperatorInput
+    birthtime: DateQueryOperatorInput
+    birthtimeMs: FloatQueryOperatorInput
+    id: StringQueryOperatorInput
+    parent: NodeFilterInput
+    children: NodeFilterListInput
+    internal: InternalFilterInput
+  ): File
   allFile(filter: FileFilterInput, sort: [FileSortInput], skip: Int, limit: Int): FileConnection!
-  directory(sourceInstanceName: StringQueryOperatorInput, absolutePath: StringQueryOperatorInput, relativePath: StringQueryOperatorInput, extension: StringQueryOperatorInput, size: IntQueryOperatorInput, prettySize: StringQueryOperatorInput, modifiedTime: DateQueryOperatorInput, accessTime: DateQueryOperatorInput, changeTime: DateQueryOperatorInput, birthTime: DateQueryOperatorInput, root: StringQueryOperatorInput, dir: StringQueryOperatorInput, base: StringQueryOperatorInput, ext: StringQueryOperatorInput, name: StringQueryOperatorInput, relativeDirectory: StringQueryOperatorInput, dev: IntQueryOperatorInput, mode: IntQueryOperatorInput, nlink: IntQueryOperatorInput, uid: IntQueryOperatorInput, gid: IntQueryOperatorInput, rdev: IntQueryOperatorInput, ino: FloatQueryOperatorInput, atimeMs: FloatQueryOperatorInput, mtimeMs: FloatQueryOperatorInput, ctimeMs: FloatQueryOperatorInput, atime: DateQueryOperatorInput, mtime: DateQueryOperatorInput, ctime: DateQueryOperatorInput, birthtime: DateQueryOperatorInput, birthtimeMs: FloatQueryOperatorInput, id: StringQueryOperatorInput, parent: NodeFilterInput, children: NodeFilterListInput, internal: InternalFilterInput): Directory
-  allDirectory(filter: DirectoryFilterInput, sort: [DirectorySortInput], skip: Int, limit: Int): DirectoryConnection!
-  site(buildTime: DateQueryOperatorInput, siteMetadata: SiteSiteMetadataFilterInput, port: IntQueryOperatorInput, host: StringQueryOperatorInput, polyfill: BooleanQueryOperatorInput, pathPrefix: StringQueryOperatorInput, jsxRuntime: StringQueryOperatorInput, trailingSlash: StringQueryOperatorInput, graphqlTypegen: BooleanQueryOperatorInput, id: StringQueryOperatorInput, parent: NodeFilterInput, children: NodeFilterListInput, internal: InternalFilterInput): Site
+  directory(
+    sourceInstanceName: StringQueryOperatorInput
+    absolutePath: StringQueryOperatorInput
+    relativePath: StringQueryOperatorInput
+    extension: StringQueryOperatorInput
+    size: IntQueryOperatorInput
+    prettySize: StringQueryOperatorInput
+    modifiedTime: DateQueryOperatorInput
+    accessTime: DateQueryOperatorInput
+    changeTime: DateQueryOperatorInput
+    birthTime: DateQueryOperatorInput
+    root: StringQueryOperatorInput
+    dir: StringQueryOperatorInput
+    base: StringQueryOperatorInput
+    ext: StringQueryOperatorInput
+    name: StringQueryOperatorInput
+    relativeDirectory: StringQueryOperatorInput
+    dev: IntQueryOperatorInput
+    mode: IntQueryOperatorInput
+    nlink: IntQueryOperatorInput
+    uid: IntQueryOperatorInput
+    gid: IntQueryOperatorInput
+    rdev: IntQueryOperatorInput
+    ino: FloatQueryOperatorInput
+    atimeMs: FloatQueryOperatorInput
+    mtimeMs: FloatQueryOperatorInput
+    ctimeMs: FloatQueryOperatorInput
+    atime: DateQueryOperatorInput
+    mtime: DateQueryOperatorInput
+    ctime: DateQueryOperatorInput
+    birthtime: DateQueryOperatorInput
+    birthtimeMs: FloatQueryOperatorInput
+    id: StringQueryOperatorInput
+    parent: NodeFilterInput
+    children: NodeFilterListInput
+    internal: InternalFilterInput
+  ): Directory
+  allDirectory(
+    filter: DirectoryFilterInput
+    sort: [DirectorySortInput]
+    skip: Int
+    limit: Int
+  ): DirectoryConnection!
+  site(
+    buildTime: DateQueryOperatorInput
+    siteMetadata: SiteSiteMetadataFilterInput
+    port: IntQueryOperatorInput
+    host: StringQueryOperatorInput
+    polyfill: BooleanQueryOperatorInput
+    pathPrefix: StringQueryOperatorInput
+    jsxRuntime: StringQueryOperatorInput
+    trailingSlash: StringQueryOperatorInput
+    graphqlTypegen: BooleanQueryOperatorInput
+    id: StringQueryOperatorInput
+    parent: NodeFilterInput
+    children: NodeFilterListInput
+    internal: InternalFilterInput
+  ): Site
   allSite(filter: SiteFilterInput, sort: [SiteSortInput], skip: Int, limit: Int): SiteConnection!
-  siteFunction(functionRoute: StringQueryOperatorInput, pluginName: StringQueryOperatorInput, originalAbsoluteFilePath: StringQueryOperatorInput, originalRelativeFilePath: StringQueryOperatorInput, relativeCompiledFilePath: StringQueryOperatorInput, absoluteCompiledFilePath: StringQueryOperatorInput, matchPath: StringQueryOperatorInput, id: StringQueryOperatorInput, parent: NodeFilterInput, children: NodeFilterListInput, internal: InternalFilterInput): SiteFunction
-  allSiteFunction(filter: SiteFunctionFilterInput, sort: [SiteFunctionSortInput], skip: Int, limit: Int): SiteFunctionConnection!
-  sitePage(path: StringQueryOperatorInput, component: StringQueryOperatorInput, internalComponentName: StringQueryOperatorInput, componentChunkName: StringQueryOperatorInput, matchPath: StringQueryOperatorInput, pageContext: JSONQueryOperatorInput, pluginCreator: SitePluginFilterInput, id: StringQueryOperatorInput, parent: NodeFilterInput, children: NodeFilterListInput, internal: InternalFilterInput): SitePage
-  allSitePage(filter: SitePageFilterInput, sort: [SitePageSortInput], skip: Int, limit: Int): SitePageConnection!
-  sitePlugin(resolve: StringQueryOperatorInput, name: StringQueryOperatorInput, version: StringQueryOperatorInput, nodeAPIs: StringQueryOperatorInput, browserAPIs: StringQueryOperatorInput, ssrAPIs: StringQueryOperatorInput, pluginFilepath: StringQueryOperatorInput, pluginOptions: JSONQueryOperatorInput, packageJson: JSONQueryOperatorInput, id: StringQueryOperatorInput, parent: NodeFilterInput, children: NodeFilterListInput, internal: InternalFilterInput): SitePlugin
-  allSitePlugin(filter: SitePluginFilterInput, sort: [SitePluginSortInput], skip: Int, limit: Int): SitePluginConnection!
-  siteBuildMetadata(buildTime: DateQueryOperatorInput, id: StringQueryOperatorInput, parent: NodeFilterInput, children: NodeFilterListInput, internal: InternalFilterInput): SiteBuildMetadata
-  allSiteBuildMetadata(filter: SiteBuildMetadataFilterInput, sort: [SiteBuildMetadataSortInput], skip: Int, limit: Int): SiteBuildMetadataConnection!
-  sanityBook(_id: StringQueryOperatorInput, _type: StringQueryOperatorInput, _createdAt: DateQueryOperatorInput, _updatedAt: DateQueryOperatorInput, _rev: StringQueryOperatorInput, _key: StringQueryOperatorInput, title: StringQueryOperatorInput, cover: SanityImageFilterInput, author: SanityCrossDatasetReferenceFilterInput, genres: SanityGenreFilterListInput, publisher: SanityPublisherFilterInput, _rawCover: JSONQueryOperatorInput, _rawAuthor: JSONQueryOperatorInput, _rawGenres: JSONQueryOperatorInput, _rawPublisher: JSONQueryOperatorInput, id: StringQueryOperatorInput, parent: NodeFilterInput, children: NodeFilterListInput, internal: InternalFilterInput): SanityBook
-  allSanityBook(filter: SanityBookFilterInput, sort: [SanityBookSortInput], skip: Int, limit: Int): SanityBookConnection!
-  sanityGenre(_id: StringQueryOperatorInput, _type: StringQueryOperatorInput, _createdAt: DateQueryOperatorInput, _updatedAt: DateQueryOperatorInput, _rev: StringQueryOperatorInput, _key: StringQueryOperatorInput, title: StringQueryOperatorInput, id: StringQueryOperatorInput, parent: NodeFilterInput, children: NodeFilterListInput, internal: InternalFilterInput): SanityGenre
-  allSanityGenre(filter: SanityGenreFilterInput, sort: [SanityGenreSortInput], skip: Int, limit: Int): SanityGenreConnection!
-  sanityPublisher(_id: StringQueryOperatorInput, _type: StringQueryOperatorInput, _createdAt: DateQueryOperatorInput, _updatedAt: DateQueryOperatorInput, _rev: StringQueryOperatorInput, _key: StringQueryOperatorInput, name: StringQueryOperatorInput, id: StringQueryOperatorInput, parent: NodeFilterInput, children: NodeFilterListInput, internal: InternalFilterInput): SanityPublisher
-  allSanityPublisher(filter: SanityPublisherFilterInput, sort: [SanityPublisherSortInput], skip: Int, limit: Int): SanityPublisherConnection!
-  sanityFileAsset(_id: StringQueryOperatorInput, _type: StringQueryOperatorInput, _createdAt: DateQueryOperatorInput, _updatedAt: DateQueryOperatorInput, _rev: StringQueryOperatorInput, _key: StringQueryOperatorInput, originalFilename: StringQueryOperatorInput, label: StringQueryOperatorInput, title: StringQueryOperatorInput, description: StringQueryOperatorInput, altText: StringQueryOperatorInput, sha1hash: StringQueryOperatorInput, extension: StringQueryOperatorInput, mimeType: StringQueryOperatorInput, size: FloatQueryOperatorInput, assetId: StringQueryOperatorInput, path: StringQueryOperatorInput, url: StringQueryOperatorInput, source: SanityAssetSourceDataFilterInput, _rawSource: JSONQueryOperatorInput, id: StringQueryOperatorInput, parent: NodeFilterInput, children: NodeFilterListInput, internal: InternalFilterInput): SanityFileAsset
-  allSanityFileAsset(filter: SanityFileAssetFilterInput, sort: [SanityFileAssetSortInput], skip: Int, limit: Int): SanityFileAssetConnection!
-  sanityImageAsset(_id: StringQueryOperatorInput, _type: StringQueryOperatorInput, _createdAt: DateQueryOperatorInput, _updatedAt: DateQueryOperatorInput, _rev: StringQueryOperatorInput, _key: StringQueryOperatorInput, originalFilename: StringQueryOperatorInput, label: StringQueryOperatorInput, title: StringQueryOperatorInput, description: StringQueryOperatorInput, altText: StringQueryOperatorInput, sha1hash: StringQueryOperatorInput, extension: StringQueryOperatorInput, mimeType: StringQueryOperatorInput, size: FloatQueryOperatorInput, assetId: StringQueryOperatorInput, uploadId: StringQueryOperatorInput, path: StringQueryOperatorInput, url: StringQueryOperatorInput, metadata: SanityImageMetadataFilterInput, source: SanityAssetSourceDataFilterInput, _rawMetadata: JSONQueryOperatorInput, _rawSource: JSONQueryOperatorInput, gatsbyImageData: GatsbyImageDataQueryOperatorInput, id: StringQueryOperatorInput, parent: NodeFilterInput, children: NodeFilterListInput, internal: InternalFilterInput, filename: StringQueryOperatorInput, filesize: IntQueryOperatorInput, width: IntQueryOperatorInput, height: IntQueryOperatorInput, publicUrl: StringQueryOperatorInput, resize: RemoteFileResizeFilterInput, gatsbyImage: GatsbyImageDataQueryOperatorInput): SanityImageAsset
-  allSanityImageAsset(filter: SanityImageAssetFilterInput, sort: [SanityImageAssetSortInput], skip: Int, limit: Int): SanityImageAssetConnection!
-  sanityAuthor(_id: StringQueryOperatorInput, _type: StringQueryOperatorInput, _createdAt: DateQueryOperatorInput, _updatedAt: DateQueryOperatorInput, _rev: StringQueryOperatorInput, _key: StringQueryOperatorInput, name: StringQueryOperatorInput, profilePicture: SanityImageFilterInput, _rawProfilePicture: JSONQueryOperatorInput, id: StringQueryOperatorInput, parent: NodeFilterInput, children: NodeFilterListInput, internal: InternalFilterInput): SanityAuthor
-  allSanityAuthor(filter: SanityAuthorFilterInput, sort: [SanityAuthorSortInput], skip: Int, limit: Int): SanityAuthorConnection!
+  siteFunction(
+    functionRoute: StringQueryOperatorInput
+    pluginName: StringQueryOperatorInput
+    originalAbsoluteFilePath: StringQueryOperatorInput
+    originalRelativeFilePath: StringQueryOperatorInput
+    relativeCompiledFilePath: StringQueryOperatorInput
+    absoluteCompiledFilePath: StringQueryOperatorInput
+    matchPath: StringQueryOperatorInput
+    id: StringQueryOperatorInput
+    parent: NodeFilterInput
+    children: NodeFilterListInput
+    internal: InternalFilterInput
+  ): SiteFunction
+  allSiteFunction(
+    filter: SiteFunctionFilterInput
+    sort: [SiteFunctionSortInput]
+    skip: Int
+    limit: Int
+  ): SiteFunctionConnection!
+  sitePage(
+    path: StringQueryOperatorInput
+    component: StringQueryOperatorInput
+    internalComponentName: StringQueryOperatorInput
+    componentChunkName: StringQueryOperatorInput
+    matchPath: StringQueryOperatorInput
+    pageContext: JSONQueryOperatorInput
+    pluginCreator: SitePluginFilterInput
+    id: StringQueryOperatorInput
+    parent: NodeFilterInput
+    children: NodeFilterListInput
+    internal: InternalFilterInput
+  ): SitePage
+  allSitePage(
+    filter: SitePageFilterInput
+    sort: [SitePageSortInput]
+    skip: Int
+    limit: Int
+  ): SitePageConnection!
+  sitePlugin(
+    resolve: StringQueryOperatorInput
+    name: StringQueryOperatorInput
+    version: StringQueryOperatorInput
+    nodeAPIs: StringQueryOperatorInput
+    browserAPIs: StringQueryOperatorInput
+    ssrAPIs: StringQueryOperatorInput
+    pluginFilepath: StringQueryOperatorInput
+    pluginOptions: JSONQueryOperatorInput
+    packageJson: JSONQueryOperatorInput
+    id: StringQueryOperatorInput
+    parent: NodeFilterInput
+    children: NodeFilterListInput
+    internal: InternalFilterInput
+  ): SitePlugin
+  allSitePlugin(
+    filter: SitePluginFilterInput
+    sort: [SitePluginSortInput]
+    skip: Int
+    limit: Int
+  ): SitePluginConnection!
+  siteBuildMetadata(
+    buildTime: DateQueryOperatorInput
+    id: StringQueryOperatorInput
+    parent: NodeFilterInput
+    children: NodeFilterListInput
+    internal: InternalFilterInput
+  ): SiteBuildMetadata
+  allSiteBuildMetadata(
+    filter: SiteBuildMetadataFilterInput
+    sort: [SiteBuildMetadataSortInput]
+    skip: Int
+    limit: Int
+  ): SiteBuildMetadataConnection!
+  sanityBook(
+    _id: StringQueryOperatorInput
+    _type: StringQueryOperatorInput
+    _createdAt: DateQueryOperatorInput
+    _updatedAt: DateQueryOperatorInput
+    _rev: StringQueryOperatorInput
+    _key: StringQueryOperatorInput
+    title: StringQueryOperatorInput
+    cover: SanityImageFilterInput
+    author: SanityCrossDatasetReferenceFilterInput
+    genres: SanityGenreFilterListInput
+    publisher: SanityPublisherFilterInput
+    _rawCover: JSONQueryOperatorInput
+    _rawAuthor: JSONQueryOperatorInput
+    _rawGenres: JSONQueryOperatorInput
+    _rawPublisher: JSONQueryOperatorInput
+    id: StringQueryOperatorInput
+    parent: NodeFilterInput
+    children: NodeFilterListInput
+    internal: InternalFilterInput
+  ): SanityBook
+  allSanityBook(
+    filter: SanityBookFilterInput
+    sort: [SanityBookSortInput]
+    skip: Int
+    limit: Int
+  ): SanityBookConnection!
+  sanityGenre(
+    _id: StringQueryOperatorInput
+    _type: StringQueryOperatorInput
+    _createdAt: DateQueryOperatorInput
+    _updatedAt: DateQueryOperatorInput
+    _rev: StringQueryOperatorInput
+    _key: StringQueryOperatorInput
+    title: StringQueryOperatorInput
+    id: StringQueryOperatorInput
+    parent: NodeFilterInput
+    children: NodeFilterListInput
+    internal: InternalFilterInput
+  ): SanityGenre
+  allSanityGenre(
+    filter: SanityGenreFilterInput
+    sort: [SanityGenreSortInput]
+    skip: Int
+    limit: Int
+  ): SanityGenreConnection!
+  sanityPublisher(
+    _id: StringQueryOperatorInput
+    _type: StringQueryOperatorInput
+    _createdAt: DateQueryOperatorInput
+    _updatedAt: DateQueryOperatorInput
+    _rev: StringQueryOperatorInput
+    _key: StringQueryOperatorInput
+    name: StringQueryOperatorInput
+    id: StringQueryOperatorInput
+    parent: NodeFilterInput
+    children: NodeFilterListInput
+    internal: InternalFilterInput
+  ): SanityPublisher
+  allSanityPublisher(
+    filter: SanityPublisherFilterInput
+    sort: [SanityPublisherSortInput]
+    skip: Int
+    limit: Int
+  ): SanityPublisherConnection!
+  sanityFileAsset(
+    _id: StringQueryOperatorInput
+    _type: StringQueryOperatorInput
+    _createdAt: DateQueryOperatorInput
+    _updatedAt: DateQueryOperatorInput
+    _rev: StringQueryOperatorInput
+    _key: StringQueryOperatorInput
+    originalFilename: StringQueryOperatorInput
+    label: StringQueryOperatorInput
+    title: StringQueryOperatorInput
+    description: StringQueryOperatorInput
+    altText: StringQueryOperatorInput
+    sha1hash: StringQueryOperatorInput
+    extension: StringQueryOperatorInput
+    mimeType: StringQueryOperatorInput
+    size: FloatQueryOperatorInput
+    assetId: StringQueryOperatorInput
+    path: StringQueryOperatorInput
+    url: StringQueryOperatorInput
+    source: SanityAssetSourceDataFilterInput
+    _rawSource: JSONQueryOperatorInput
+    id: StringQueryOperatorInput
+    parent: NodeFilterInput
+    children: NodeFilterListInput
+    internal: InternalFilterInput
+  ): SanityFileAsset
+  allSanityFileAsset(
+    filter: SanityFileAssetFilterInput
+    sort: [SanityFileAssetSortInput]
+    skip: Int
+    limit: Int
+  ): SanityFileAssetConnection!
+  sanityImageAsset(
+    _id: StringQueryOperatorInput
+    _type: StringQueryOperatorInput
+    _createdAt: DateQueryOperatorInput
+    _updatedAt: DateQueryOperatorInput
+    _rev: StringQueryOperatorInput
+    _key: StringQueryOperatorInput
+    originalFilename: StringQueryOperatorInput
+    label: StringQueryOperatorInput
+    title: StringQueryOperatorInput
+    description: StringQueryOperatorInput
+    altText: StringQueryOperatorInput
+    sha1hash: StringQueryOperatorInput
+    extension: StringQueryOperatorInput
+    mimeType: StringQueryOperatorInput
+    size: FloatQueryOperatorInput
+    assetId: StringQueryOperatorInput
+    uploadId: StringQueryOperatorInput
+    path: StringQueryOperatorInput
+    url: StringQueryOperatorInput
+    metadata: SanityImageMetadataFilterInput
+    source: SanityAssetSourceDataFilterInput
+    _rawMetadata: JSONQueryOperatorInput
+    _rawSource: JSONQueryOperatorInput
+    gatsbyImageData: GatsbyImageDataQueryOperatorInput
+    id: StringQueryOperatorInput
+    parent: NodeFilterInput
+    children: NodeFilterListInput
+    internal: InternalFilterInput
+    filename: StringQueryOperatorInput
+    filesize: IntQueryOperatorInput
+    width: IntQueryOperatorInput
+    height: IntQueryOperatorInput
+    publicUrl: StringQueryOperatorInput
+    resize: RemoteFileResizeFilterInput
+    gatsbyImage: GatsbyImageDataQueryOperatorInput
+  ): SanityImageAsset
+  allSanityImageAsset(
+    filter: SanityImageAssetFilterInput
+    sort: [SanityImageAssetSortInput]
+    skip: Int
+    limit: Int
+  ): SanityImageAssetConnection!
+  sanityAuthor(
+    _id: StringQueryOperatorInput
+    _type: StringQueryOperatorInput
+    _createdAt: DateQueryOperatorInput
+    _updatedAt: DateQueryOperatorInput
+    _rev: StringQueryOperatorInput
+    _key: StringQueryOperatorInput
+    name: StringQueryOperatorInput
+    profilePicture: SanityImageFilterInput
+    _rawProfilePicture: JSONQueryOperatorInput
+    id: StringQueryOperatorInput
+    parent: NodeFilterInput
+    children: NodeFilterListInput
+    internal: InternalFilterInput
+  ): SanityAuthor
+  allSanityAuthor(
+    filter: SanityAuthorFilterInput
+    sort: [SanityAuthorSortInput]
+    skip: Int
+    limit: Int
+  ): SanityAuthorConnection!
 }
 
-"""Remote Interface"""
+"""
+Remote Interface
+"""
 interface RemoteFile {
   id: ID!
   mimeType: String!
@@ -924,7 +1309,6 @@ interface RemoteFile {
     fit: RemoteFileFit = COVER
 
     """
-    
     The image formats to generate. Valid values are AUTO (meaning the same
     format as the source image), JPG, PNG, WEBP and AVIF.
     The default value is [AUTO, WEBP, AVIF], and you should rarely need to
@@ -943,35 +1327,29 @@ interface RemoteFile {
   """
   gatsbyImage(
     """
-    
     The layout for the image.
     FIXED: A static image sized, that does not resize according to the screen width
     FULL_WIDTH: The image resizes to fit its container. Pass a "sizes" option if
     it isn't going to be the full width of the screen.
     CONSTRAINED: Resizes to fit its container, up to a maximum width, at which point it will remain fixed in size.
-    
     """
     layout: RemoteFileLayout = CONSTRAINED
 
     """
-    
     The display width of the generated image for layout = FIXED, and the display
     width of the largest image for layout = CONSTRAINED.
     The actual largest image resolution will be this value multiplied by the largest value in outputPixelDensities
     Ignored if layout = FLUID.
-    
     """
     width: Int
 
     """
-    
     If set, the height of the generated image. If omitted, it is calculated from
     the supplied width, matching the aspect ratio of the source image.
     """
     height: Int
 
     """
-    
     Format of generated placeholder image, displayed while the main image loads.
     BLURRED: a blurred, low resolution image, encoded as a base64 data URI
     DOMINANT_COLOR: a solid color, calculated from the dominant color of the image (default).
@@ -981,16 +1359,13 @@ interface RemoteFile {
     placeholder: RemoteFilePlaceholder = DOMINANT_COLOR
 
     """
-    
     If set along with width or height, this will set the value of the other
     dimension to match the provided aspect ratio, cropping the image if needed.
     If neither width or height is provided, height will be set based on the intrinsic width of the source image.
-    
     """
     aspectRatio: Float
 
     """
-    
     The image formats to generate. Valid values are AUTO (meaning the same
     format as the source image), JPG, PNG, WEBP and AVIF.
     The default value is [AUTO, WEBP, AVIF], and you should rarely need to
@@ -998,42 +1373,35 @@ interface RemoteFile {
     not know the formats of the source images, as this could lead to unwanted
     results such as converting JPEGs to PNGs. Specifying
     both PNG and JPG is not supported and will be ignored.
-    
     """
     formats: [RemoteFileFormat!] = [AUTO, WEBP, AVIF]
 
     """
-    
     A list of image pixel densities to generate for FIXED and CONSTRAINED
     images. You should rarely need to change this. It will never generate images
     larger than the source, and will always include a 1x image.
     Default is [ 1, 2 ] for fixed images, meaning 1x, 2x, and [0.25, 0.5, 1, 2]
     for fluid. In this case, an image with a fluid layout and width = 400 would
     generate images at 100, 200, 400 and 800px wide.
-    
     """
     outputPixelDensities: [Float] = [0.25, 0.5, 1, 2]
 
     """
-    
     Specifies the image widths to generate. You should rarely need to change
     this. For FIXED and CONSTRAINED images it is better to allow these to be
     determined automatically,
     based on the image size. For FULL_WIDTH images this can be used to override
     the default, which is [750, 1080, 1366, 1920].
     It will never generate any images larger than the source.
-    
     """
     breakpoints: [Int] = [750, 1080, 1366, 1920]
 
     """
-    
     The "sizes" property, passed to the img tag. This describes the display size of the image.
     This does not affect the generated images, but is used by the browser to
     decide which images to download. You can leave this blank for fixed images,
     or if the responsive image
     container will be the full width of the screen. In these cases we will generate an appropriate value.
-    
     """
     sizes: String
 
@@ -1153,7 +1521,9 @@ type SanityAuthor implements SanityDocument & Node {
     """
     formatString: String
 
-    """Returns a string generated with Moment.js' `fromNow` function"""
+    """
+    Returns a string generated with Moment.js' `fromNow` function
+    """
     fromNow: Boolean
 
     """
@@ -1163,7 +1533,9 @@ type SanityAuthor implements SanityDocument & Node {
     """
     difference: String
 
-    """Configures the locale Moment.js will use to format the date."""
+    """
+    Configures the locale Moment.js will use to format the date.
+    """
     locale: String
   ): Date
   _updatedAt(
@@ -1174,7 +1546,9 @@ type SanityAuthor implements SanityDocument & Node {
     """
     formatString: String
 
-    """Returns a string generated with Moment.js' `fromNow` function"""
+    """
+    Returns a string generated with Moment.js' `fromNow` function
+    """
     fromNow: Boolean
 
     """
@@ -1184,7 +1558,9 @@ type SanityAuthor implements SanityDocument & Node {
     """
     difference: String
 
-    """Configures the locale Moment.js will use to format the date."""
+    """
+    Configures the locale Moment.js will use to format the date.
+    """
     locale: String
   ): Date
   _rev: String
@@ -1298,7 +1674,9 @@ type SanityBook implements SanityDocument & Node {
     """
     formatString: String
 
-    """Returns a string generated with Moment.js' `fromNow` function"""
+    """
+    Returns a string generated with Moment.js' `fromNow` function
+    """
     fromNow: Boolean
 
     """
@@ -1308,7 +1686,9 @@ type SanityBook implements SanityDocument & Node {
     """
     difference: String
 
-    """Configures the locale Moment.js will use to format the date."""
+    """
+    Configures the locale Moment.js will use to format the date.
+    """
     locale: String
   ): Date
   _updatedAt(
@@ -1319,7 +1699,9 @@ type SanityBook implements SanityDocument & Node {
     """
     formatString: String
 
-    """Returns a string generated with Moment.js' `fromNow` function"""
+    """
+    Returns a string generated with Moment.js' `fromNow` function
+    """
     fromNow: Boolean
 
     """
@@ -1329,7 +1711,9 @@ type SanityBook implements SanityDocument & Node {
     """
     difference: String
 
-    """Configures the locale Moment.js will use to format the date."""
+    """
+    Configures the locale Moment.js will use to format the date.
+    """
     locale: String
   ): Date
   _rev: String
@@ -1483,7 +1867,9 @@ input SanityCrossDatasetReferenceSortInput {
   _projectId: SortOrderEnum
 }
 
-"""A Sanity document"""
+"""
+A Sanity document
+"""
 interface SanityDocument {
   _id: String
   _type: String
@@ -1510,7 +1896,9 @@ type SanityFileAsset implements SanityDocument & Node {
     """
     formatString: String
 
-    """Returns a string generated with Moment.js' `fromNow` function"""
+    """
+    Returns a string generated with Moment.js' `fromNow` function
+    """
     fromNow: Boolean
 
     """
@@ -1520,7 +1908,9 @@ type SanityFileAsset implements SanityDocument & Node {
     """
     difference: String
 
-    """Configures the locale Moment.js will use to format the date."""
+    """
+    Configures the locale Moment.js will use to format the date.
+    """
     locale: String
   ): Date
   _updatedAt(
@@ -1531,7 +1921,9 @@ type SanityFileAsset implements SanityDocument & Node {
     """
     formatString: String
 
-    """Returns a string generated with Moment.js' `fromNow` function"""
+    """
+    Returns a string generated with Moment.js' `fromNow` function
+    """
     fromNow: Boolean
 
     """
@@ -1541,7 +1933,9 @@ type SanityFileAsset implements SanityDocument & Node {
     """
     difference: String
 
-    """Configures the locale Moment.js will use to format the date."""
+    """
+    Configures the locale Moment.js will use to format the date.
+    """
     locale: String
   ): Date
   _rev: String
@@ -1575,7 +1969,11 @@ type SanityFileAssetConnection {
   max(field: SanityFileAssetFieldSelector!): Float
   min(field: SanityFileAssetFieldSelector!): Float
   sum(field: SanityFileAssetFieldSelector!): Float
-  group(skip: Int, limit: Int, field: SanityFileAssetFieldSelector!): [SanityFileAssetGroupConnection!]!
+  group(
+    skip: Int
+    limit: Int
+    field: SanityFileAssetFieldSelector!
+  ): [SanityFileAssetGroupConnection!]!
 }
 
 type SanityFileAssetEdge {
@@ -1647,7 +2045,11 @@ type SanityFileAssetGroupConnection {
   max(field: SanityFileAssetFieldSelector!): Float
   min(field: SanityFileAssetFieldSelector!): Float
   sum(field: SanityFileAssetFieldSelector!): Float
-  group(skip: Int, limit: Int, field: SanityFileAssetFieldSelector!): [SanityFileAssetGroupConnection!]!
+  group(
+    skip: Int
+    limit: Int
+    field: SanityFileAssetFieldSelector!
+  ): [SanityFileAssetGroupConnection!]!
   field: String!
   fieldValue: String
 }
@@ -1696,7 +2098,9 @@ type SanityGenre implements SanityDocument & Node {
     """
     formatString: String
 
-    """Returns a string generated with Moment.js' `fromNow` function"""
+    """
+    Returns a string generated with Moment.js' `fromNow` function
+    """
     fromNow: Boolean
 
     """
@@ -1706,7 +2110,9 @@ type SanityGenre implements SanityDocument & Node {
     """
     difference: String
 
-    """Configures the locale Moment.js will use to format the date."""
+    """
+    Configures the locale Moment.js will use to format the date.
+    """
     locale: String
   ): Date
   _updatedAt(
@@ -1717,7 +2123,9 @@ type SanityGenre implements SanityDocument & Node {
     """
     formatString: String
 
-    """Returns a string generated with Moment.js' `fromNow` function"""
+    """
+    Returns a string generated with Moment.js' `fromNow` function
+    """
     fromNow: Boolean
 
     """
@@ -1727,7 +2135,9 @@ type SanityGenre implements SanityDocument & Node {
     """
     difference: String
 
-    """Configures the locale Moment.js will use to format the date."""
+    """
+    Configures the locale Moment.js will use to format the date.
+    """
     locale: String
   ): Date
   _rev: String
@@ -1871,7 +2281,9 @@ type SanityImageAsset implements SanityDocument & Node & RemoteFile {
     """
     formatString: String
 
-    """Returns a string generated with Moment.js' `fromNow` function"""
+    """
+    Returns a string generated with Moment.js' `fromNow` function
+    """
     fromNow: Boolean
 
     """
@@ -1881,7 +2293,9 @@ type SanityImageAsset implements SanityDocument & Node & RemoteFile {
     """
     difference: String
 
-    """Configures the locale Moment.js will use to format the date."""
+    """
+    Configures the locale Moment.js will use to format the date.
+    """
     locale: String
   ): Date
   _updatedAt(
@@ -1892,7 +2306,9 @@ type SanityImageAsset implements SanityDocument & Node & RemoteFile {
     """
     formatString: String
 
-    """Returns a string generated with Moment.js' `fromNow` function"""
+    """
+    Returns a string generated with Moment.js' `fromNow` function
+    """
     fromNow: Boolean
 
     """
@@ -1902,7 +2318,9 @@ type SanityImageAsset implements SanityDocument & Node & RemoteFile {
     """
     difference: String
 
-    """Configures the locale Moment.js will use to format the date."""
+    """
+    Configures the locale Moment.js will use to format the date.
+    """
     locale: String
   ): Date
   _rev: String
@@ -2025,7 +2443,6 @@ type SanityImageAsset implements SanityDocument & Node & RemoteFile {
     fit: RemoteFileFit = COVER
 
     """
-    
     The image formats to generate. Valid values are AUTO (meaning the same
     format as the source image), JPG, PNG, WEBP and AVIF.
     The default value is [AUTO, WEBP, AVIF], and you should rarely need to
@@ -2044,35 +2461,29 @@ type SanityImageAsset implements SanityDocument & Node & RemoteFile {
   """
   gatsbyImage(
     """
-    
     The layout for the image.
     FIXED: A static image sized, that does not resize according to the screen width
     FULL_WIDTH: The image resizes to fit its container. Pass a "sizes" option if
     it isn't going to be the full width of the screen.
     CONSTRAINED: Resizes to fit its container, up to a maximum width, at which point it will remain fixed in size.
-    
     """
     layout: RemoteFileLayout = CONSTRAINED
 
     """
-    
     The display width of the generated image for layout = FIXED, and the display
     width of the largest image for layout = CONSTRAINED.
     The actual largest image resolution will be this value multiplied by the largest value in outputPixelDensities
     Ignored if layout = FLUID.
-    
     """
     width: Int
 
     """
-    
     If set, the height of the generated image. If omitted, it is calculated from
     the supplied width, matching the aspect ratio of the source image.
     """
     height: Int
 
     """
-    
     Format of generated placeholder image, displayed while the main image loads.
     BLURRED: a blurred, low resolution image, encoded as a base64 data URI
     DOMINANT_COLOR: a solid color, calculated from the dominant color of the image (default).
@@ -2082,16 +2493,13 @@ type SanityImageAsset implements SanityDocument & Node & RemoteFile {
     placeholder: RemoteFilePlaceholder = DOMINANT_COLOR
 
     """
-    
     If set along with width or height, this will set the value of the other
     dimension to match the provided aspect ratio, cropping the image if needed.
     If neither width or height is provided, height will be set based on the intrinsic width of the source image.
-    
     """
     aspectRatio: Float
 
     """
-    
     The image formats to generate. Valid values are AUTO (meaning the same
     format as the source image), JPG, PNG, WEBP and AVIF.
     The default value is [AUTO, WEBP, AVIF], and you should rarely need to
@@ -2099,42 +2507,35 @@ type SanityImageAsset implements SanityDocument & Node & RemoteFile {
     not know the formats of the source images, as this could lead to unwanted
     results such as converting JPEGs to PNGs. Specifying
     both PNG and JPG is not supported and will be ignored.
-    
     """
     formats: [RemoteFileFormat!] = [AUTO, WEBP, AVIF]
 
     """
-    
     A list of image pixel densities to generate for FIXED and CONSTRAINED
     images. You should rarely need to change this. It will never generate images
     larger than the source, and will always include a 1x image.
     Default is [ 1, 2 ] for fixed images, meaning 1x, 2x, and [0.25, 0.5, 1, 2]
     for fluid. In this case, an image with a fluid layout and width = 400 would
     generate images at 100, 200, 400 and 800px wide.
-    
     """
     outputPixelDensities: [Float] = [0.25, 0.5, 1, 2]
 
     """
-    
     Specifies the image widths to generate. You should rarely need to change
     this. For FIXED and CONSTRAINED images it is better to allow these to be
     determined automatically,
     based on the image size. For FULL_WIDTH images this can be used to override
     the default, which is [750, 1080, 1366, 1920].
     It will never generate any images larger than the source.
-    
     """
     breakpoints: [Int] = [750, 1080, 1366, 1920]
 
     """
-    
     The "sizes" property, passed to the img tag. This describes the display size of the image.
     This does not affect the generated images, but is used by the browser to
     decide which images to download. You can leave this blank for fixed images,
     or if the responsive image
     container will be the full width of the screen. In these cases we will generate an appropriate value.
-    
     """
     sizes: String
 
@@ -2157,7 +2558,11 @@ type SanityImageAssetConnection {
   max(field: SanityImageAssetFieldSelector!): Float
   min(field: SanityImageAssetFieldSelector!): Float
   sum(field: SanityImageAssetFieldSelector!): Float
-  group(skip: Int, limit: Int, field: SanityImageAssetFieldSelector!): [SanityImageAssetGroupConnection!]!
+  group(
+    skip: Int
+    limit: Int
+    field: SanityImageAssetFieldSelector!
+  ): [SanityImageAssetGroupConnection!]!
 }
 
 type SanityImageAssetEdge {
@@ -2251,7 +2656,11 @@ type SanityImageAssetGroupConnection {
   max(field: SanityImageAssetFieldSelector!): Float
   min(field: SanityImageAssetFieldSelector!): Float
   sum(field: SanityImageAssetFieldSelector!): Float
-  group(skip: Int, limit: Int, field: SanityImageAssetFieldSelector!): [SanityImageAssetGroupConnection!]!
+  group(
+    skip: Int
+    limit: Int
+    field: SanityImageAssetFieldSelector!
+  ): [SanityImageAssetGroupConnection!]!
   field: String!
   fieldValue: String
 }
@@ -2624,7 +3033,9 @@ type SanityPublisher implements SanityDocument & Node {
     """
     formatString: String
 
-    """Returns a string generated with Moment.js' `fromNow` function"""
+    """
+    Returns a string generated with Moment.js' `fromNow` function
+    """
     fromNow: Boolean
 
     """
@@ -2634,7 +3045,9 @@ type SanityPublisher implements SanityDocument & Node {
     """
     difference: String
 
-    """Configures the locale Moment.js will use to format the date."""
+    """
+    Configures the locale Moment.js will use to format the date.
+    """
     locale: String
   ): Date
   _updatedAt(
@@ -2645,7 +3058,9 @@ type SanityPublisher implements SanityDocument & Node {
     """
     formatString: String
 
-    """Returns a string generated with Moment.js' `fromNow` function"""
+    """
+    Returns a string generated with Moment.js' `fromNow` function
+    """
     fromNow: Boolean
 
     """
@@ -2655,7 +3070,9 @@ type SanityPublisher implements SanityDocument & Node {
     """
     difference: String
 
-    """Configures the locale Moment.js will use to format the date."""
+    """
+    Configures the locale Moment.js will use to format the date.
+    """
     locale: String
   ): Date
   _rev: String
@@ -2676,7 +3093,11 @@ type SanityPublisherConnection {
   max(field: SanityPublisherFieldSelector!): Float
   min(field: SanityPublisherFieldSelector!): Float
   sum(field: SanityPublisherFieldSelector!): Float
-  group(skip: Int, limit: Int, field: SanityPublisherFieldSelector!): [SanityPublisherGroupConnection!]!
+  group(
+    skip: Int
+    limit: Int
+    field: SanityPublisherFieldSelector!
+  ): [SanityPublisherGroupConnection!]!
 }
 
 type SanityPublisherEdge {
@@ -2722,7 +3143,11 @@ type SanityPublisherGroupConnection {
   max(field: SanityPublisherFieldSelector!): Float
   min(field: SanityPublisherFieldSelector!): Float
   sum(field: SanityPublisherFieldSelector!): Float
-  group(skip: Int, limit: Int, field: SanityPublisherFieldSelector!): [SanityPublisherGroupConnection!]!
+  group(
+    skip: Int
+    limit: Int
+    field: SanityPublisherFieldSelector!
+  ): [SanityPublisherGroupConnection!]!
   field: String!
   fieldValue: String
 }
@@ -2742,7 +3167,9 @@ input SanityPublisherSortInput {
 }
 
 input SanityResolveReferencesConfiguration {
-  """Max depth to resolve references to"""
+  """
+  Max depth to resolve references to
+  """
   maxDepth: Int!
 }
 
@@ -2769,7 +3196,9 @@ type Site implements Node {
     """
     formatString: String
 
-    """Returns a string generated with Moment.js' `fromNow` function"""
+    """
+    Returns a string generated with Moment.js' `fromNow` function
+    """
     fromNow: Boolean
 
     """
@@ -2779,7 +3208,9 @@ type Site implements Node {
     """
     difference: String
 
-    """Configures the locale Moment.js will use to format the date."""
+    """
+    Configures the locale Moment.js will use to format the date.
+    """
     locale: String
   ): Date
   siteMetadata: SiteSiteMetadata
@@ -2805,7 +3236,9 @@ type SiteBuildMetadata implements Node {
     """
     formatString: String
 
-    """Returns a string generated with Moment.js' `fromNow` function"""
+    """
+    Returns a string generated with Moment.js' `fromNow` function
+    """
     fromNow: Boolean
 
     """
@@ -2815,7 +3248,9 @@ type SiteBuildMetadata implements Node {
     """
     difference: String
 
-    """Configures the locale Moment.js will use to format the date."""
+    """
+    Configures the locale Moment.js will use to format the date.
+    """
     locale: String
   ): Date
   id: ID!
@@ -2833,7 +3268,11 @@ type SiteBuildMetadataConnection {
   max(field: SiteBuildMetadataFieldSelector!): Float
   min(field: SiteBuildMetadataFieldSelector!): Float
   sum(field: SiteBuildMetadataFieldSelector!): Float
-  group(skip: Int, limit: Int, field: SiteBuildMetadataFieldSelector!): [SiteBuildMetadataGroupConnection!]!
+  group(
+    skip: Int
+    limit: Int
+    field: SiteBuildMetadataFieldSelector!
+  ): [SiteBuildMetadataGroupConnection!]!
 }
 
 type SiteBuildMetadataEdge {
@@ -2867,7 +3306,11 @@ type SiteBuildMetadataGroupConnection {
   max(field: SiteBuildMetadataFieldSelector!): Float
   min(field: SiteBuildMetadataFieldSelector!): Float
   sum(field: SiteBuildMetadataFieldSelector!): Float
-  group(skip: Int, limit: Int, field: SiteBuildMetadataFieldSelector!): [SiteBuildMetadataGroupConnection!]!
+  group(
+    skip: Int
+    limit: Int
+    field: SiteBuildMetadataFieldSelector!
+  ): [SiteBuildMetadataGroupConnection!]!
   field: String!
   fieldValue: String
 }
@@ -3265,4 +3708,3 @@ input StringQueryOperatorInput {
   regex: String
   glob: String
 }
-

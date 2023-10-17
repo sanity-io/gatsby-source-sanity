@@ -3,8 +3,8 @@ import {SourceNodesArgs} from 'gatsby'
 import debug from '../debug'
 import {SanityDocument} from '../types/sanity'
 import {SyncWithGatsby} from './getSyncWithGatsby'
-import { CACHE_KEYS, getCacheKey } from './cache'
-import { PluginConfig } from './validateConfig'
+import {CACHE_KEYS, getCacheKey} from './cache'
+import {PluginConfig} from './validateConfig'
 
 export const sleep = (ms: number) => {
   return new Promise((resolve) => setTimeout(resolve, ms))
