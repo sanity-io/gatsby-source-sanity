@@ -8,6 +8,7 @@
     "build": "npm run build -w gatsby-source-sanity",
     "format": "npm run format -w gatsby-source-sanity",
     "prepublishOnly": "npm run prepublishOnly -w gatsby-source-sanity",
-    "test": "npm run test -w gatsby-source-sanity"
+    "test": "npm run test -w gatsby-source-sanity",
+    "release": "npm run release -w gatsby-source-sanity"
   }
 }
