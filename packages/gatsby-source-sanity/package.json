@@ -33,6 +33,7 @@
     "build": "tsc && tsc -t ES5 --outDir lib-es5",
     "format": "prettier --write src/**/*.{ts,tsx}",
     "prepublishOnly": "npm run build",
+    "release": "semantic-release",
     "test": "jest",
     "watch": "tsc --watch & tsc && tsc -t ES5 --outDir lib-es5 --watch"
   },
