@@ -5,6 +5,12 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.9.1](https://github.com/sanity-io/gatsby-source-sanity/compare/v7.9.0...v7.9.1) (2023-10-18)
+
+### Bug Fixes
+
+- sanityClient() does not accept undefined as apiHost ([#272](https://github.com/sanity-io/gatsby-source-sanity/issues/272)) ([224b994](https://github.com/sanity-io/gatsby-source-sanity/commit/224b994aed47676fa6c6b1a1c5b7a6c20624ce8f))
+
 ## [7.9.0](https://github.com/sanity-io/gatsby-source-sanity/compare/v7.8.1...v7.9.0) (2023-10-17)
 
 ### Features
