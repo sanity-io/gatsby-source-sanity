@@ -437,7 +437,7 @@ export const setFieldsOnGraphQLNodeType: GatsbyNode['setFieldsOnGraphQLNodeType'
 }
 
 function getClient(config: PluginConfig) {
-  const {projectId, dataset, apiHost, token} = config
+  const {projectId, dataset, apiHost = 'https://api.sanity.io', token} = config
   return sanityClient({
     apiHost,
     projectId,
