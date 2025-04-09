@@ -14,7 +14,7 @@ jobs:
     name: 🤔
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac # v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
       - uses: actions/setup-node@v3
         with:
           node-version: lts/*
@@ -22,7 +22,7 @@ jobs:
       - name: check if workflows needs prettier
         run: npx prettier --cache --check ".github/workflows/**/*.yml" || (echo "An action can't make changes to actions, you'll have to run prettier manually" && exit 1)
       - run: npx prettier --ignore-path .gitignore --cache --write .
-      - uses: EndBug/add-and-commit@1bad3abcf0d6ec49a5857d124b0bfb52dc7bb081 # v9
+      - uses: EndBug/add-and-commit@a94899bca583c204427a224a7af87c02f9b325d5 # v9
         with:
           default_author: github_actions
           commit: --no-verify
