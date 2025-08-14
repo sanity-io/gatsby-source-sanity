@@ -24,7 +24,7 @@ export default async function handleDeltaChanges({
   config,
 }: {
   args: SourceNodesArgs
-  lastBuildTime: Date
+  lastBuildTime: string
   client: SanityClient
   syncWithGatsby: SyncWithGatsby
   config: PluginConfig
@@ -35,7 +35,7 @@ export default async function handleDeltaChanges({
     const changedDocs = await client.fetch<SanityDocument[]>(
       '*[!(_type match "system.**") && _updatedAt > $timestamp]',
       {
-        timestamp: lastBuildTime.toISOString(),
+        timestamp: lastBuildTime,
       },
     )
     changedDocs.forEach((doc) => {
