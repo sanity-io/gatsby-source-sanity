@@ -97,10 +97,11 @@ jobs:
         with:
           node-version: lts/*
           cache: npm
+          registry-url: 'https://registry.npmjs.org'
       - run: npm ci
         # Branches that will release new versions are defined in .releaserc.json
       - run: npm run release
         env:
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
           NPM_CONFIG_PROVENANCE: true
