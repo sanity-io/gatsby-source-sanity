@@ -1,32 +1,9 @@
----
-name: CI & Release
-
-# Workflow name based on selected inputs. Fallback to default Github naming when expression evaluates to empty string
-run-name: >-
-  ${{
-    inputs.release && inputs.test && 'Build ➤ Test ➤ Publish to NPM' ||
-    inputs.release && !inputs.test && 'Build ➤ Skip Tests ➤ Publish to NPM' ||
-    github.event_name == 'workflow_dispatch' && inputs.test && 'Build ➤ Test' ||
-    github.event_name == 'workflow_dispatch' && !inputs.test && 'Build ➤ Skip Tests' ||
-    ''
-  }}
+name: CI
 
 on:
   pull_request:
   push:
     branches: [main]
-  workflow_dispatch:
-    inputs:
-      test:
-        description: 'Run tests'
-        required: true
-        default: true
-        type: boolean
-      release:
-        description: 'Publish new release'
-        required: true
-        default: false
-        type: boolean
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
@@ -46,7 +23,6 @@ jobs:
 
   test:
     needs: build
-    if: github.event.inputs.test != 'false'
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -71,38 +47,3 @@ jobs:
           cache: npm
       - run: npm i
       - run: npm test
-
-  release:
-    needs: [build, test]
-    # only run if opt-in during workflow_dispatch
-    if: always() && github.event.inputs.release == 'true' && needs.build.result != 'failure' && needs.test.result != 'failure' && needs.test.result != 'cancelled'
-    runs-on: ubuntu-latest
-    permissions:
-      id-token: write
-    steps:
-      - uses: actions/create-github-app-token@v2
-        id: app-token
-        with:
-          app-id: ${{ secrets.ECOSPARK_APP_ID }}
-          private-key: ${{ secrets.ECOSPARK_APP_PRIVATE_KEY }}
-      - uses: actions/checkout@v5
-        with:
-          # Need all history to analyze commits since last release
-          fetch-depth: 0
-          # Uses generated token to allow pushing commits back
-          token: ${{ steps.app-token.outputs.token }}
-          # Make sure GITHUB_TOKEN will not be persisted in repo's config
-          persist-credentials: false
-      - uses: actions/setup-node@v4
-        with:
-          cache: npm
-          node-version: lts/*
-          registry-url: 'https://registry.npmjs.org'
-      # Ensure npm 11.5.1 or later is installed
-      - name: Update npm
-        run: npm install -g npm@latest
-      - run: npm ci
-        # Branches that will release new versions are defined in .releaserc.json
-      - run: npm run release
-        env:
-          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
